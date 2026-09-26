@@ -1,0 +1,806 @@
+{
+  "name": "Taqyeem - Generate Testimonial Image",
+  "nodes": [
+    {
+      "id": "n-webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "taqyeem-generate-testimonial",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "webhookId": "taqyeem-generate-testimonial"
+    },
+    {
+      "id": "n-has-review-id",
+      "name": "Has review_id?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.body.review_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-start",
+      "name": "Start Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1120,
+        -80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yqghkumzazhppkqrvtfa.supabase.co/functions/v1/taqyeem-generation-pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hrdW16YXpocHBrcXJ2dGZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MzU1MzgsImV4cCI6MjEwNTMxMTUzOH0.OmSWQmbbg7DlwbgudrX7Wir8QgR1dDJE1xkQN0uOu_Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'start', review_id: $json.body.review_id }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "n-start-error",
+      "name": "Start OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        -80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-already-done",
+      "name": "Already Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        -160
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.alreadyCompleted }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-build-prompt",
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -240
+      ],
+      "parameters": {
+        "jsCode": "const d = $input.item.json;\nconst brandColor = d.merchant.brand_color;\n\nconst prompt = \"This image is a BACKGROUND TEMPLATE for a social-media testimonial card. It will have real text added on top afterward by a separate deterministic process \\u2014 you must NOT render any text, letters, numbers, words, logos, stars, or typography of any kind in this image.\\n\\n\" +\n\"Use the attached reference image as the primary art-direction source. Study its composition, spatial hierarchy, dark cinematic mood, grid/texture language, contrast, glow/bloom behavior, visual density, negative space and depth \\u2014 then create a NEW composition in that same visual language. Do not copy the reference pixel-for-pixel or reproduce its exact content; interpret its art direction for a new, original composition.\\n\\n\" +\n\"Composition requirements:\\n\" +\n\"- Exactly 1:1 square, full-bleed, high resolution.\\n\" +\n\"- Reserve a clear, intentional text-safe area covering roughly the right two-thirds of the frame vertically from about 25% to 90% of the height. This area must have lower visual detail/contrast so large white text reads clearly when placed on top afterward. Do not place bright highlights, sharp edges, or busy detail directly in this zone.\\n\" +\n\"- Use exactly this hex color as a deliberate accent (in glow, gradient, or edge lighting) \\u2014 never recolor the whole image with it, use it as a controlled accent only: \" + brandColor + \".\\n\" +\n\"- Build genuine depth and texture: layered lighting, glow blooms, a fine grid or line-based graphic language, controlled contrast \\u2014 the composition should feel deliberate and premium, not like an empty gradient.\\n\\n\" +\n\"Absolutely forbidden in this image:\\n\" +\n\"- any text, words, letters, or numbers\\n\" +\n\"- any logo or brand mark\\n\" +\n\"- any star icons or rating indicators\\n\" +\n\"- any typography or lettering of any kind, real or decorative-looking\\n\" +\n\"- people, hands, phones, or photographic elements\\n\\n\" +\n\"This is purely a visual background template \\u2014 all customer text, name, rating, and merchant identity will be added afterward by the application, not by you.\";\n\nreturn {\n  json: {\n    prompt,\n    referenceImageBase64: d.referenceImageBase64,\n    referenceMime: d.referenceMime,\n    review_id: d.review.id,\n    merchant_id: d.merchant.id,\n    generated_content_id: d.generated_content_id\n  }\n};"
+      }
+    },
+    {
+      "id": "n-nano-banana",
+      "name": "Nano Banana",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        -240
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'google/gemini-3-pro-image-preview', messages: [{ role: 'user', content: [ { type: 'text', text: $json.prompt }, { type: 'image_url', image_url: { url: 'data:' + $json.referenceMime + ';base64,' + $json.referenceImageBase64 } } ] }] }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "openRouterApi": {
+          "id": "7KA52VwwwDcAKdCo",
+          "name": "OpenRouter account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "n-extract-image",
+      "name": "Extract Image",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -240
+      ],
+      "parameters": {
+        "jsCode": "const response = $input.item.json;\nconst built = $('Build Prompt').item.json;\n\nconst image = response.choices && response.choices[0] && response.choices[0].message && response.choices[0].message.images && response.choices[0].message.images[0];\n\nif (!image) {\n  return { json: { error: 'no_image_in_openrouter_response', review_id: built.review_id, merchant_id: built.merchant_id } };\n}\n\nconst url = image.image_url.url;\nconst meta = url.split(',')[0];\nconst base64 = url.split(',')[1];\nconst mime = meta.split(':')[1].split(';')[0];\n\nreturn {\n  json: {\n    review_id: built.review_id,\n    merchant_id: built.merchant_id,\n    imageBase64: base64,\n    imageMime: mime\n  }\n};"
+      }
+    },
+    {
+      "id": "n-extract-ok",
+      "name": "Image Extracted?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -240
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-complete",
+      "name": "Complete Generation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        -240
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yqghkumzazhppkqrvtfa.supabase.co/functions/v1/taqyeem-generation-pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hrdW16YXpocHBrcXJ2dGZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MzU1MzgsImV4cCI6MjEwNTMxMTUzOH0.OmSWQmbbg7DlwbgudrX7Wir8QgR1dDJE1xkQN0uOu_Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'complete', review_id: $json.review_id, imageBase64: $json.imageBase64, imageMime: $json.imageMime }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "n-complete-ok",
+      "name": "Complete OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -240
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-success-end",
+      "name": "Success",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        -240
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "n-already-done-end",
+      "name": "Already Completed (No-Op)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -80
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "n-invalid-payload-end",
+      "name": "Invalid Payload (No-Op)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        160
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "n-mark-failed",
+      "name": "Mark Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        320
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yqghkumzazhppkqrvtfa.supabase.co/functions/v1/taqyeem-generation-pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hrdW16YXpocHBrcXJ2dGZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MzU1MzgsImV4cCI6MjEwNTMxMTUzOH0.OmSWQmbbg7DlwbgudrX7Wir8QgR1dDJE1xkQN0uOu_Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'fail', review_id: $('Webhook').item.json.body.review_id }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "n-should-send-email",
+      "name": "Should Send Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.should_send_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-build-email-html",
+      "name": "Build Email HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -480
+      ],
+      "parameters": {
+        "jsCode": "const d = $input.item.json;\nconst complete = $('Complete Generation').item.json;\nconst reviewId = $('Extract Image').item.json.review_id;\nconst email = d.email;\n\nconst ratingStars = '★'.repeat(email.rating) + '☆'.repeat(5 - email.rating);\nconst customerLine = email.customer_name ? email.customer_name : 'عميل';\n\nconst html = `\n<div dir=\"rtl\" style=\"font-family: Tahoma, Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #171717;\">\n  <p style=\"font-size: 16px;\">مرحبًا ${email.business_name}،</p>\n  <p style=\"font-size: 15px;\">وصلك تقييم جديد من عميلك، وتصميم التقييم الجاهز للمشاركة أصبح متاحًا الآن.</p>\n  <p style=\"font-size: 14px; margin-bottom: 4px;\"><strong>الاسم:</strong> ${customerLine}</p>\n  <p style=\"font-size: 14px; margin-bottom: 4px;\"><strong>التقييم:</strong> ${ratingStars} (${email.rating}/5)</p>\n  <blockquote style=\"font-size: 15px; border-right: 3px solid #087F5B; padding-right: 12px; margin: 16px 0; color: #171717;\">${email.original_text}</blockquote>\n  <img src=\"${complete.image_url}\" alt=\"تصميم التقييم\" style=\"width: 100%; max-width: 480px; border-radius: 8px; display: block; margin: 16px 0;\" />\n  <p style=\"font-size: 13px; color: #737373;\">مدعوم من تقييم</p>\n</div>\n`;\n\nreturn {\n  json: {\n    review_id: reviewId,\n    to: email.to,\n    subject: 'تقييم جديد جاهز للمشاركة ✨',\n    html\n  }\n};"
+      }
+    },
+    {
+      "id": "n-send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        -480
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.review_id }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ from: 'Taqyeem <onboarding@resend.dev>', to: [$json.to], subject: $json.subject, html: $json.html }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lP4MTu92tdVB8MIE",
+          "name": "Resend account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "n-email-sent-ok",
+      "name": "Email Sent OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        -480
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n-mark-email-sent",
+      "name": "Mark Email Sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        -560
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yqghkumzazhppkqrvtfa.supabase.co/functions/v1/taqyeem-generation-pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hrdW16YXpocHBrcXJ2dGZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MzU1MzgsImV4cCI6MjEwNTMxMTUzOH0.OmSWQmbbg7DlwbgudrX7Wir8QgR1dDJE1xkQN0uOu_Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'mark_email_result', review_id: $('Build Email HTML').item.json.review_id, success: true, provider_message_id: $json.id }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "n-mark-email-failed",
+      "name": "Mark Email Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        -400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yqghkumzazhppkqrvtfa.supabase.co/functions/v1/taqyeem-generation-pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlxZ2hrdW16YXpocHBrcXJ2dGZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MzU1MzgsImV4cCI6MjEwNTMxMTUzOH0.OmSWQmbbg7DlwbgudrX7Wir8QgR1dDJE1xkQN0uOu_Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'mark_email_result', review_id: $('Build Email HTML').item.json.review_id, success: false }) }}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Has review_id?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has review_id?": {
+      "main": [
+        [
+          {
+            "node": "Start Generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Payload (No-Op)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Generation": {
+      "main": [
+        [
+          {
+            "node": "Start OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start OK?": {
+      "main": [
+        [
+          {
+            "node": "Already Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Completed?": {
+      "main": [
+        [
+          {
+            "node": "Already Completed (No-Op)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Nano Banana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano Banana": {
+      "main": [
+        [
+          {
+            "node": "Extract Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image": {
+      "main": [
+        [
+          {
+            "node": "Image Extracted?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Extracted?": {
+      "main": [
+        [
+          {
+            "node": "Complete Generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete Generation": {
+      "main": [
+        [
+          {
+            "node": "Complete OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complete OK?": {
+      "main": [
+        [
+          {
+            "node": "Should Send Email?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Send Email?": {
+      "main": [
+        [
+          {
+            "node": "Build Email HTML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Email HTML": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Email Sent OK?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Email Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Sent OK?": {
+      "main": [
+        [
+          {
+            "node": "Mark Email Sent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Email Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Email Sent": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Email Failed": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

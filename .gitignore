@@ -1,0 +1,49 @@
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+secrets/
+.supabase/
+
+# --- Node / package managers ---
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Vite / build output ---
+dist/
+dist-ssr/
+build/
+*.local
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- Testing / coverage ---
+coverage/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- Editor / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- n8n local data (if run locally during development) ---
+.n8n/
+
+# --- Misc ---
+*.tmp
+*.temp
+.scratch/
+.playwright-mcp/
