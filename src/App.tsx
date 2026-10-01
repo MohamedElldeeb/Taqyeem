@@ -13,6 +13,8 @@ const TestimonialPreviewPage = React.lazy(() => import('@/pages/TestimonialPrevi
 const WallOfLovePage = React.lazy(() => import('@/pages/WallOfLovePage'))
 const LoginPage = React.lazy(() => import('@/pages/auth/LoginPage'))
 const SignUpPage = React.lazy(() => import('@/pages/auth/SignUpPage'))
+const ForgotPasswordPage = React.lazy(() => import('@/pages/auth/ForgotPasswordPage'))
+const ResetPasswordPage = React.lazy(() => import('@/pages/auth/ResetPasswordPage'))
 const OnboardingPage = React.lazy(() => import('@/pages/onboarding/OnboardingPage'))
 const DashboardHomePage = React.lazy(() => import('@/pages/dashboard/DashboardHomePage'))
 const DashboardReviewsPage = React.lazy(() => import('@/pages/dashboard/DashboardReviewsPage'))
@@ -32,6 +34,8 @@ function App() {
 
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
           path="/onboarding"

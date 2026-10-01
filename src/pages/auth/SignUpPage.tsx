@@ -23,6 +23,7 @@ function SignUpPage() {
   const [submitting, setSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [needsEmailConfirmation, setNeedsEmailConfirmation] = React.useState(false)
+  const [alreadyExists, setAlreadyExists] = React.useState(false)
 
   if (!loading && session) {
     return <Navigate to="/onboarding" replace />
@@ -33,11 +34,16 @@ function SignUpPage() {
     setSubmitting(true)
     setError(null)
 
-    const { error: signUpError } = await signUp(email, password)
+    const { error: signUpError, alreadyExists: existing } = await signUp(email, password)
     setSubmitting(false)
 
     if (signUpError) {
       setError(signUpError)
+      return
+    }
+
+    if (existing) {
+      setAlreadyExists(true)
       return
     }
 
@@ -58,7 +64,14 @@ function SignUpPage() {
           <CardDescription>ابدأ في جمع تقييمات عملائك الحقيقية.</CardDescription>
         </CardHeader>
         <CardContent>
-          {needsEmailConfirmation ? (
+          {alreadyExists ? (
+            <div className="flex flex-col gap-4">
+              <p className="text-sm text-ink">
+                الحساب ده موجود بالفعل. من فضلك سجّل الدخول بدل إنشاء حساب جديد.
+              </p>
+              <Button onClick={() => navigate('/login')}>تسجيل الدخول</Button>
+            </div>
+          ) : needsEmailConfirmation ? (
             <p className="text-sm text-ink">
               تم إنشاء الحساب. برجاء تفعيل بريدك الإلكتروني من الرسالة المرسلة إليك ثم
               تسجيل الدخول.
