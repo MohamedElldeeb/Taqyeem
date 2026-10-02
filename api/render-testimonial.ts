@@ -1,8 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import chromium from '@sparticuz/chromium'
 import { chromium as playwrightChromium } from 'playwright-core'
-import { existsSync } from 'node:fs'
-import { pathToFileURL } from 'node:url'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 /**
@@ -16,6 +15,28 @@ import path from 'node:path'
  * (taqyeem-generation-pipeline), authenticated with a shared secret header
  * — never reachable from the browser or billed to an anonymous caller.
  */
+
+/**
+ * Templates reference fonts via `url('../fonts/<file>.ttf')`, resolved
+ * relative to the template's own path. Chromium's own file:// fetch for
+ * these has proven unreliable in the Vercel serverless environment (the
+ * bundled file is intermittently reported as ERR_FILE_NOT_FOUND even
+ * though Node's own fs can always see it) — inlining the font bytes as
+ * data: URIs removes that separate fetch entirely.
+ */
+const fontDataUriCache = new Map<string, string>()
+function inlineFonts(html: string): string {
+  return html.replace(/url\('\.\.\/fonts\/([^']+)'\)/g, (match, fileName: string) => {
+    let dataUri = fontDataUriCache.get(fileName)
+    if (!dataUri) {
+      const fontPath = path.join(process.cwd(), 'api', 'fonts', fileName)
+      const base64 = readFileSync(fontPath).toString('base64')
+      dataUri = `url('data:font/ttf;base64,${base64}')`
+      fontDataUriCache.set(fileName, dataUri)
+    }
+    return dataUri
+  })
+}
 
 const TEMPLATE_IDS = new Set([
   '01-neon-editorial',
@@ -87,7 +108,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ;(window as unknown as { TAQYEEM_DATA: unknown }).TAQYEEM_DATA = d
     }, data)
 
-    await page.goto(pathToFileURL(templatePath).href)
+    const html = inlineFonts(readFileSync(templatePath, 'utf-8'))
+    await page.setContent(html, { waitUntil: 'load' })
     await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
 
     const overflow = await page.$eval('[data-slot="quote"]', (el) => (el as HTMLElement).dataset.overflow)
