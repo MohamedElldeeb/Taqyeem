@@ -38,6 +38,21 @@ function inlineFonts(html: string): string {
   })
 }
 
+/**
+ * Injects the review/merchant data as a `window.TAQYEEM_DATA = {...}` script
+ * right after `<head>`, so it runs (in document order) before the template's
+ * own runtime script at the end of `<body>` reads it. This replaces an
+ * earlier `page.addInitScript()` + `page.goto('file://...')` approach: once
+ * rendering moved to `page.setContent()` (to fix the font-loading bug above),
+ * init scripts stopped reliably running before the page's own scripts,
+ * which silently left every render showing the template's own hardcoded
+ * placeholder text/color instead of the real review data.
+ */
+function injectData(html: string, data: unknown): string {
+  const json = JSON.stringify(data).replace(/</g, '\\u003c')
+  return html.replace('<head>', `<head>\n<script>window.TAQYEEM_DATA = ${json};</script>`)
+}
+
 const TEMPLATE_IDS = new Set([
   '01-neon-editorial',
   '02-luxury-editorial',
@@ -100,11 +115,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       logoUrl: typeof logoUrl === 'string' ? logoUrl : undefined,
     }
 
-    await page.addInitScript((d) => {
-      ;(window as unknown as { TAQYEEM_DATA: unknown }).TAQYEEM_DATA = d
-    }, data)
-
-    const html = inlineFonts(readFileSync(templatePath, 'utf-8'))
+    let html = readFileSync(templatePath, 'utf-8')
+    html = inlineFonts(html)
+    html = injectData(html, data)
     await page.setContent(html, { waitUntil: 'load' })
     await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
 
