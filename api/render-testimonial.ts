@@ -74,6 +74,18 @@ function injectStarFont(html: string): string {
 }
 
 const TEMPLATE_IDS = new Set([
+  '01-glass-orbs',
+  '02-soft-clay',
+  '03-tilted-stack',
+  '04-extruded-type',
+  '05-floating-note',
+  '06-neumorphic',
+  '07-liquid-chrome',
+  '08-ticket-stub',
+  '09-inflated-bubble',
+  '10-paper-depth',
+  '11-spotlight-podium',
+  '12-horizon-grid',
   '01-neon-editorial',
   '02-luxury-editorial',
   '03-minimal-modern',

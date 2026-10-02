@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="taqyeem-template" content="12-horizon-grid">
+<title>Taqyeem · Horizon Grid</title>
+<style>
+@font-face { font-family: 'Cairo'; src: url('../fonts/Cairo-Variable.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: block; }
+:root { --brand: #FF4F8B; }
+html, body { margin: 0; padding: 0; width: 1080px; height: 1080px; overflow: hidden; background: transparent; }
+* { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; box-sizing: content-box; }
+.cv { width: 1080px; height: 1080px; position: relative; overflow: hidden; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; }
+.qbox { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; }
+[data-slot="quote"] { overflow-wrap: anywhere; }
+[data-slot="logo"] img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cv{background:linear-gradient(180deg,#F7F5FB 0%,#EDEAF4 32%,#E2DEEC 32.1%,#D9D5E6 100%);color:#1B1830}
+.sun{position:absolute;top:90px;left:50%;width:520px;height:260px;margin-left:-260px;border-radius:260px 260px 0 0;background:repeating-linear-gradient(180deg,var(--brand) 0 26px,transparent 26px 34px),var(--brand);-webkit-mask:linear-gradient(180deg,#000 55%,transparent 100%);mask:linear-gradient(180deg,#000 55%,transparent 100%);opacity:.9}
+.floor{position:absolute;left:-600px;right:-600px;top:346px;height:1000px;transform-origin:50% 0;transform:perspective(500px) rotateX(62deg);background-image:linear-gradient(color-mix(in srgb,var(--brand) 55%,transparent) 2px,transparent 2px),linear-gradient(90deg,color-mix(in srgb,var(--brand) 55%,transparent) 2px,transparent 2px);background-size:90px 90px;-webkit-mask:linear-gradient(180deg,#000 30%,transparent 90%);mask:linear-gradient(180deg,#000 30%,transparent 90%)}
+.card{position:absolute;top:290px;right:100px;left:100px;bottom:110px;border-radius:38px;background:rgba(255,255,255,.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.9);box-shadow:0 40px 70px rgba(40,20,80,.22);box-sizing:border-box;padding:58px 68px;display:flex;flex-direction:column;gap:24px}
+.fshadow{position:absolute;left:200px;right:200px;bottom:40px;height:50px;border-radius:50%;background:rgba(40,20,80,.25);filter:blur(16px)}
+.top,.bot{display:flex;justify-content:space-between;align-items:center}
+.head{padding:10px 24px;border-radius:12px;background:#1B1830;color:#fff;font-size:24px;font-weight:800}
+.stars{font-size:31px;color:#F7B500;letter-spacing:4px}
+.quote{margin:0;font-size:52px;font-weight:800;line-height:1.6}
+.name{font-size:31px;font-weight:800}
+.mer{display:flex;align-items:center;gap:12px;direction:ltr}
+.logo{width:50px;height:50px;border-radius:14px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;overflow:hidden}
+.mname{font-size:21px;font-weight:700;color:#5E5873}
+</style>
+</head>
+<body>
+<div class="cv" data-slot="canvas">
+<div class="sun" data-slot="accent-sun"></div><div class="floor" data-slot="accent-grid"></div><div class="fshadow"></div>
+<div class="card">
+ <div class="top"><div class="head" data-slot="heading">آراء عملاؤنا</div><div class="stars" data-slot="rating">★★★★★</div></div>
+ <div class="qbox"><p class="quote" data-slot="quote">الخدمة كانت ممتازة جدًا والتعامل راقي، أكيد هرجع لكم تاني.</p></div>
+ <div class="bot"><div class="name" data-slot="customer">محمد أحمد</div><div class="mer"><div class="logo" data-slot="logo" data-on-brand>T</div><div class="mname" data-slot="merchant">Taqyeem</div></div></div>
+</div>
+</div>
+<script>
+window.TAQYEEM_TEMPLATE = { id: "12-horizon-grid", defaultBrand: "#FF4F8B" };
+/* Taqyeem template runtime: fills slots, fits the quote, sets brand contrast, then marks ready. */
+(function () {
+  var T = window.TAQYEEM_TEMPLATE;
+  function q(sel) { return document.querySelector('[data-slot="' + sel + '"]'); }
+  function params() {
+    var p = new URLSearchParams(location.search), d = {};
+    ['heading','quote','customer','merchant','brandColor','logoUrl','rating'].forEach(function (k) { if (p.has(k)) d[k] = p.get(k); });
+    return d;
+  }
+  function setText(el, v) {
+    if (!el || v == null) return;
+    var kids = el.children;
+    (kids.length ? kids[kids.length - 1] : el).textContent = v;
+  }
+  function luminance(hex) {
+    var h = hex.replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var rgb = [0, 2, 4].map(function (i) { var c = parseInt(h.substr(i, 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  }
+  function fitQuote() {
+    var el = q('quote'); if (!el) return;
+    var box = el.parentElement, base = parseFloat(el.dataset.baseSize || getComputedStyle(el).fontSize);
+    el.dataset.baseSize = base; el.style.fontSize = base + 'px';
+    var min = Math.max(28, Math.round(base * 0.55));
+    function overflows() {
+      var cs = getComputedStyle(box);
+      var avail = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var kids = Array.prototype.filter.call(box.children, function (c) { return getComputedStyle(c).position !== 'absolute'; });
+      var used;
+      if (cs.flexDirection === 'column') {
+        used = kids.reduce(function (s, c) { return s + c.offsetHeight; }, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1);
+      } else {
+        used = Math.max.apply(null, kids.map(function (c) { return c.offsetHeight; }));
+      }
+      return used > avail + 1;
+    }
+    var size = base;
+    while (overflows() && size > min) { size -= 2; el.style.fontSize = size + 'px'; }
+    el.dataset.fittedSize = size;
+    el.dataset.overflow = overflows() ? 'true' : 'false';
+  }
+  function render(data) {
+    data = data || {};
+    var brand = data.brandColor || T.defaultBrand;
+    document.documentElement.style.setProperty('--brand', brand);
+    var onBrand = luminance(brand) > 0.45 ? '#111111' : '#FFFFFF';
+    document.querySelectorAll('[data-on-brand]').forEach(function (n) { n.style.color = onBrand; });
+    setText(q('heading'), data.heading);
+    setText(q('quote'), data.quote);
+    setText(q('customer'), data.customer);
+    setText(q('merchant'), data.merchant);
+    var av = q('avatar'); if (av && data.customer) av.textContent = data.customer.trim().charAt(0);
+    var logo = q('logo'), wait = [];
+    if (logo) {
+      if (data.logoUrl) {
+        var img = new Image(); img.alt = ''; img.src = data.logoUrl;
+        logo.textContent = ''; logo.appendChild(img);
+        wait.push(img.decode ? img.decode().catch(function () {}) : Promise.resolve());
+      } else if (data.merchant) {
+        logo.textContent = data.merchant.trim().charAt(0).toUpperCase();
+      }
+    }
+    var r = q('rating');
+    if (r && data.rating != null) {
+      var n = Math.max(0, Math.min(5, Math.round(+data.rating)));
+      r.innerHTML = '★'.repeat(n) + (n < 5 ? '<span style="opacity:.28">' + '★'.repeat(5 - n) + '</span>' : '');
+    }
+    document.documentElement.removeAttribute('data-ready');
+    var fl = ['400','500','600','700','800','900'].map(function (w) { return document.fonts.load(w + ' 40px Cairo', 'عربي'); });
+    return Promise.all(fl.concat(wait)).then(function () { return document.fonts.ready; }).then(function () {
+      fitQuote();
+      document.documentElement.setAttribute('data-ready', 'true');
+    });
+  }
+  window.taqyeemRender = render;
+  var initial = Object.assign({}, window.TAQYEEM_DATA || {}, params());
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { render(initial); });
+  else render(initial);
+})();
+
+
+</script>
+</body>
+</html>
