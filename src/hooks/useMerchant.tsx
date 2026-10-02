@@ -10,6 +10,7 @@ export interface Merchant {
   slug: string
   logo_url: string | null
   brand_color: string
+  default_template_id: string
   created_at: string
   updated_at: string
 }

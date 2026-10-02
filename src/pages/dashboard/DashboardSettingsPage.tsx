@@ -12,8 +12,10 @@ import {
 import { ColorSwatchPicker } from '@/components/ui/color-swatch-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { TemplatePreview } from '@/components/testimonial/TemplatePreview'
 import { useMerchant } from '@/hooks/useMerchant'
 import { supabase } from '@/lib/supabase'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, type TemplateId } from '@/lib/testimonial-templates'
 
 /**
  * Brand Settings — persists business_name/brand_color via the existing
@@ -30,7 +32,31 @@ function DashboardSettingsPage() {
   const [saved, setSaved] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
+  const [savingTemplate, setSavingTemplate] = React.useState(false)
+  const [templateError, setTemplateError] = React.useState<string | null>(null)
+
   if (!merchant) return null
+
+  async function handleSelectTemplate(templateId: TemplateId) {
+    if (templateId === merchant!.default_template_id || savingTemplate) return
+
+    setSavingTemplate(true)
+    setTemplateError(null)
+
+    const { error: updateError } = await supabase
+      .from('merchants')
+      .update({ default_template_id: templateId })
+      .eq('id', merchant!.id)
+
+    setSavingTemplate(false)
+
+    if (updateError) {
+      setTemplateError('تعذر حفظ التصميم. حاول مرة أخرى.')
+      return
+    }
+
+    await refetch()
+  }
 
   async function handleSave() {
     setSaving(true)
@@ -111,6 +137,44 @@ function DashboardSettingsPage() {
             {saved && <Check className="size-4" />}
             {saving ? 'جاري الحفظ...' : saved ? 'تم الحفظ' : 'حفظ التغييرات'}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-3xl">
+        <CardHeader>
+          <CardTitle>تصميم التقييم</CardTitle>
+          <CardDescription>
+            اختر التصميم الذي يستخدم تلقائيًا لكل تقييم جديد. التصاميم السابقة لا تتغير عند اختيار تصميم مختلف.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            {TEMPLATE_IDS.map((templateId) => {
+              const isSelected = merchant.default_template_id === templateId
+              return (
+                <button
+                  key={templateId}
+                  type="button"
+                  onClick={() => handleSelectTemplate(templateId)}
+                  disabled={savingTemplate}
+                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-2 transition ${
+                    isSelected ? 'border-emerald' : 'border-transparent hover:border-border'
+                  }`}
+                >
+                  <div className="relative">
+                    <TemplatePreview templateId={templateId} brandColor={brandColor} size={140} />
+                    {isSelected && (
+                      <div className="absolute left-1 top-1 flex size-6 items-center justify-center rounded-full bg-emerald text-white">
+                        <Check className="size-4" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-ink">{TEMPLATE_LABELS[templateId]}</span>
+                </button>
+              )
+            })}
+          </div>
+          {templateError && <p className="text-sm text-danger">{templateError}</p>}
         </CardContent>
       </Card>
     </div>

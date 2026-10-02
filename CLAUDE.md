@@ -72,13 +72,13 @@ If a task implies any of the above, stop and flag it instead of building it.
 
 **Automation:** n8n
 
-**AI:** OpenRouter, configurable image-generation model (currently planned: Nano Banana)
+**Testimonial rendering:** deterministic, template-based (resvg + Cairo). No AI image-generation model is called for normal testimonial generation (see §6).
 
 **QR:** lightweight QR code library
 
 **Email:** provider selected during implementation (do not hardcode a choice prematurely; isolate behind a single sending function)
 
-**Hard rule:** Never expose the OpenRouter API key (or any server secret) in frontend code, bundles, or client-visible env vars (no `VITE_OPENROUTER_API_KEY`). All AI calls happen server-side (n8n / server function), never directly from the browser.
+**Hard rule:** Never expose any server secret (service-role keys, provider API keys) in frontend code, bundles, or client-visible env vars. All privileged generation logic runs server-side (Supabase Edge Function), never in the browser.
 
 ---
 
@@ -94,6 +94,8 @@ merchants
   slug
   logo_url
   brand_color
+  default_template_id  -- one of the 8 template ids (§6.2); defaults to the
+                        -- system default for merchants who never chose one
   created_at
   updated_at
 
@@ -134,56 +136,43 @@ Rules:
 
 ---
 
-## 6. AI Architecture
+## 6. Testimonial Rendering Architecture
 
-### 6.1 Isolation — and the canonical final-image pipeline (Phase 13)
+### 6.1 Static, reusable templates — no AI image generation
 
-**Non-negotiable split of responsibility:** the AI model generates ONLY a visual background/template. It is never asked to render any text, letters, numbers, logos, stars, or typography — not even the customer's name. The application deterministically composes the FINAL image server-side, on top of that AI background:
+**Taqyeem does not call any AI image-generation model for normal testimonial generation.** Earlier phases of this project used a per-review AI-generated visual background; that architecture has been fully replaced. The merchant instead picks one of a fixed set of reusable testimonial templates (`merchants.default_template_id`), and every testimonial for that merchant is rendered deterministically from it:
 
 ```
 reviews row (real customer text/name/rating)
-  → n8n generation pipeline
-  → AI generates visual background/template ONLY (no text, no logo, no stars)
-  → Edge Function (taqyeem-generation-pipeline, `complete` action):
-      background + EXACT original_text + customer_name + rating
+  → n8n generation pipeline (webhook only — no AI call)
+  → Edge Function (taqyeem-generation-pipeline, `generate` action):
+      merchant's default_template_id (resolved server-side, never trusted
+      from the caller) + EXACT original_text + customer_name + rating
       + REAL merchant logo (fetched from merchants.logo_url, never AI-drawn)
-      + merchant business_name
-      → rendered deterministically (SVG → PNG via resvg, IBM Plex Sans Arabic)
+      + merchant business_name + merchant brand_color
+      → rendered deterministically (template SVG → PNG via resvg, Cairo)
       → FINAL TESTIMONIAL IMAGE
   → uploaded to generated-content/{merchant_id}/{review_id}.png
-  → generated_content.image_url = this FINAL image (never the AI-only background)
+  → generated_content.image_url = this image
   → Dashboard, Wall of Love, and Email all consume this same image_url —
     none of them independently reconstruct or re-render the visual.
 ```
 
-The AI-only background is never persisted anywhere and never reaches any consumer — it exists only transiently in memory during the single `complete` request. `generated_content.status` only becomes `completed` once the final composed image has been successfully stored; a failure at either the AI-generation stage or the deterministic-composition stage results in `failed`, recoverable, with the original review left completely intact.
+`generated_content.status` only becomes `completed` once the composed image has been successfully stored; a failure results in `failed`, recoverable, with the original review left completely intact. An already-completed review is never regenerated — including when the merchant later changes their default template; existing images stay exactly as they were.
 
-UI code never talks to OpenRouter directly. Provider/model configuration (API key, model id) is isolated in server-side config, not in UI code.
+UI code never talks to any image-generation API. There is no per-review external API call anywhere in this flow, which keeps cost and output fully predictable.
 
-### 6.2 Inputs to the model (background generation only)
+### 6.2 The template registry
 
-- Reference image (primary art-direction input) — the actual image bytes, not just a filename mention
-- Merchant brand color (used as a controlled accent in the prompt — never used to recolor the whole image)
-- Square (1:1) format instruction
-- Explicit, concrete negative instructions: no text, no letters, no numbers, no logos, no stars, no typography of any kind, no people/photographic elements
-- An explicit reserved text-safe-area instruction (roughly the right two-thirds of the frame), since real text is composited there afterward
+Templates live in `supabase/functions/taqyeem-generation-pipeline/templates.ts`. Each template is a pure function `(exact review data + merchant brand color + logo bytes) -> SVG string` — there are eight: `neon`, `luxury`, `minimal`, `organic`, `bold`, `magazine`, `soft`, `brutalist` (`TEMPLATE_IDS`, `DEFAULT_TEMPLATE_ID = 'neon'`). Adding a future template means writing one more render function and registering it in the `RENDERERS` map — no change to the generation pipeline itself. A matching live preview is shown in the merchant-facing picker via `src/components/testimonial/TemplatePreview.tsx` (same composition/colors, rendered as scaled-down HTML/CSS rather than a separate exported asset).
 
-The model is never given the customer's review text, name, rating, business name, or logo — there is nothing for it to rewrite, because it never receives the words at all.
+Every template renders the same fixed heading ("آراء عملاؤنا"), five-star rating (always gold, never recolored by brand color), customer name, exact review text, real merchant logo (or a deterministic initial-letter fallback), and business name. The merchant's `brand_color` is used only in each template's designated accent areas (borders, accent shapes, pills) — never to recolor the whole composition.
 
 ### 6.3 Deterministic final composition
 
-Implemented via **resvg** (SVG → PNG rasterizer, WASM build, no native bindings — runs directly in the Supabase Edge Function's Deno runtime) with **IBM Plex Sans Arabic** for correct Arabic shaping (verified: proper letter joining, correct RTL), and **opentype.js** for accurate glyph-width text measurement (used to word-wrap the testimonial and to auto-scale its font size down through a fixed set of candidate sizes until it fits a maximum line count — never by truncating or altering the customer's words). The real merchant logo is fetched from `merchants.logo_url` and embedded as-is (circularly clipped); if no logo exists, a deterministic initial-letter mark is used instead — never an AI-invented logo. Rating stars are drawn as plain SVG paths, filled up to `reviews.rating`. All user-supplied text is XML-escaped before being embedded in the SVG.
+Implemented via **resvg** (SVG → PNG rasterizer, WASM build, no native bindings — runs directly in the Supabase Edge Function's Deno runtime) with **Cairo** for Arabic shaping (fetched as WOFF from Google Fonts and converted to SFNT at request time in `cairo-font.ts`, since resvg only accepts raw SFNT), and **opentype.js** for accurate glyph-width text measurement. The customer's review text is word-wrapped and auto-scaled down through a fixed set of candidate font sizes — chosen by checking each candidate's actual rendered pixel height against the template's available area, never by line-count alone — until it fits, and is never truncated or altered. Business-name labels in narrow template regions use the same shrink-to-fit approach (`fitSingleLine`) so a long business name is never clipped. The real merchant logo is fetched from `merchants.logo_url` and embedded as-is (clipped to the template's shape); if no logo exists, a deterministic initial-letter mark is used instead. Rating stars are drawn as plain SVG paths, filled up to `reviews.rating`. All user-supplied text is XML-escaped before being embedded in the SVG.
 
-Do not solve any text-rendering concern by adding another AI step that "cleans up," rewrites, or regenerates the text. That would violate the immutability rule in §2. This deterministic-composition architecture *is* the permanent solution, not a fallback for only some cases.
-
-### 6.4 Environment variables
-
-```
-OPENROUTER_API_KEY
-OPENROUTER_IMAGE_MODEL
-```
-
-These live server-side only (n8n credentials / server function env), never in frontend `.env` files that ship to the client.
+Do not solve any text-rendering concern by adding an AI step that "cleans up," rewrites, or regenerates the text. That would violate the immutability rule in §2.
 
 ---
 
@@ -209,13 +198,12 @@ Conceptual flow, triggered on review submission:
 Review submitted
   → Webhook
   → Validate payload
-  → Mark generated_content status = processing
-  → Call secure image-generation service (ImageGenerationService)
-  → OpenRouter / configured image model
-  → Store generated image in Supabase Storage
-  → Update generated_content (status = ready, image_url set)
-  → Email merchant
+  → Edge Function `generate` action: resolves merchant's default template,
+    renders deterministically, uploads, updates generated_content/reviews
+  → Email merchant (only if the Edge Function says should_send_email)
 ```
+
+No AI/image-generation API call happens in this workflow — see §6.
 
 Failure path:
 
@@ -262,7 +250,7 @@ Do not generate an AI caption or any AI-written copy for the email body beyond t
 
 **B — Customer Review:** `/r/{merchant-slug}` → Merchant branding → Rating → Original review text → Optional customer name → Submit → Success. No account.
 
-**C — Image Generation:** Review submitted → Review stored → Image generation triggered → ImageGenerationService → OpenRouter → configured image model → Generated image → Supabase Storage → `generated_content` updated → Merchant notified by email.
+**C — Image Generation:** Review submitted → Review stored → Generation triggered → merchant's default template resolved → deterministic render (§6) → Supabase Storage → `generated_content` updated → Merchant notified by email.
 
 **D — Wall of Love:** `/w/{merchant-slug}` → Merchant branding → Testimonials → Generated testimonial visuals → Customer attribution → Ratings. No login.
 
