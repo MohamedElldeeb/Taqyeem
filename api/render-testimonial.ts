@@ -53,6 +53,26 @@ function injectData(html: string, data: unknown): string {
   return html.replace('<head>', `<head>\n<script>window.TAQYEEM_DATA = ${json};</script>`)
 }
 
+/**
+ * Templates render the rating as literal ★ (U+2605) characters, styled via
+ * the element's own color/font-size — relying on the browser falling back
+ * to a system font that happens to carry that glyph. Neither bundled Arabic
+ * font (Cairo, IBM Plex Sans Arabic) contains it, and the sandboxed Vercel
+ * Chromium has no system fonts to fall back to either, so the star rendered
+ * as a tofu box. Scoping a tiny bundled font (just the ★/☆ glyphs,
+ * subsetted from Noto Sans Symbols 2, OFL-licensed) to `[data-slot="rating"]`
+ * fixes the glyph without touching the template's own authored styling.
+ */
+let starFontDataUri: string | undefined
+function injectStarFont(html: string): string {
+  if (!starFontDataUri) {
+    const fontPath = path.join(process.cwd(), 'api', 'fonts', 'StarGlyph.ttf')
+    starFontDataUri = readFileSync(fontPath).toString('base64')
+  }
+  const style = `<style>@font-face{font-family:'TaqyeemStars';src:url('data:font/ttf;base64,${starFontDataUri}') format('truetype');font-display:block}[data-slot="rating"]{font-family:'TaqyeemStars'}</style>`
+  return html.replace('<head>', `<head>\n${style}`)
+}
+
 const TEMPLATE_IDS = new Set([
   '01-neon-editorial',
   '02-luxury-editorial',
@@ -117,6 +137,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let html = readFileSync(templatePath, 'utf-8')
     html = inlineFonts(html)
+    html = injectStarFont(html)
     html = injectData(html, data)
     await page.setContent(html, { waitUntil: 'load' })
     await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
