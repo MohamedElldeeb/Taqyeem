@@ -54,39 +54,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const templatePath = path.join(process.cwd(), 'api', '_templates', `${templateId}.html`)
   if (!existsSync(templatePath)) {
-    res.status(500).json({ error: 'template_file_missing', cwd: process.cwd(), templatePath })
-    return
-  }
-
-  const fontsDir = path.join(process.cwd(), 'api', '_fonts')
-  const fontCheck = {
-    fontsDirExists: existsSync(fontsDir),
-    fontsDir,
-    cairoExists: existsSync(path.join(fontsDir, 'Cairo-Variable.ttf')),
-    __dirnameAlt: path.join(path.dirname(templatePath), '..', '_fonts', 'Cairo-Variable.ttf'),
-    __dirnameAltExists: existsSync(path.join(path.dirname(templatePath), '..', '_fonts', 'Cairo-Variable.ttf')),
-  }
-  if (!fontCheck.cairoExists) {
-    res.status(500).json({ error: 'fonts_missing', cwd: process.cwd(), ...fontCheck })
+    res.status(500).json({ error: 'template_file_missing' })
     return
   }
 
   let browser
-  let stage = 'executablePath'
   try {
     const executablePath = await chromium.executablePath()
-    stage = 'launch'
     browser = await playwrightChromium.launch({
       args: chromium.args,
       executablePath,
       headless: true,
     })
 
-    stage = 'newPage'
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
-    const consoleLines: string[] = []
-    page.on('console', (msg) => consoleLines.push(`[${msg.type()}] ${msg.text()}`))
-    page.on('pageerror', (e) => consoleLines.push(`[pageerror] ${e.message}`))
 
     const data = {
       heading: typeof heading === 'string' ? heading : undefined,
@@ -98,39 +79,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       logoUrl: typeof logoUrl === 'string' ? logoUrl : undefined,
     }
 
-    stage = 'addInitScript'
     await page.addInitScript((d) => {
       ;(window as unknown as { TAQYEEM_DATA: unknown }).TAQYEEM_DATA = d
     }, data)
 
-    stage = 'goto'
     await page.goto(pathToFileURL(templatePath).href)
-    stage = 'waitForSelector'
-    try {
-      await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
-    } catch (waitErr) {
-      const readyState = await page.evaluate(() => document.readyState).catch(() => 'unknown')
-      const dataReady = await page.evaluate(() => document.documentElement.getAttribute('data-ready')).catch(() => 'unknown')
-      const hasRenderFn = await page.evaluate(() => typeof (window as unknown as { taqyeemRender?: unknown }).taqyeemRender).catch(() => 'unknown')
-      throw new Error(
-        `${(waitErr as Error).message} | readyState=${readyState} dataReady=${dataReady} taqyeemRender=${hasRenderFn} console=${JSON.stringify(consoleLines)}`,
-      )
-    }
+    await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
 
-    stage = 'eval'
     const overflow = await page.$eval('[data-slot="quote"]', (el) => (el as HTMLElement).dataset.overflow)
 
-    stage = 'screenshot'
     const png = await page.screenshot({ clip: { x: 0, y: 0, width: 1080, height: 1080 } })
 
     res.setHeader('Content-Type', 'image/png')
     if (overflow === 'true') res.setHeader('X-Taqyeem-Overflow', 'true')
     res.status(200).send(png)
   } catch (err) {
-    console.error('render failed at', stage, err)
-    const message = err instanceof Error ? err.message : String(err)
-    const stack = err instanceof Error ? err.stack : undefined
-    res.status(500).json({ error: 'render_failed', stage, message, stack })
+    console.error('render failed', err)
+    res.status(500).json({ error: 'render_failed' })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
