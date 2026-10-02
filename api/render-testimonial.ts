@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import chromium from '@sparticuz/chromium'
 import { chromium as playwrightChromium } from 'playwright-core'
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 
@@ -58,16 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const fontsDir = path.join(process.cwd(), 'api', 'fonts')
-  let fontsDirListing: string[] | string = 'dir_missing'
-  try {
-    fontsDirListing = readdirSync(fontsDir)
-  } catch (e) {
-    fontsDirListing = `readdir_error: ${e instanceof Error ? e.message : String(e)}`
-  }
-
   let browser
-  let consoleLines: string[] = []
   try {
     const executablePath = await chromium.executablePath()
     browser = await playwrightChromium.launch({
@@ -77,9 +68,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
 
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
-    page.on('console', (msg) => consoleLines.push(`[${msg.type()}] ${msg.text()}`))
-    page.on('pageerror', (e) => consoleLines.push(`[pageerror] ${e.message}`))
-    page.on('requestfailed', (r) => consoleLines.push(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`))
 
     const data = {
       heading: typeof heading === 'string' ? heading : undefined,
@@ -107,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).send(png)
   } catch (err) {
     console.error('render failed', err)
-    res.status(500).json({ error: 'render_failed', message: err instanceof Error ? err.message : String(err), console: consoleLines, fontsDirListing, cwd: process.cwd() })
+    res.status(500).json({ error: 'render_failed' })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
