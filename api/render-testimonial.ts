@@ -59,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   let browser
+  let consoleLines: string[] = []
   try {
     const executablePath = await chromium.executablePath()
     browser = await playwrightChromium.launch({
@@ -68,6 +69,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
 
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
+    page.on('console', (msg) => consoleLines.push(`[${msg.type()}] ${msg.text()}`))
+    page.on('pageerror', (e) => consoleLines.push(`[pageerror] ${e.message}`))
+    page.on('requestfailed', (r) => consoleLines.push(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`))
 
     const data = {
       heading: typeof heading === 'string' ? heading : undefined,
@@ -95,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).send(png)
   } catch (err) {
     console.error('render failed', err)
-    res.status(500).json({ error: 'render_failed' })
+    res.status(500).json({ error: 'render_failed', message: err instanceof Error ? err.message : String(err), console: consoleLines })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
