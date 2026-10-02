@@ -58,14 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  const fontPath = path.join(process.cwd(), 'api', 'fonts', 'Cairo-Variable.ttf')
-  if (!existsSync(fontPath)) {
-    res.status(500).json({ error: 'font_missing_from_node_fs', fontPath, cwd: process.cwd() })
-    return
-  }
-
   let browser
-  const consoleLines: string[] = []
   try {
     const executablePath = await chromium.executablePath()
     browser = await playwrightChromium.launch({
@@ -75,9 +68,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
 
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
-    page.on('console', (msg) => consoleLines.push(`[${msg.type()}] ${msg.text()}`))
-    page.on('pageerror', (e) => consoleLines.push(`[pageerror] ${e.message}`))
-    page.on('requestfailed', (r) => consoleLines.push(`[requestfailed] ${r.url()} ${r.failure()?.errorText}`))
 
     const data = {
       heading: typeof heading === 'string' ? heading : undefined,
@@ -105,8 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).send(png)
   } catch (err) {
     console.error('render failed', err)
-    const message = err instanceof Error ? err.message : String(err)
-    res.status(500).json({ error: 'render_failed', message, console: consoleLines })
+    res.status(500).json({ error: 'render_failed' })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
