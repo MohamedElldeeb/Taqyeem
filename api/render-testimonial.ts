@@ -59,14 +59,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   let browser
+  let stage = 'executablePath'
   try {
     const executablePath = await chromium.executablePath()
+    stage = 'launch'
     browser = await playwrightChromium.launch({
       args: chromium.args,
       executablePath,
       headless: true,
     })
 
+    stage = 'newPage'
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
 
     const data = {
@@ -79,23 +82,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       logoUrl: typeof logoUrl === 'string' ? logoUrl : undefined,
     }
 
+    stage = 'addInitScript'
     await page.addInitScript((d) => {
       ;(window as unknown as { TAQYEEM_DATA: unknown }).TAQYEEM_DATA = d
     }, data)
 
+    stage = 'goto'
     await page.goto(pathToFileURL(templatePath).href)
+    stage = 'waitForSelector'
     await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
 
+    stage = 'eval'
     const overflow = await page.$eval('[data-slot="quote"]', (el) => (el as HTMLElement).dataset.overflow)
 
+    stage = 'screenshot'
     const png = await page.screenshot({ clip: { x: 0, y: 0, width: 1080, height: 1080 } })
 
     res.setHeader('Content-Type', 'image/png')
     if (overflow === 'true') res.setHeader('X-Taqyeem-Overflow', 'true')
     res.status(200).send(png)
   } catch (err) {
-    console.error('render failed', err)
-    res.status(500).json({ error: 'render_failed' })
+    console.error('render failed at', stage, err)
+    const message = err instanceof Error ? err.message : String(err)
+    const stack = err instanceof Error ? err.stack : undefined
+    res.status(500).json({ error: 'render_failed', stage, message, stack })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
