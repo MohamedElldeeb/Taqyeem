@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).send(png)
   } catch (err) {
     console.error('render failed', err)
-    res.status(500).json({ error: 'render_failed' })
+    res.status(500).json({ error: 'render_failed', message: err instanceof Error ? err.message : String(err), stack: err instanceof Error ? err.stack : undefined })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
