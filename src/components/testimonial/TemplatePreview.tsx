@@ -1,25 +1,24 @@
-import type { TemplateId } from '@/lib/testimonial-templates'
+﻿import type { TemplateId } from '@/lib/testimonial-templates'
 
-/**
- * Real reference screenshot of the approved template (the exact HTML/CSS
- * design, rendered once at its default brand color) — not a hand-built
- * CSS approximation. Approximating these from inline styles drifted from
- * the real design in practice, so the picker now shows the actual
- * reference output instead.
- */
 interface TemplatePreviewProps {
   templateId: TemplateId
   size?: number
+  className?: string
 }
 
-export function TemplatePreview({ templateId, size = 180 }: TemplatePreviewProps) {
+export function TemplatePreview({ templateId, size, className }: TemplatePreviewProps) {
+  const fluid = !size || size <= 0
+  const src = '/template-previews/' + templateId + '.png'
   return (
     <img
-      src={`/template-previews/${templateId}.png`}
+      src={src}
       alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'cover', borderRadius: 12, display: 'block' }}
+      className={className}
+      style={
+        fluid
+          ? { width: '100%', aspectRatio: '1 / 1', objectFit: 'cover', display: 'block' }
+          : { width: size, height: size, objectFit: 'cover', borderRadius: 12, display: 'block' }
+      }
     />
   )
 }

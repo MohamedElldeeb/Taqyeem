@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { Check, Copy } from 'lucide-react'
+import { AlertCircle, Check, Copy, Rocket, Sparkles, Upload } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -13,20 +13,28 @@ import {
 import { ColorPicker } from '@/components/ui/color-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { LanguageToggle } from '@/components/ui/language-toggle'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { AnimatedBackground } from '@/components/ui/animated-background'
+import { BrandLogo } from '@/components/ui/brand-logo'
 import { useAuth } from '@/lib/auth-context'
+import { useLanguage } from '@/lib/language-context'
 import { useMerchant } from '@/hooks/useMerchant'
 import { slugify } from '@/lib/slugify'
 import { supabase } from '@/lib/supabase'
+import { isValidBusinessName, isValidSlug } from '@/lib/validators'
 
 function OnboardingPage() {
   const { user } = useAuth()
   const { merchant, loading: merchantLoading, refetch } = useMerchant()
+  const { t, isRTL } = useLanguage()
   const navigate = useNavigate()
 
   const [businessName, setBusinessName] = React.useState('')
   const [slug, setSlug] = React.useState('')
   const [slugTouched, setSlugTouched] = React.useState(false)
-  const [brandColor, setBrandColor] = React.useState('#087F5B')
+  const [touched, setTouched] = React.useState<{ businessName?: boolean; slug?: boolean }>({})
+  const [brandColor, setBrandColor] = React.useState('#059669')
   const [logoFile, setLogoFile] = React.useState<File | null>(null)
   const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(null)
 
@@ -38,6 +46,21 @@ function OnboardingPage() {
   if (!merchantLoading && merchant) {
     return <Navigate to="/dashboard" replace />
   }
+
+  const businessNameError = React.useMemo(() => {
+    if (!touched.businessName) return null
+    if (!businessName.trim()) return t('val_biz_name_required')
+    if (!isValidBusinessName(businessName)) return t('val_biz_name_min')
+    return null
+  }, [businessName, touched.businessName, t])
+
+  const slugError = React.useMemo(() => {
+    if (!touched.slug) return null
+    if (!slug.trim()) return t('val_slug_required')
+    if (slug.trim().length < 2) return t('val_slug_min')
+    if (!isValidSlug(slug)) return t('val_slug_invalid')
+    return null
+  }, [slug, touched.slug, t])
 
   function handleBusinessNameChange(value: string) {
     setBusinessName(value)
@@ -59,7 +82,15 @@ function OnboardingPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+    setTouched({ businessName: true, slug: true })
     if (!user) return
+
+    const isBizValid = isValidBusinessName(businessName)
+    const isSlugValid = isValidSlug(slug)
+
+    if (!isBizValid || !isSlugValid) {
+      return
+    }
 
     setSubmitting(true)
     setError(null)
@@ -85,7 +116,7 @@ function OnboardingPage() {
     const { error: insertError } = await supabase.from('merchants').insert({
       user_id: user.id,
       business_name: businessName.trim(),
-      slug,
+      slug: slug.trim(),
       logo_url: logoUrl,
       brand_color: brandColor,
     })
@@ -102,7 +133,7 @@ function OnboardingPage() {
     }
 
     await refetch()
-    setCreatedSlug(slug)
+    setCreatedSlug(slug.trim())
   }
 
   const reviewLink = createdSlug ? `${window.location.origin}/r/${createdSlug}` : ''
@@ -115,21 +146,42 @@ function OnboardingPage() {
 
   if (createdSlug) {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-background px-gutter">
-        <Card className="w-full max-w-sm text-center">
-          <CardHeader>
-            <CardTitle>تم إنشاء متجرك بنجاح!</CardTitle>
-            <CardDescription>هذا رابط التقييم الخاص بك، جاهز للمشاركة.</CardDescription>
+      <main className="relative flex min-h-dvh items-center justify-center bg-background px-4 py-8 selection:bg-emerald/20 overflow-hidden">
+        {/* Animated Mesh Background */}
+        <AnimatedBackground variant="hero" showDots showParticles />
+
+        <Card className="w-full max-w-md border-emerald-border/80 bg-surface/95 backdrop-blur-xl p-6 text-center shadow-xl animate-scale-in relative z-10">
+          <CardHeader className="flex flex-col items-center gap-3">
+            <div className="flex size-16 items-center justify-center rounded-3xl bg-emerald text-white shadow-lg animate-float-gentle">
+              <Rocket className="size-8" />
+            </div>
+            <CardTitle className="text-2xl font-extrabold text-ink">
+              {t('onboarding_complete_title')}
+            </CardTitle>
+            <CardDescription className="text-sm text-ink-muted">
+              {t('onboarding_complete_desc')}
+            </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <code className="break-all rounded-md border border-border bg-muted-surface px-3 py-2 text-sm text-ink">
-              {reviewLink}
-            </code>
-            <Button variant="secondary" size="sm" onClick={handleCopy}>
-              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-              {copied ? 'تم النسخ' : 'نسخ الرابط'}
+
+          <CardContent className="flex flex-col gap-4 mt-2">
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-background-subtle p-2">
+              <code className="flex-1 truncate text-start text-xs font-mono text-ink">
+                {reviewLink}
+              </code>
+              <Button variant="secondary" size="xs" onClick={handleCopy} className="gap-1.5 shrink-0">
+                {copied ? <Check className="size-3.5 text-emerald" /> : <Copy className="size-3.5" />}
+                <span>{copied ? t('action_copied') : t('action_copy')}</span>
+              </Button>
+            </div>
+
+            <Button
+              size="lg"
+              variant="primaryGlow"
+              onClick={() => navigate('/dashboard')}
+              className="w-full font-bold shadow-md"
+            >
+              {t('onboarding_go_dashboard')}
             </Button>
-            <Button onClick={() => navigate('/dashboard')}>الذهاب إلى لوحة التحكم</Button>
           </CardContent>
         </Card>
       </main>
@@ -137,83 +189,203 @@ function OnboardingPage() {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-background px-gutter py-gutter-lg">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>إعداد متجرك</CardTitle>
-          <CardDescription>بيانات بسيطة لتجهيز صفحة التقييم الخاصة بك.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="businessName">اسم المتجر</Label>
-              <Input
-                id="businessName"
-                required
-                value={businessName}
-                onChange={(event) => handleBusinessNameChange(event.target.value)}
-                disabled={submitting}
-              />
-            </div>
+    <main className="relative flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-12 selection:bg-emerald/20 overflow-hidden">
+      {/* Animated Mesh Background */}
+      <AnimatedBackground variant="mesh" showDots showParticles />
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="slug">رابط التقييم الخاص بك</Label>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-text" dir="ltr">
-                  /r/
-                </span>
+      {/* Top Header */}
+      <div className="absolute top-4 inset-x-4 flex items-center justify-between max-w-5xl mx-auto z-10">
+        <BrandLogo href="/" size="sm" />
+        <div className="flex items-center gap-2">
+          <ThemeToggle variant="minimal" />
+          <LanguageToggle variant="pill" />
+        </div>
+      </div>
+
+      <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+        {/* Setup Form */}
+        <Card className="lg:col-span-7 border-border bg-surface p-2 shadow-xl animate-fade-in">
+          <CardHeader>
+            <div className="inline-flex size-10 items-center justify-center rounded-xl bg-emerald-surface text-emerald mb-1">
+              <Sparkles className="size-5" />
+            </div>
+            <CardTitle className="text-2xl font-extrabold text-ink">
+              {t('onboarding_title')}
+            </CardTitle>
+            <CardDescription className="text-sm text-ink-muted">
+              {t('onboarding_subtitle')}
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="p-6 pt-0">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="businessName" className="text-xs font-bold text-ink">
+                  {t('onboarding_biz_name_label')}
+                </Label>
                 <Input
-                  id="slug"
+                  id="businessName"
                   required
-                  dir="ltr"
-                  value={slug}
-                  onChange={(event) => handleSlugChange(event.target.value)}
+                  value={businessName}
+                  onChange={(event) => handleBusinessNameChange(event.target.value)}
+                  onBlur={() => setTouched((prev) => ({ ...prev, businessName: true }))}
+                  hasError={Boolean(businessNameError)}
                   disabled={submitting}
+                  placeholder={isRTL ? 'مثال: متجر الرياض للقهوة المختصة' : 'e.g. Specialty Coffee Co.'}
                 />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="logo">شعار المتجر (اختياري)</Label>
-              <div className="flex items-center gap-4">
-                {logoPreviewUrl ? (
-                  <img
-                    src={logoPreviewUrl}
-                    alt=""
-                    className="size-14 rounded-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="flex size-14 items-center justify-center rounded-full text-lg font-semibold text-white"
-                    style={{ backgroundColor: brandColor }}
-                    aria-hidden
-                  >
-                    {businessName.trim().charAt(0) || '؟'}
-                  </div>
+                {businessNameError && (
+                  <p className="flex items-center gap-1 text-[11px] font-semibold text-rose-500 animate-fade-in">
+                    <AlertCircle className="size-3 shrink-0" />
+                    <span>{businessNameError}</span>
+                  </p>
                 )}
-                <Input
-                  id="logo"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  disabled={submitting}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="slug" className="text-xs font-bold text-ink">
+                  {t('onboarding_slug_label')}
+                </Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-semibold text-ink-subtle select-none" dir="ltr">
+                    /r/
+                  </span>
+                  <Input
+                    id="slug"
+                    required
+                    dir="ltr"
+                    value={slug}
+                    onChange={(event) => handleSlugChange(event.target.value)}
+                    onBlur={() => setTouched((prev) => ({ ...prev, slug: true }))}
+                    hasError={Boolean(slugError)}
+                    disabled={submitting}
+                    placeholder="store-name"
+                    className="font-mono"
+                  />
+                </div>
+                {slugError && (
+                  <p className="flex items-center gap-1 text-[11px] font-semibold text-rose-500 animate-fade-in">
+                    <AlertCircle className="size-3 shrink-0" />
+                    <span>{slugError}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="logo" className="text-xs font-bold text-ink">
+                  {t('onboarding_logo_label')}
+                </Label>
+                <div className="flex items-center gap-4 rounded-xl border border-dashed border-border p-3">
+                  {logoPreviewUrl ? (
+                    <img
+                      src={logoPreviewUrl}
+                      alt="Logo Preview"
+                      className="size-14 rounded-2xl object-cover border border-border shadow-xs"
+                    />
+                  ) : (
+                    <div
+                      className="flex size-14 items-center justify-center rounded-2xl text-xl font-bold text-white shadow-xs"
+                      style={{ backgroundColor: brandColor }}
+                    >
+                      {businessName.trim().charAt(0) || 'ت'}
+                    </div>
+                  )}
+
+                  <div className="flex-1 flex flex-col gap-1">
+                    <Button variant="secondary" size="xs" asChild className="w-fit cursor-pointer">
+                      <label htmlFor="logo">
+                        <Upload className="size-3.5" />
+                        {logoFile ? 'تغيير الصورة' : 'اختيار شعار'}
+                      </label>
+                    </Button>
+                    <Input
+                      id="logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      disabled={submitting}
+                      className="hidden"
+                    />
+                    <span className="text-[11px] text-ink-subtle">PNG, JPG حتى 5 ميجابايت</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label className="text-xs font-bold text-ink">
+                  {t('onboarding_brand_color_label')}
+                </Label>
+                <ColorPicker value={brandColor} onChange={setBrandColor} />
+              </div>
+
+              {error && (
+                <div className="rounded-xl border border-danger-border bg-danger-surface p-3 animate-fade-in">
+                  <p className="text-xs font-semibold text-danger">{error}</p>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                size="lg"
+                variant="primaryGlow"
+                loading={submitting}
+                className="mt-2 font-bold shadow-md"
+              >
+                {t('action_continue')}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Live Interactive Preview Card */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <span className="text-xs font-bold text-ink-subtle">
+            {isRTL ? 'معاينة حية فورية لصفحتك' : 'Live Preview'}
+          </span>
+          <Card className="border-border bg-surface/90 backdrop-blur-md p-5 shadow-lg">
+            <div className="flex flex-col items-center gap-4 text-center">
+              {logoPreviewUrl ? (
+                <img
+                  src={logoPreviewUrl}
+                  alt="Logo"
+                  className="size-16 rounded-2xl object-cover border border-border shadow-xs"
                 />
+              ) : (
+                <div
+                  className="flex size-16 items-center justify-center rounded-2xl text-2xl font-extrabold text-white shadow-xs transition-colors"
+                  style={{ backgroundColor: brandColor }}
+                >
+                  {businessName.trim().charAt(0) || 'ت'}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1">
+                <h3 className="text-base font-bold text-ink">
+                  {businessName.trim() || (isRTL ? 'اسم متجرك' : 'Your Store Name')}
+                </h3>
+                <span className="text-xs font-mono text-ink-subtle">
+                  /r/{slug.trim() || 'your-slug'}
+                </span>
+              </div>
+
+              <div className="w-full rounded-xl border border-border bg-background-subtle p-3 flex flex-col gap-2">
+                <div className="flex justify-center gap-1 text-amber-400">
+                  ⭐⭐⭐⭐⭐
+                </div>
+                <p className="text-xs text-ink-muted italic">
+                  "{isRTL ? 'إيه رأيك في تجربتك معانا؟' : 'How was your experience with us?'}"
+                </p>
+              </div>
+
+              <div
+                className="w-full h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white shadow-xs transition-colors"
+                style={{ backgroundColor: brandColor }}
+              >
+                {t('review_submit_btn')}
               </div>
             </div>
-
-            <div className="flex flex-col gap-2">
-              <Label>لون العلامة التجارية</Label>
-              <ColorPicker value={brandColor} onChange={setBrandColor} />
-            </div>
-
-            {error && <p className="text-sm text-danger">{error}</p>}
-
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'جاري الإنشاء...' : 'متابعة'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </Card>
+        </div>
+      </div>
     </main>
   )
 }

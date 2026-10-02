@@ -8,11 +8,11 @@ import { FullPageSpinner } from '@/components/auth/RequireAuth'
 
 const CustomerReviewPage = React.lazy(() => import('@/pages/CustomerReviewPage'))
 const LandingPage = React.lazy(() => import('@/pages/LandingPage'))
-const DesignPreviewPage = React.lazy(() => import('@/pages/DesignPreviewPage'))
 const TestimonialPreviewPage = React.lazy(() => import('@/pages/TestimonialPreviewPage'))
 const WallOfLovePage = React.lazy(() => import('@/pages/WallOfLovePage'))
 const LoginPage = React.lazy(() => import('@/pages/auth/LoginPage'))
 const SignUpPage = React.lazy(() => import('@/pages/auth/SignUpPage'))
+const ConfirmEmailPage = React.lazy(() => import('@/pages/auth/ConfirmEmailPage'))
 const ForgotPasswordPage = React.lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 const ResetPasswordPage = React.lazy(() => import('@/pages/auth/ResetPasswordPage'))
 const OnboardingPage = React.lazy(() => import('@/pages/onboarding/OnboardingPage'))
@@ -30,9 +30,9 @@ function App() {
         <Route path="/r/:slug" element={<CustomerReviewPage />} />
         <Route path="/w/:slug" element={<WallOfLovePage />} />
         <Route path="/preview/testimonial" element={<TestimonialPreviewPage />} />
-        <Route path="/preview/design" element={<DesignPreviewPage />} />
 
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/confirm-email" element={<ConfirmEmailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
