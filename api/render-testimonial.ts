@@ -58,6 +58,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
+  const fontPath = path.join(process.cwd(), 'api', 'fonts', 'Cairo-Variable.ttf')
+  if (!existsSync(fontPath)) {
+    res.status(500).json({ error: 'font_missing_from_node_fs', fontPath, cwd: process.cwd() })
+    return
+  }
+
   let browser
   const consoleLines: string[] = []
   try {
