@@ -234,7 +234,7 @@ function DashboardSettingsPage() {
                   }`}
                 >
                   <div className="relative">
-                    <TemplatePreview templateId={templateId} brandColor={brandColor} size={140} />
+                    <TemplatePreview templateId={templateId} size={140} />
                     {isSelected && (
                       <div className="absolute left-1 top-1 flex size-6 items-center justify-center rounded-full bg-emerald text-white">
                         <Check className="size-4" />

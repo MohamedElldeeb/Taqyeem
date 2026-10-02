@@ -1,5 +1,12 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "functions": {
+    "api/render-testimonial.ts": {
+      "memory": 3009,
+      "maxDuration": 30,
+      "includeFiles": "api/_templates/**,api/_fonts/**"
+    }
+  }
 }

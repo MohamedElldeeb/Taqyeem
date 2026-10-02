@@ -148,10 +148,15 @@ reviews row (real customer text/name/rating)
   → Edge Function (taqyeem-generation-pipeline, `generate` action):
       merchant's default_template_id (resolved server-side, never trusted
       from the caller) + EXACT original_text + customer_name + rating
-      + REAL merchant logo (fetched from merchants.logo_url, never AI-drawn)
+      + REAL merchant logo (merchants.logo_url, never AI-drawn)
       + merchant business_name + merchant brand_color
-      → rendered deterministically (template SVG → PNG via resvg, Cairo)
-      → FINAL TESTIMONIAL IMAGE
+      → POST to taqyeem.site/api/render-testimonial (shared-secret auth)
+      → Vercel serverless function launches headless Chromium
+        (@sparticuz/chromium + playwright-core), loads the template's
+        exact HTML/CSS file, injects the data via window.TAQYEEM_DATA,
+        waits for the template's own data-ready signal, screenshots
+        1080x1080
+      → FINAL TESTIMONIAL IMAGE (PNG bytes returned to the Edge Function)
   → uploaded to generated-content/{merchant_id}/{review_id}.png
   → generated_content.image_url = this image
   → Dashboard, Wall of Love, and Email all consume this same image_url —
@@ -160,19 +165,23 @@ reviews row (real customer text/name/rating)
 
 `generated_content.status` only becomes `completed` once the composed image has been successfully stored; a failure results in `failed`, recoverable, with the original review left completely intact. An already-completed review is never regenerated — including when the merchant later changes their default template; existing images stay exactly as they were.
 
-UI code never talks to any image-generation API. There is no per-review external API call anywhere in this flow, which keeps cost and output fully predictable.
+UI code never talks to any AI image-generation API. There is no per-review AI call anywhere in this flow, which keeps cost and output fully predictable — the only external call per review is the deterministic render endpoint.
 
-### 6.2 The template registry
+### 6.2 The template registry — real HTML/CSS, not a re-implementation
 
-Templates live in `supabase/functions/taqyeem-generation-pipeline/templates.ts`. Each template is a pure function `(exact review data + merchant brand color + logo bytes) -> SVG string` — there are eight: `neon`, `luxury`, `minimal`, `organic`, `bold`, `magazine`, `soft`, `brutalist` (`TEMPLATE_IDS`, `DEFAULT_TEMPLATE_ID = 'neon'`). Adding a future template means writing one more render function and registering it in the `RENDERERS` map — no change to the generation pipeline itself. A matching live preview is shown in the merchant-facing picker via `src/components/testimonial/TemplatePreview.tsx` (same composition/colors, rendered as scaled-down HTML/CSS rather than a separate exported asset).
+Templates are **exact HTML/CSS files**, not hand-rebuilt SVG/canvas approximations: `api/_templates/01-neon-editorial.html` … `08-brutalist-modern.html` in the frontend repo, each self-contained (inline styles, inline runtime script, `@font-face` pointing at `api/_fonts/`). This is deliberate — an earlier attempt at reproducing these designs as SVG (to run inside the Supabase Edge Function's Deno/resvg runtime) drifted visibly from the approved designs, because resvg does not support `color-mix()`, layered gradients, or the exact Arabic shaping these templates rely on. Headless Chromium is the only renderer that reproduces them exactly, so rendering was moved out of the Edge Function entirely (Deno Deploy cannot launch a browser) and into a dedicated Vercel serverless function (`api/render-testimonial.ts`).
 
-Every template renders the same fixed heading ("آراء عملاؤنا"), five-star rating (always gold, never recolored by brand color), customer name, exact review text, real merchant logo (or a deterministic initial-letter fallback), and business name. The merchant's `brand_color` is used only in each template's designated accent areas (borders, accent shapes, pills) — never to recolor the whole composition.
+Each template exposes the same `data-slot` contract (`heading`, `quote`, `customer`, `rating`, `merchant`, `logo`, plus template-specific `accent-*` slots) and the same `window.taqyeemRender(data)` runtime, which fits the quote text by shrinking it in 2px steps until it fits its container (down to a floor, never truncating), sets on-brand text contrast via relative luminance, and signals `data-ready="true"` when done. `merchants.default_template_id` stores one of the 8 ids directly (`TEMPLATE_IDS` in both `src/lib/testimonial-templates.ts` and the Edge Function's `templates.ts`); adding a future template means dropping in one more HTML file plus its id in both registries — no change to the render endpoint or the pipeline logic itself.
 
-### 6.3 Deterministic final composition
+The merchant-facing picker (`DashboardSettingsPage.tsx`) shows the real reference screenshot for each template (`public/template-previews/<id>.png`) rather than a re-approximated live preview — same reasoning: a hand-built preview can drift from the real output, a screenshot of the real output cannot.
 
-Implemented via **resvg** (SVG → PNG rasterizer, WASM build, no native bindings — runs directly in the Supabase Edge Function's Deno runtime) with **Cairo** for Arabic shaping (fetched as WOFF from Google Fonts and converted to SFNT at request time in `cairo-font.ts`, since resvg only accepts raw SFNT), and **opentype.js** for accurate glyph-width text measurement. The customer's review text is word-wrapped and auto-scaled down through a fixed set of candidate font sizes — chosen by checking each candidate's actual rendered pixel height against the template's available area, never by line-count alone — until it fits, and is never truncated or altered. Business-name labels in narrow template regions use the same shrink-to-fit approach (`fitSingleLine`) so a long business name is never clipped. The real merchant logo is fetched from `merchants.logo_url` and embedded as-is (clipped to the template's shape); if no logo exists, a deterministic initial-letter mark is used instead. Rating stars are drawn as plain SVG paths, filled up to `reviews.rating`. All user-supplied text is XML-escaped before being embedded in the SVG.
+Every template renders the same fixed heading ("آراء عملاؤنا" by default, overridable), five-star rating (always gold, never recolored by brand color), customer name, exact review text, real merchant logo via `<img>` (or a deterministic initial-letter fallback), and business name. The merchant's `brand_color` only affects each template's own `--brand` CSS custom property (accent borders/shapes/pills) — never the whole composition.
 
-Do not solve any text-rendering concern by adding an AI step that "cleans up," rewrites, or regenerates the text. That would violate the immutability rule in §2.
+### 6.3 The render endpoint (`api/render-testimonial.ts`)
+
+A Vercel Node serverless function, authenticated by a shared secret (`X-Render-Secret` header, checked against the `RENDER_SECRET` env var — set independently in both the Vercel project and the Supabase Edge Function's secrets, never committed to source since this repo is public). It launches Chromium via `@sparticuz/chromium` + `playwright-core`, navigates to the requested template's `file://` path with `window.TAQYEEM_DATA` pre-set via `addInitScript`, waits for `html[data-ready="true"]`, and screenshots the `0,0,1080,1080` region — mirroring the templates' own reference `render.mjs` script exactly, so output is guaranteed identical to the approved reference previews. All user-supplied text reaches the page as data (`window.TAQYEEM_DATA`), never as interpolated HTML/script — the templates' own runtime is responsible for safely inserting it as `textContent`.
+
+Do not solve any text-rendering concern by adding an AI step that "cleans up," rewrites, or regenerates the text. That would violate the immutability rule in §2. Do not reintroduce an SVG/canvas re-implementation of these templates — that is the exact drift this architecture was changed to avoid.
 
 ---
 

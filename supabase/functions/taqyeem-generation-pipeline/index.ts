@@ -1,37 +1,35 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { Resvg, initWasm } from "npm:@resvg/resvg-wasm@2.6.2";
 
-import { getCairoFontBuffers, getMeasureFont } from "./cairo-font.ts";
-import { DEFAULT_TEMPLATE_ID, isTemplateId, renderTemplate, type TemplateId } from "./templates.ts";
+import { DEFAULT_TEMPLATE_ID, isTemplateId, type TemplateId } from "./templates.ts";
 
 /**
  * Taqyeem testimonial image generation pipeline.
  *
- * Static-template architecture (replaces the earlier per-review AI visual
- * generation): the merchant picks one of a fixed set of reusable
- * testimonial templates (merchants.default_template_id). Every review is
- * composed deterministically — background, layout, and accent colors
- * come from the chosen TemplateDefinition (see templates.ts); the exact
- * customer review text, name, rating, merchant name, and real merchant
- * logo are rendered on top via resvg (SVG -> PNG, WASM, no native
- * bindings) with Cairo for Arabic shaping. No external image-generation
- * API (OpenRouter, Nano Banana/Gemini, or any other model) is called
- * anywhere in this flow — cost and output are fully predictable, and
- * there is no AI visual randomness.
+ * Static-template architecture: the merchant picks one of a fixed set of
+ * reusable testimonial templates (merchants.default_template_id). Every
+ * review is composed deterministically from the chosen template's exact
+ * HTML/CSS source (api/_templates/*.html in the frontend repo) — rendered
+ * with real headless Chromium (via the taqyeem.site/api/render-testimonial
+ * Vercel function), the only method that reproduces those designs exactly
+ * (CSS color-mix(), gradients, Arabic shaping fine details do not survive
+ * a hand-rebuilt SVG/canvas port). No AI image-generation API is called
+ * anywhere in this flow — cost and output are fully predictable.
  *
- * All privileged Supabase reads/writes (bypassing RLS) live here, using
- * the service-role key Supabase auto-injects into every Edge Function's
- * own runtime — this key is never seen by n8n, the frontend, or committed
- * anywhere. n8n calls this function with the (public, non-secret) anon
- * key as bearer auth, purely to gate the endpoint from the open internet.
+ * This function stays the sole privileged orchestrator: it is the only
+ * place with service-role Supabase access (auto-injected into every Edge
+ * Function's runtime — never seen by n8n, the frontend, or committed
+ * anywhere), and it owns idempotency, the merchant_id trust boundary, and
+ * the email-claim handshake. The actual pixel rendering is delegated to
+ * the Vercel render endpoint over HTTPS, authenticated with a shared
+ * secret header so it is never reachable by an anonymous caller.
  *
  * Actions:
  *  - generate: idempotently create/reuse generated_content, resolve the
  *              merchant's default template (falling back to the system
  *              default for merchants who never picked one), render the
- *              FINAL image deterministically, upload it, update
- *              generated_content/reviews, and atomically claim the
+ *              FINAL image via the Vercel render endpoint, upload it,
+ *              update generated_content/reviews, and atomically claim the
  *              email_deliveries row (Phase 12) — the only path that can
  *              ever trigger a merchant email. merchant_id and all review
  *              content are derived from the review row itself, never
@@ -53,29 +51,18 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+// Must equal the Vercel project's RENDER_SECRET env var — gates the
+// render endpoint from the open internet. Set via `supabase secrets set
+// RENDER_SECRET=... ` (or the Dashboard's Edge Functions → Secrets page),
+// never hardcoded here: this file ships to a public repo.
+const RENDER_SECRET = Deno.env.get("RENDER_SECRET") ?? "";
+const RENDER_ENDPOINT = "https://taqyeem.site/api/render-testimonial";
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json" },
   });
-}
-
-async function fetchBytes(url: string): Promise<{ bytes: Uint8Array; mime: string } | null> {
-  const res = await fetch(url);
-  if (!res.ok) return null;
-  const mime = res.headers.get("content-type") ?? "image/jpeg";
-  return { bytes: new Uint8Array(await res.arrayBuffer()), mime };
-}
-
-let wasmReadyPromise: Promise<void> | null = null;
-async function ensureWasmReady(): Promise<void> {
-  if (!wasmReadyPromise) {
-    wasmReadyPromise = (async () => {
-      const res = await fetch("https://unpkg.com/@resvg/resvg-wasm@2.6.2/index_bg.wasm");
-      await initWasm(await res.arrayBuffer());
-    })();
-  }
-  return wasmReadyPromise;
 }
 
 async function renderFinalPng(opts: {
@@ -85,30 +72,31 @@ async function renderFinalPng(opts: {
   rating: number;
   businessName: string;
   brandColor: string;
-  logo: { bytes: Uint8Array; mime: string } | null;
+  logoUrl: string | null;
 }): Promise<Uint8Array> {
-  await ensureWasmReady();
-  const cairoBuffers = await getCairoFontBuffers();
-  const font = await getMeasureFont(cairoBuffers);
-
-  const svg = renderTemplate(opts.templateId, {
-    reviewText: opts.reviewText,
-    customerName: opts.customerName,
-    rating: opts.rating,
-    businessName: opts.businessName,
-    brandColor: opts.brandColor,
-    logo: opts.logo,
-    font,
-  });
-
-  const resvg = new Resvg(svg, {
-    font: {
-      fontBuffers: cairoBuffers,
-      loadSystemFonts: false,
-      defaultFontFamily: "Cairo",
+  const res = await fetch(RENDER_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Render-Secret": RENDER_SECRET,
     },
+    body: JSON.stringify({
+      templateId: opts.templateId,
+      quote: opts.reviewText,
+      customer: opts.customerName ?? undefined,
+      rating: opts.rating,
+      merchant: opts.businessName,
+      brandColor: opts.brandColor,
+      logoUrl: opts.logoUrl ?? undefined,
+    }),
   });
-  return resvg.render().asPng();
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`render endpoint failed: ${res.status} ${detail}`);
+  }
+
+  return new Uint8Array(await res.arrayBuffer());
 }
 
 // --- Action handlers ----------------------------------------------------
@@ -256,11 +244,6 @@ async function handleGenerate(review_id: string) {
     ? merchant.default_template_id
     : DEFAULT_TEMPLATE_ID;
 
-  let logo: { bytes: Uint8Array; mime: string } | null = null;
-  if (merchant.logo_url) {
-    logo = await fetchBytes(merchant.logo_url);
-  }
-
   let finalPng: Uint8Array;
   try {
     finalPng = await renderFinalPng({
@@ -270,7 +253,7 @@ async function handleGenerate(review_id: string) {
       rating: review.rating,
       businessName: merchant.business_name,
       brandColor: merchant.brand_color,
-      logo,
+      logoUrl: merchant.logo_url,
     });
   } catch (composeError) {
     console.error("final composition failed", composeError);
