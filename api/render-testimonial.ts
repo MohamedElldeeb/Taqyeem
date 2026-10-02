@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import chromium from '@sparticuz/chromium'
 import { chromium as playwrightChromium } from 'playwright-core'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 
@@ -58,6 +58,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
+  const fontsDir = path.join(process.cwd(), 'api', 'fonts')
+  let fontsDirListing: string[] | string = 'dir_missing'
+  try {
+    fontsDirListing = readdirSync(fontsDir)
+  } catch (e) {
+    fontsDirListing = `readdir_error: ${e instanceof Error ? e.message : String(e)}`
+  }
+
   let browser
   let consoleLines: string[] = []
   try {
@@ -99,7 +107,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(200).send(png)
   } catch (err) {
     console.error('render failed', err)
-    res.status(500).json({ error: 'render_failed', message: err instanceof Error ? err.message : String(err), console: consoleLines })
+    res.status(500).json({ error: 'render_failed', message: err instanceof Error ? err.message : String(err), console: consoleLines, fontsDirListing, cwd: process.cwd() })
   } finally {
     if (browser) await browser.close().catch(() => {})
   }
