@@ -274,7 +274,7 @@ function renderNeon(ctx: Ctx): string {
   const quoteAvail = quoteBottom - quoteTop;
 
   const markH = 90;
-  const { fontSize, lines, lineHeight } = fitQuote(ctx.font, ctx.reviewText, [56, 50, 44, 38, 34, 30, 26, 24], width, Math.max(0, quoteAvail - markH - 16), 1.3);
+  const { fontSize, lines, lineHeight } = fitQuote(ctx.font, ctx.reviewText, [58, 52, 46, 41, 37, 33, 29, 26], width, Math.max(0, quoteAvail - markH - 16), 1.3);
   const blockH = markH + 16 + lines.length * lineHeight;
   const blockTop = quoteTop + Math.max(0, (quoteAvail - blockH) / 2);
 
@@ -308,7 +308,7 @@ function renderNeon(ctx: Ctx): string {
   <rect x="${right - pillW}" y="${headerY}" width="${pillW}" height="${headerH}" rx="28" fill="none" stroke="${ctx.safeBrandColor}" stroke-width="2"/>
   <text x="${right - pillW / 2}" y="${headerY + headerH / 2 + 9}" font-family="Cairo" font-weight="700" font-size="26" fill="${ctx.safeBrandColor}" text-anchor="middle">${pillText}</text>
 
-  ${starsRow(left + 4 * 46 + 18, headerY + headerH / 2, 46, 18, ctx.rating, "#FFC83D", "rgba(255,255,255,0.22)")}
+  ${starsRow(left + 4 * 50 + 20, headerY + headerH / 2, 50, 20, ctx.rating, "#FFC83D", "rgba(255,255,255,0.22)")}
 
   <text x="${right}" y="${blockTop + markH * 0.78}" font-family="Cairo" font-weight="900" font-size="150" fill="${ctx.safeBrandColor}" text-anchor="end" opacity="0.9">&quot;</text>
   ${quoteLinesSvg}
@@ -387,8 +387,8 @@ function renderLuxury(ctx: Ctx): string {
 
   ${quoteLinesSvg}
 
-  ${starsRow(CANVAS / 2 + 88, ratingY, 44, 15, ctx.rating, "#D4AF37", "rgba(255,255,255,0.18)")}
-  ${ctx.customerNameEsc ? `<text x="${CANVAS / 2}" y="${nameY}" font-family="Cairo" font-weight="600" font-size="32" fill="#F2ECE0" text-anchor="middle">${ctx.customerNameEsc}</text>` : ""}
+  ${starsRow(CANVAS / 2 + 96, ratingY, 48, 17, ctx.rating, "#D4AF37", "rgba(255,255,255,0.18)")}
+  ${ctx.customerNameEsc ? `<text x="${CANVAS / 2}" y="${nameY}" font-family="Cairo" font-weight="600" font-size="34" fill="#F2ECE0" text-anchor="middle">${ctx.customerNameEsc}</text>` : ""}
   <rect x="${CANVAS / 2 - 24}" y="${barY}" width="48" height="3" fill="${ctx.safeBrandColor}"/>
 
   ${logoMark({
@@ -402,7 +402,7 @@ function renderLuxury(ctx: Ctx): string {
     fallbackTextColor: "#C9A96E",
     border: { color: "rgba(201,169,110,0.6)", width: 1 },
   })}
-  <text x="${CANVAS / 2 + 30}" y="${footerRowY + 6}" font-family="Cairo" font-weight="500" font-size="18" fill="rgba(242,236,224,0.6)" text-anchor="end" letter-spacing="2">${ctx.businessNameEsc}</text>
+  <text x="${CANVAS / 2 + 30}" y="${footerRowY + 7}" font-family="Cairo" font-weight="500" font-size="20" fill="rgba(242,236,224,0.6)" text-anchor="end" letter-spacing="2">${ctx.businessNameEsc}</text>
 </svg>`.trim();
 }
 
@@ -444,7 +444,7 @@ function renderMinimal(ctx: Ctx): string {
 
   <line x1="${left}" y1="${footerTop}" x2="${right}" y2="${footerTop}" stroke="#111111" stroke-width="1"/>
   ${ctx.customerNameEsc ? `<text x="${left}" y="${footerTop + 50}" font-family="Cairo" font-weight="800" font-size="34" fill="#111111" text-anchor="start">${ctx.customerNameEsc}</text>` : ""}
-  ${starsRow(left + 4 * 40 + (ctx.customerNameEsc ? 0 : 0), footerTop + (ctx.customerNameEsc ? 100 : 40), 40, 15, ctx.rating, "#F2B600")}
+  ${starsRow(left + 4 * 44 + (ctx.customerNameEsc ? 0 : 0), footerTop + (ctx.customerNameEsc ? 100 : 40), 44, 17, ctx.rating, "#F2B600")}
 </svg>`.trim();
 }
 
@@ -469,7 +469,7 @@ function renderOrganic(ctx: Ctx): string {
   const quoteAvail = quoteBottom - quoteTop;
 
   const markH = 70;
-  const { fontSize, lines, lineHeight } = fitQuote(ctx.font, ctx.reviewText, [46, 42, 38, 34, 30, 26], width, Math.max(0, quoteAvail - markH - 8), 1.8);
+  const { fontSize, lines, lineHeight } = fitQuote(ctx.font, ctx.reviewText, [50, 45, 40, 36, 32, 28], width, Math.max(0, quoteAvail - markH - 8), 1.8);
   const blockH = markH + 8 + lines.length * lineHeight;
   const blockTop = quoteTop + Math.max(0, (quoteAvail - blockH) / 2);
 
@@ -490,7 +490,7 @@ function renderOrganic(ctx: Ctx): string {
 
   <circle cx="${innerLeft + 6}" cy="${cardY + padY + 12}" r="6" fill="${ctx.safeBrandColor}"/>
   <text x="${innerLeft + 24}" y="${cardY + padY + 18}" font-family="Cairo" font-weight="600" font-size="25" fill="#6E5A43" text-anchor="start">${HEADING_LABEL}</text>
-  ${starsRow(innerRight, cardY + padY + 14, 36, 15, ctx.rating, "#E0A82E")}
+  ${starsRow(innerRight, cardY + padY + 15, 40, 17, ctx.rating, "#E0A82E")}
 
   <text x="${innerRight}" y="${blockTop + markH * 0.78}" font-family="Cairo" font-weight="800" font-size="110" fill="${ctx.safeBrandColor}" text-anchor="end">&quot;</text>
   ${quoteLinesSvg}
@@ -527,8 +527,8 @@ function renderBold(ctx: Ctx): string {
 
   <rect x="0" y="0" width="620" height="330" fill="${ctx.safeBrandColor}"/>
   <text x="${right}" y="152" font-family="Cairo" font-weight="900" font-size="44" fill="#FFFFFF" text-anchor="end">${HEADING_LABEL}</text>
-  <rect x="${right - 190}" y="186" width="190" height="44" fill="#111111"/>
-  ${starsRow(right - 20, 208, 35, 13, ctx.rating, "#FFC83D", "rgba(255,255,255,0.22)")}
+  <rect x="${right - 214}" y="184" width="214" height="48" fill="#111111"/>
+  ${starsRow(right - 24, 208, 40, 16, ctx.rating, "#FFC83D", "rgba(255,255,255,0.22)")}
 
   <circle cx="88" cy="173" r="85" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2" transform="translate(0,0)"/>
   <rect x="194" y="194" width="32" height="32" fill="#E8E4DC"/>
@@ -580,7 +580,7 @@ function renderMagazine(ctx: Ctx): string {
   <rect x="88" y="80" width="${CANVAS - 176}" height="3" fill="#1A1A1A"/>
   <text x="${CANVAS - 88}" y="128" font-family="Cairo" font-weight="900" font-size="32" fill="#1A1A1A" text-anchor="end">${HEADING_LABEL}</text>
   ${logoMark({ cx: 88 + 20, cy: 114, size: 40, shape: "square", logo: ctx.logo, fallbackLetter: ctx.businessNameEsc.trim().charAt(0), fallbackBg: "transparent", fallbackTextColor: "#1A1A1A", border: { color: "#1A1A1A", width: 2 } })}
-  <text x="${88 + 48}" y="119" font-family="Cairo" font-weight="700" font-size="18" fill="#1A1A1A" text-anchor="start" letter-spacing="1">${ctx.businessNameEsc}</text>
+  <text x="${88 + 48}" y="120" font-family="Cairo" font-weight="700" font-size="20" fill="#1A1A1A" text-anchor="start" letter-spacing="1">${ctx.businessNameEsc}</text>
   <rect x="88" y="142" width="${CANVAS - 176}" height="1" fill="#1A1A1A"/>
 
   <rect x="${150}" y="${250}" width="800" height="720" fill="${ctx.safeBrandColor}" transform="rotate(-4 ${150 + 400} ${250 + 360})"/>
@@ -592,7 +592,7 @@ function renderMagazine(ctx: Ctx): string {
 
   <line x1="${innerLeft}" y1="${footerY - 24}" x2="${innerRight}" y2="${footerY - 24}" stroke="#1A1A1A" stroke-width="1"/>
   ${ctx.customerNameEsc ? `<text x="${innerLeft}" y="${footerY}" font-family="Cairo" font-weight="800" font-size="32" fill="#1A1A1A" text-anchor="start">${ctx.customerNameEsc}</text>` : ""}
-  ${starsRow(innerRight, footerY - 10, 36, 15, ctx.rating, "#E8A800")}
+  ${starsRow(innerRight, footerY - 11, 40, 17, ctx.rating, "#E8A800")}
 </svg>`.trim();
 }
 
@@ -648,13 +648,13 @@ function renderSoft(ctx: Ctx): string {
   <rect x="${innerLeft}" y="${headerCy - 24}" width="${pillW}" height="48" rx="24" fill="${brandAlpha(ctx.safeBrandColor, "1F")}"/>
   <circle cx="${innerLeft + 26}" cy="${headerCy}" r="5" fill="${ctx.safeBrandColor}"/>
   <text x="${innerLeft + 42}" y="${headerCy + 8}" font-family="Cairo" font-weight="600" font-size="24" fill="#3A332C" text-anchor="start">${pillText}</text>
-  ${starsRow(innerRight, headerCy, 34, 14, ctx.rating, "#E5AE2E")}
+  ${starsRow(innerRight, headerCy, 38, 16, ctx.rating, "#E5AE2E")}
 
   ${quoteLinesSvg}
 
   <rect x="${innerLeft}" y="${footerTop}" width="${innerRight - innerLeft}" height="${footerH}" rx="32" fill="#F2EDE7"/>
   ${logoMark({ cx: innerLeft + 36 + 18, cy: footerCy, size: 72, shape: "circle", logo: ctx.logo, fallbackLetter: avatarLetter, fallbackBg: ctx.safeBrandColor, fallbackTextColor: "#FFFFFF" })}
-  ${ctx.customerNameEsc ? `<text x="${innerLeft + 36 + 54}" y="${footerCy + 10}" font-family="Cairo" font-weight="700" font-size="30" fill="#2A2420" text-anchor="start">${ctx.customerNameEsc}</text>` : ""}
+  ${ctx.customerNameEsc ? `<text x="${innerLeft + 36 + 54}" y="${footerCy + 11}" font-family="Cairo" font-weight="700" font-size="32" fill="#2A2420" text-anchor="start">${ctx.customerNameEsc}</text>` : ""}
 
   ${logoMark({ cx: innerRight - 24, cy: footerCy, size: 48, shape: "roundedSquare", rounding: 16, logo: ctx.logo, fallbackLetter: ctx.businessNameEsc.trim().charAt(0), fallbackBg: "#FFFFFF", fallbackTextColor: "#3A332C" })}
   <text x="${innerRight - 60}" y="${footerCy + 7}" font-family="Cairo" font-weight="600" font-size="20" fill="#7A6F66" text-anchor="end">${ctx.businessNameEsc}</text>
@@ -715,7 +715,7 @@ function renderBrutalist(ctx: Ctx): string {
   ${ctx.customerNameEsc ? `<text x="${innerLeft + 44}" y="${footerCy + 13}" font-family="Cairo" font-weight="800" font-size="38" fill="#0A0A0A" text-anchor="start">${ctx.customerNameEsc}</text>` : ""}
 
   <rect x="${frameRight - accentW}" y="${midBottom}" width="${accentW}" height="${footerH}" fill="#0A0A0A"/>
-  ${starsRow(frameRight - accentW / 2 + 72, footerCy, 36, 15, ctx.rating, "#FFC21A", "rgba(255,255,255,0.22)")}
+  ${starsRow(frameRight - accentW / 2 + 80, footerCy, 40, 18, ctx.rating, "#FFC21A", "rgba(255,255,255,0.22)")}
 </svg>`.trim();
 }
 

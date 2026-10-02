@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ColorSwatchPicker } from '@/components/ui/color-swatch-picker'
+import { ColorPicker } from '@/components/ui/color-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/lib/auth-context'
@@ -203,7 +203,7 @@ function OnboardingPage() {
 
             <div className="flex flex-col gap-2">
               <Label>لون العلامة التجارية</Label>
-              <ColorSwatchPicker value={brandColor} onChange={setBrandColor} />
+              <ColorPicker value={brandColor} onChange={setBrandColor} />
             </div>
 
             {error && <p className="text-sm text-danger">{error}</p>}

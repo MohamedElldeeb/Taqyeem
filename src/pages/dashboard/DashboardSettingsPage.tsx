@@ -9,25 +9,33 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ColorSwatchPicker } from '@/components/ui/color-swatch-picker'
+import { ColorPicker } from '@/components/ui/color-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TemplatePreview } from '@/components/testimonial/TemplatePreview'
+import { useAuth } from '@/lib/auth-context'
 import { useMerchant } from '@/hooks/useMerchant'
 import { supabase } from '@/lib/supabase'
 import { TEMPLATE_IDS, TEMPLATE_LABELS, type TemplateId } from '@/lib/testimonial-templates'
 
+const MAX_LOGO_BYTES = 5 * 1024 * 1024
+
 /**
- * Brand Settings — persists business_name/brand_color via the existing
- * merchants_update_own RLS policy (owner-scoped, unchanged from Phase 6).
- * Logo replacement stays disabled ("قريباً") — swapping/deleting a live
- * logo is a larger feature (storage cleanup, re-upload flow) out of
- * scope for this hardening pass.
+ * Brand Settings — persists business_name/brand_color/logo_url via the
+ * existing merchants_update_own RLS policy (owner-scoped). Logo upload
+ * goes to the `logos` storage bucket (public read, owner-scoped write,
+ * keyed on auth.uid() — see migration 20260923153500), the same bucket
+ * and path convention OnboardingPage already uses. Works from any device
+ * (desktop file picker, mobile camera/gallery) since `accept="image/*"`
+ * on a native file input triggers the OS's own picker UI everywhere.
  */
 function DashboardSettingsPage() {
+  const { user } = useAuth()
   const { merchant, refetch } = useMerchant()
   const [businessName, setBusinessName] = React.useState(merchant?.business_name ?? '')
   const [brandColor, setBrandColor] = React.useState(merchant?.brand_color ?? '#087F5B')
+  const [logoFile, setLogoFile] = React.useState<File | null>(null)
+  const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(null)
   const [saving, setSaving] = React.useState(false)
   const [saved, setSaved] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
@@ -35,7 +43,33 @@ function DashboardSettingsPage() {
   const [savingTemplate, setSavingTemplate] = React.useState(false)
   const [templateError, setTemplateError] = React.useState<string | null>(null)
 
+  React.useEffect(() => {
+    return () => {
+      if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl)
+    }
+  }, [logoPreviewUrl])
+
   if (!merchant) return null
+
+  function handleLogoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null
+    event.target.value = ''
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setError('الملف المختار مش صورة.')
+      return
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      setError('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا).')
+      return
+    }
+
+    setError(null)
+    setLogoFile(file)
+    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl)
+    setLogoPreviewUrl(URL.createObjectURL(file))
+  }
 
   async function handleSelectTemplate(templateId: TemplateId) {
     if (templateId === merchant!.default_template_id || savingTemplate) return
@@ -59,13 +93,33 @@ function DashboardSettingsPage() {
   }
 
   async function handleSave() {
+    if (!user) return
+
     setSaving(true)
     setError(null)
     setSaved(false)
 
+    let logoUrl = merchant!.logo_url
+
+    if (logoFile) {
+      const extension = logoFile.name.split('.').pop() ?? 'png'
+      const path = `${user.id}/logo-${Date.now()}.${extension}`
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(path, logoFile, { upsert: true, contentType: logoFile.type })
+
+      if (uploadError) {
+        setSaving(false)
+        setError('تعذر رفع الشعار. حاول مرة أخرى.')
+        return
+      }
+
+      logoUrl = supabase.storage.from('logos').getPublicUrl(path).data.publicUrl
+    }
+
     const { error: updateError } = await supabase
       .from('merchants')
-      .update({ business_name: businessName.trim(), brand_color: brandColor })
+      .update({ business_name: businessName.trim(), brand_color: brandColor, logo_url: logoUrl })
       .eq('id', merchant!.id)
 
     setSaving(false)
@@ -75,10 +129,16 @@ function DashboardSettingsPage() {
       return
     }
 
+    setLogoFile(null)
+    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl)
+    setLogoPreviewUrl(null)
+
     await refetch()
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
+
+  const displayedLogoUrl = logoPreviewUrl ?? merchant.logo_url
 
   return (
     <div className="flex flex-col gap-6">
@@ -103,11 +163,11 @@ function DashboardSettingsPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label>الشعار</Label>
+            <Label htmlFor="logo">الشعار</Label>
             <div className="flex items-center gap-4">
-              {merchant.logo_url ? (
+              {displayedLogoUrl ? (
                 <img
-                  src={merchant.logo_url}
+                  src={displayedLogoUrl}
                   alt=""
                   className="size-16 rounded-full object-cover"
                 />
@@ -120,15 +180,27 @@ function DashboardSettingsPage() {
                   {businessName.trim().charAt(0)}
                 </div>
               )}
-              <Button variant="secondary" size="sm" disabled>
-                رفع شعار (قريباً)
-              </Button>
+              <div className="flex flex-col gap-1">
+                <Button variant="secondary" size="sm" asChild>
+                  <label htmlFor="logo" className="cursor-pointer">
+                    {merchant.logo_url || logoFile ? 'تغيير الشعار' : 'رفع شعار'}
+                  </label>
+                </Button>
+                <Input
+                  id="logo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                />
+                {logoFile && <span className="text-xs text-muted-text">هيتم الرفع عند الحفظ</span>}
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="brandColor">لون العلامة التجارية</Label>
-            <ColorSwatchPicker value={brandColor} onChange={setBrandColor} />
+            <Label>لون العلامة التجارية</Label>
+            <ColorPicker value={brandColor} onChange={setBrandColor} />
           </div>
 
           {error && <p className="text-sm text-danger">{error}</p>}
