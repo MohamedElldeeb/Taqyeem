@@ -7,6 +7,18 @@
  */
 
 export type TemplateId =
+  | "01-glass-orbs"
+  | "02-soft-clay"
+  | "03-tilted-stack"
+  | "04-extruded-type"
+  | "05-floating-note"
+  | "06-neumorphic"
+  | "07-liquid-chrome"
+  | "08-ticket-stub"
+  | "09-inflated-bubble"
+  | "10-paper-depth"
+  | "11-spotlight-podium"
+  | "12-horizon-grid"
   | "01-neon-editorial"
   | "02-luxury-editorial"
   | "03-minimal-modern"
@@ -17,6 +29,18 @@ export type TemplateId =
   | "08-brutalist-modern";
 
 export const TEMPLATE_IDS: TemplateId[] = [
+  "01-glass-orbs",
+  "02-soft-clay",
+  "03-tilted-stack",
+  "04-extruded-type",
+  "05-floating-note",
+  "06-neumorphic",
+  "07-liquid-chrome",
+  "08-ticket-stub",
+  "09-inflated-bubble",
+  "10-paper-depth",
+  "11-spotlight-podium",
+  "12-horizon-grid",
   "01-neon-editorial",
   "02-luxury-editorial",
   "03-minimal-modern",
@@ -27,7 +51,7 @@ export const TEMPLATE_IDS: TemplateId[] = [
   "08-brutalist-modern",
 ];
 
-export const DEFAULT_TEMPLATE_ID: TemplateId = "01-neon-editorial";
+export const DEFAULT_TEMPLATE_ID: TemplateId = "01-glass-orbs";
 
 export function isTemplateId(value: unknown): value is TemplateId {
   return typeof value === "string" && (TEMPLATE_IDS as string[]).includes(value);
