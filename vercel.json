@@ -4,7 +4,7 @@
   ],
   "functions": {
     "api/render-testimonial.ts": {
-      "memory": 3009,
+      "memory": 2048,
       "maxDuration": 30,
       "includeFiles": "api/_templates/**,api/_fonts/**"
     }
