@@ -54,7 +54,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const templatePath = path.join(process.cwd(), 'api', '_templates', `${templateId}.html`)
   if (!existsSync(templatePath)) {
-    res.status(500).json({ error: 'template_file_missing' })
+    res.status(500).json({ error: 'template_file_missing', cwd: process.cwd(), templatePath })
+    return
+  }
+
+  const fontsDir = path.join(process.cwd(), 'api', '_fonts')
+  const fontCheck = {
+    fontsDirExists: existsSync(fontsDir),
+    fontsDir,
+    cairoExists: existsSync(path.join(fontsDir, 'Cairo-Variable.ttf')),
+    __dirnameAlt: path.join(path.dirname(templatePath), '..', '_fonts', 'Cairo-Variable.ttf'),
+    __dirnameAltExists: existsSync(path.join(path.dirname(templatePath), '..', '_fonts', 'Cairo-Variable.ttf')),
+  }
+  if (!fontCheck.cairoExists) {
+    res.status(500).json({ error: 'fonts_missing', cwd: process.cwd(), ...fontCheck })
     return
   }
 
