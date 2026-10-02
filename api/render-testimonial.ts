@@ -71,6 +71,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     stage = 'newPage'
     const page = await browser.newPage({ viewport: { width: 1080, height: 1080 }, deviceScaleFactor: 1 })
+    const consoleLines: string[] = []
+    page.on('console', (msg) => consoleLines.push(`[${msg.type()}] ${msg.text()}`))
+    page.on('pageerror', (e) => consoleLines.push(`[pageerror] ${e.message}`))
 
     const data = {
       heading: typeof heading === 'string' ? heading : undefined,
@@ -90,7 +93,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     stage = 'goto'
     await page.goto(pathToFileURL(templatePath).href)
     stage = 'waitForSelector'
-    await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
+    try {
+      await page.waitForSelector('html[data-ready="true"]', { timeout: 15000 })
+    } catch (waitErr) {
+      const readyState = await page.evaluate(() => document.readyState).catch(() => 'unknown')
+      const dataReady = await page.evaluate(() => document.documentElement.getAttribute('data-ready')).catch(() => 'unknown')
+      const hasRenderFn = await page.evaluate(() => typeof (window as unknown as { taqyeemRender?: unknown }).taqyeemRender).catch(() => 'unknown')
+      throw new Error(
+        `${(waitErr as Error).message} | readyState=${readyState} dataReady=${dataReady} taqyeemRender=${hasRenderFn} console=${JSON.stringify(consoleLines)}`,
+      )
+    }
 
     stage = 'eval'
     const overflow = await page.$eval('[data-slot="quote"]', (el) => (el as HTMLElement).dataset.overflow)
