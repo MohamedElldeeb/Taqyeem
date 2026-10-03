@@ -9,7 +9,8 @@ import {
   MOCK_TESTIMONIAL_READY_NO_NAME,
 } from '@/mock/generated-testimonials'
 import { useLanguage } from '@/lib/language-context'
-import { Sparkles, CheckCircle2, Sliders } from 'lucide-react'
+import { CheckCircle2, Sliders, Palette, Check } from 'lucide-react'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, type TemplateId } from '@/lib/testimonial-templates'
 
 const ADDITIONAL_SAMPLES: Record<string, GeneratedTestimonialData> = {
   short: {
@@ -36,6 +37,7 @@ const ADDITIONAL_SAMPLES: Record<string, GeneratedTestimonialData> = {
 function TestimonialPreviewPage() {
   const { isRTL } = useLanguage()
   const [activePreset, setActivePreset] = useState<'default' | 'short' | 'long'>('default')
+  const [selectedTemplateId, setSelectedTemplateId] = useState<TemplateId>('01-neon-editorial')
 
   const getActiveReadyData = () => {
     if (activePreset === 'short') return ADDITIONAL_SAMPLES.short
@@ -55,18 +57,18 @@ function TestimonialPreviewPage() {
         {/* Page Header */}
         <header className="flex flex-col gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-border bg-emerald-surface px-3.5 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs">
-            <Sparkles className="size-3.5" />
-            <span>{isRTL ? 'معاينة التصاميم · Creative Showcase' : 'Creative Showcase · Visual Templates'}</span>
+            <Palette className="size-3.5" />
+            <span>{isRTL ? 'معاينة القوالب والتصاميم · Creative Templates' : 'Creative Templates Showcase'}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-ink tracking-tight">
-            {isRTL ? 'معاينة تصاميم التقييمات التفاعلية' : 'Interactive Testimonial Designs Showcase'}
+            {isRTL ? 'معاينة قوالب وتصاميم التقييمات التفاعلية' : 'Interactive Designer Templates Showcase'}
           </h1>
 
           <p className="max-w-2xl text-sm sm:text-base text-ink-muted leading-relaxed">
             {isRTL
-              ? 'استعراض لحالات التصاميم المختلفة مع تناسق الخطوط التلقائي وضمان عدم اقتطاع النص في جميع المقاسات.'
-              : 'Showcase of testimonial card states with adaptive typography ensuring text is never clipped regardless of length.'}
+              ? 'استعراض لقوالب التصاميم الـ 8 مع حالات المعالجة المختلفة وتناسق الخطوط التلقائي.'
+              : 'Showcase of the 8 designer templates and testimonial card states with adaptive typography.'}
           </p>
 
           {/* Review Length Filter Pills */}
@@ -77,7 +79,7 @@ function TestimonialPreviewPage() {
             </span>
             <button
               onClick={() => setActivePreset('default')}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                 activePreset === 'default'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-surface border border-border text-ink-muted hover:text-ink hover:bg-background-subtle'
@@ -87,7 +89,7 @@ function TestimonialPreviewPage() {
             </button>
             <button
               onClick={() => setActivePreset('short')}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                 activePreset === 'short'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-surface border border-border text-ink-muted hover:text-ink hover:bg-background-subtle'
@@ -97,7 +99,7 @@ function TestimonialPreviewPage() {
             </button>
             <button
               onClick={() => setActivePreset('long')}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                 activePreset === 'long'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-surface border border-border text-ink-muted hover:text-ink hover:bg-background-subtle'
@@ -108,17 +110,78 @@ function TestimonialPreviewPage() {
           </div>
         </header>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-          {/* 1. Processing */}
-          <section className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 px-1">
-              <span className="size-2 shrink-0 rounded-full bg-amber-500 animate-pulse" />
-              <span className="text-xs sm:text-sm font-bold text-ink">
-                {isRTL ? 'قيد التجهيز (Processing)' : 'Processing State'}
+        {/* 8 Designer Templates Gallery Row */}
+        <section className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface/90 backdrop-blur-md p-5 shadow-xs">
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/60">
+            <div className="flex items-center gap-2">
+              <Palette className="size-4 text-emerald" />
+              <span className="text-sm font-bold text-ink">
+                {isRTL ? 'اختر قالباً للمعاينة المباشرة (8 قوالب):' : 'Select Designer Template to Preview (8 Styles):'}
               </span>
             </div>
-            <GeneratedTestimonialCard status="processing" />
+            <span className="text-xs font-bold text-emerald-deep bg-emerald-surface px-2.5 py-0.5 rounded-full border border-emerald-border/60">
+              {TEMPLATE_LABELS[selectedTemplateId]}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 pt-1">
+            {TEMPLATE_IDS.map((tId) => {
+              const isSelected = selectedTemplateId === tId
+              return (
+                <button
+                  key={tId}
+                  type="button"
+                  onClick={() => setSelectedTemplateId(tId)}
+                  className={`group relative flex flex-col items-center overflow-hidden rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'border-emerald ring-2 ring-emerald/30 shadow-md scale-105 bg-emerald-surface/30'
+                      : 'border-border/80 bg-background-subtle/50 hover:border-border hover:bg-surface hover:shadow-xs'
+                  }`}
+                >
+                  <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={`/template-previews/${tId}.png`}
+                      alt={TEMPLATE_LABELS[tId]}
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {isSelected && (
+                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs">
+                        <Check className="size-2.5 stroke-[3]" />
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className={`w-full text-center py-1 text-[10px] font-bold truncate px-1 ${
+                      isSelected ? 'text-emerald-deep font-black' : 'text-ink-muted group-hover:text-ink'
+                    }`}
+                  >
+                    {TEMPLATE_LABELS[tId]}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+          {/* 1. Selected Template Render Preview */}
+          <section className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 px-1">
+              <span className="size-2 shrink-0 rounded-full bg-indigo-500" />
+              <span className="text-xs sm:text-sm font-bold text-ink">
+                {isRTL ? `قالب: ${TEMPLATE_LABELS[selectedTemplateId]}` : `Template: ${TEMPLATE_LABELS[selectedTemplateId]}`}
+              </span>
+            </div>
+            <div className="aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-950 shadow-md">
+              <img
+                src={`/template-previews/${selectedTemplateId}.png`}
+                alt={TEMPLATE_LABELS[selectedTemplateId]}
+                className="size-full object-cover"
+                loading="lazy"
+              />
+            </div>
           </section>
 
           {/* 2. Ready with Name */}
@@ -126,7 +189,7 @@ function TestimonialPreviewPage() {
             <div className="flex items-center gap-2 px-1">
               <span className="size-2 shrink-0 rounded-full bg-emerald-500" />
               <span className="text-xs sm:text-sm font-bold text-ink">
-                {isRTL ? 'مكتمل مع اسم العميل (Ready)' : 'Ready with Customer Name'}
+                {isRTL ? 'مكتمل مع اسم العميل (Live Ready)' : 'Live Ready with Name'}
               </span>
             </div>
             <GeneratedTestimonialCard status="ready" data={getActiveReadyData()} />
@@ -146,15 +209,15 @@ function TestimonialPreviewPage() {
             />
           </section>
 
-          {/* 4. Failed */}
+          {/* 4. Processing */}
           <section className="flex flex-col gap-3">
             <div className="flex items-center gap-2 px-1">
-              <span className="size-2 shrink-0 rounded-full bg-rose-500" />
+              <span className="size-2 shrink-0 rounded-full bg-amber-500 animate-pulse" />
               <span className="text-xs sm:text-sm font-bold text-ink">
-                {isRTL ? 'حالة إعادة المحاولة (Failed)' : 'Failed State & Retry'}
+                {isRTL ? 'قيد التجهيز (Processing)' : 'Processing State'}
               </span>
             </div>
-            <GeneratedTestimonialCard status="failed" onRetry={() => {}} />
+            <GeneratedTestimonialCard status="processing" />
           </section>
         </div>
 

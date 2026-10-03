@@ -6,12 +6,11 @@ import {
   Home,
   LogOut,
   MessageSquareText,
+  Palette,
   PanelLeftClose,
   PanelLeftOpen,
   QrCode,
-  Settings,
   Sparkles,
-  User,
 } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
@@ -103,7 +102,7 @@ function MerchantProfileDropdown({
             ? 'border-emerald-border bg-emerald-surface/60 shadow-sm ring-2 ring-emerald-500/20'
             : 'border-border/80 bg-surface/80 hover:border-emerald-border/60 hover:bg-surface',
         )}
-        title={`${merchant.business_name} - ${isRTL ? 'الملف الشخصي والإعدادات' : 'Profile & Settings'}`}
+        title={`${merchant.business_name} - ${isRTL ? 'الهوية البصرية والتخصيص' : 'Branding & Identity'}`}
       >
         <MerchantAvatar merchant={merchant} size="sm" />
 
@@ -142,15 +141,15 @@ function MerchantProfileDropdown({
           </div>
 
           <div className="flex flex-col gap-0.5">
-            {/* Profile & Settings Page Link */}
+            {/* Branding & Store Identity Page Link */}
             <Link
-              to="/dashboard/settings"
+              to="/dashboard/branding"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-ink transition-all hover:bg-emerald-surface hover:text-emerald-deep"
               role="menuitem"
             >
-              <User className="size-4 text-emerald" />
-              <span>{isRTL ? 'الملف الشخصي والإعدادات' : 'Profile & Settings'}</span>
+              <Palette className="size-4 text-emerald" />
+              <span>{isRTL ? 'الهوية البصرية والعلامة' : 'Branding & Identity'}</span>
             </Link>
 
             {/* Public Wall */}
@@ -239,7 +238,7 @@ function DashboardShell() {
     { to: '/dashboard/reviews', label: t('nav_reviews'), icon: MessageSquareText, end: false },
     { to: '/dashboard/wall-of-love', label: t('nav_wall_of_love'), icon: Heart, end: false },
     { to: '/dashboard/qr', label: t('nav_qr'), icon: QrCode, end: false },
-    { to: '/dashboard/settings', label: t('nav_settings'), icon: Settings, end: false },
+    { to: '/dashboard/branding', label: t('nav_branding') || t('nav_settings'), icon: Palette, end: false },
   ]
 
   return (

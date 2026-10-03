@@ -30,30 +30,38 @@ export function BrandIcon({ size = 'md', className, ...props }: BrandIconProps) 
       <defs>
         <linearGradient id="taqyeem-icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#10B981" />
-          <stop offset="50%" stopColor="#059669" />
+          <stop offset="45%" stopColor="#059669" />
           <stop offset="100%" stopColor="#047857" />
         </linearGradient>
         <linearGradient id="taqyeem-icon-shine" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.35" />
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.32" />
+          <stop offset="60%" stopColor="#FFFFFF" stopOpacity="0.04" />
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
         </linearGradient>
       </defs>
 
       {/* Squircle Rounded Container */}
-      <rect width="64" height="64" rx="18" fill="url(#taqyeem-icon-gradient)" />
-      <rect width="64" height="64" rx="18" fill="url(#taqyeem-icon-shine)" />
+      <rect width="64" height="64" rx="16" fill="url(#taqyeem-icon-gradient)" />
+      <rect width="64" height="64" rx="16" fill="url(#taqyeem-icon-shine)" />
+      <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" stroke="#FFFFFF" strokeOpacity="0.2" strokeWidth="1.5" />
 
-      {/* Primary Left Quotation Mark (Solid White) */}
+      {/* Primary Left Quotation Mark */}
       <path
-        d="M25.5 19.5 C29.64 19.5 33 22.86 33 27 C33 29.35 31.92 31.45 30.2 32.85 C29.1 36.2 26.2 39.8 18.5 43.5 C21.2 39.8 22.1 36.8 21.6 34.2 C18.8 33.6 18 30.8 18 27 C18 22.86 21.36 19.5 25.5 19.5 Z"
+        d="M24 18 C28.4 18 32 21.6 32 26 C32 28.5 30.8 30.7 28.9 32.2 C27.5 35.8 24.2 39.6 16.5 43.5 C19.5 39.5 20.4 36.3 19.8 33.6 C16.9 32.9 16 30 16 26 C16 21.6 19.6 18 24 18 Z"
         fill="#FFFFFF"
       />
 
-      {/* Secondary Right Quotation Mark (Soft Mint/Translucent White) */}
+      {/* Secondary Right Quotation Mark */}
       <path
-        d="M44.5 19.5 C48.64 19.5 52 22.86 52 27 C52 29.35 50.92 31.45 49.2 32.85 C48.1 36.2 45.2 39.8 37.5 43.5 C40.2 39.8 41.1 36.8 40.6 34.2 C37.8 33.6 37 30.8 37 27 C37 22.86 40.36 19.5 44.5 19.5 Z"
+        d="M43 18 C47.4 18 51 21.6 51 26 C51 28.5 49.8 30.7 47.9 32.2 C46.5 35.8 43.2 39.6 35.5 43.5 C38.5 39.5 39.4 36.3 38.8 33.6 C35.9 32.9 35 30 35 26 C35 21.6 38.6 18 43 18 Z"
         fill="#FFFFFF"
-        fillOpacity="0.75"
+        fillOpacity="0.88"
+      />
+
+      {/* Golden Micro Star Accent */}
+      <path
+        d="M47 11.5 L48.3 14.2 L51.2 14.6 L49.1 16.6 L49.6 19.5 L47 18.1 L44.4 19.5 L44.9 16.6 L42.8 14.6 L45.7 14.2 Z"
+        fill="url(#taqyeem-star-icon)"
       />
     </svg>
   )

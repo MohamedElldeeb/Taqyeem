@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   MessageCircle,
   MessageSquareText,
+  Palette,
   QrCode,
   Share2,
   ShieldCheck,
@@ -34,6 +35,7 @@ import { useMerchant } from '@/hooks/useMerchant'
 import { useMerchantReviews, type ReviewDbStatus } from '@/hooks/useMerchantReviews'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
 
 function DashboardHomePage() {
   const { merchant } = useMerchant()
@@ -137,7 +139,7 @@ function DashboardHomePage() {
       {/* 1. Hero Welcome Header Row */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
         <div className="flex flex-col gap-1.5">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-border bg-emerald-surface px-3 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs backdrop-blur-md">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>{isRTL ? 'لوحة تحكم المتجر · نشط وتفاعلي' : 'Live Store Dashboard · Active'}</span>
           </div>
@@ -373,7 +375,90 @@ function DashboardHomePage() {
         </Card>
       </div>
 
-      {/* 4. Bottom Section: Recent Reviews Feed */}
+      {/* 4. Templates Showcase Hub on Dashboard Home */}
+      <Card className="border-border/80 bg-surface/90 backdrop-blur-md shadow-xs transition-all duration-300 hover:shadow-md overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 py-3.5 px-5 sm:px-6">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-2xs">
+              <Palette className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm sm:text-base font-bold text-ink">
+                  {isRTL ? 'قوالب تصاميم التقييمات' : 'Review Card Templates'}
+                </CardTitle>
+                <Badge variant="default" className="text-[10px] py-0 px-2 font-bold">
+                  8 {isRTL ? 'قوالب حصرية' : 'Presets'}
+                </Badge>
+              </div>
+              <CardDescription className="text-xs text-ink-muted mt-0.5">
+                {isRTL
+                  ? `القالب الافتراضي المطبق على تقييماتك: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`
+                  : `Active default template for your reviews: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`}
+              </CardDescription>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button asChild variant="outline" size="sm" className="h-8 text-xs font-bold gap-1.5 shadow-2xs">
+              <Link to="/preview/testimonial">
+                <Sparkles className="size-3.5 text-indigo-500" />
+                <span>{isRTL ? 'المحاكي التفاعلي' : 'Live Simulator'}</span>
+              </Link>
+            </Button>
+
+            <Button asChild variant="primaryGlow" size="sm" className="h-8 text-xs font-bold gap-1.5 shadow-xs">
+              <Link to="/dashboard/branding">
+                <Palette className="size-3.5" />
+                <span>{isRTL ? 'تخصيص القالب' : 'Customize Template'}</span>
+              </Link>
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-4 sm:p-5">
+          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5 sm:gap-3">
+            {TEMPLATE_IDS.map((tId) => {
+              const isActive = (merchant?.default_template_id || DEFAULT_TEMPLATE_ID) === tId
+              return (
+                <Link
+                  key={tId}
+                  to="/dashboard/branding"
+                  className={`group relative flex flex-col items-center overflow-hidden rounded-xl border transition-all duration-200 ${
+                    isActive
+                      ? 'border-emerald ring-2 ring-emerald/30 shadow-sm scale-102 bg-emerald-surface/30'
+                      : 'border-border/80 bg-background-subtle/50 hover:border-border hover:bg-surface hover:shadow-xs'
+                  }`}
+                  title={`${TEMPLATE_LABELS[tId]} - ${isActive ? (isRTL ? 'القالب النشط حالياً' : 'Active Template') : (isRTL ? 'اضغط للتطبيق' : 'Click to apply')}`}
+                >
+                  <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
+                    <img
+                      src={`/template-previews/${tId}.png`}
+                      alt={TEMPLATE_LABELS[tId]}
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {isActive && (
+                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs">
+                        <Check className="size-2.5 stroke-[3]" />
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className={`w-full text-center py-1 text-[10px] font-bold truncate px-1 ${
+                      isActive ? 'text-emerald-deep font-black' : 'text-ink-muted group-hover:text-ink'
+                    }`}
+                  >
+                    {TEMPLATE_LABELS[tId]}
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 5. Bottom Section: Recent Reviews Feed */}
       <Card className="shadow-xs border-border/80 bg-surface/90 backdrop-blur-md transition-all duration-300 hover:shadow-md">
         <CardHeader className="flex flex-row items-center justify-between border-b border-border/60 py-4 px-5 sm:px-6">
           <div className="flex flex-col gap-0.5">

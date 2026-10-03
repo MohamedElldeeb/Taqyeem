@@ -277,7 +277,7 @@ export function AppShell({
 
                   {/* Instagram */}
                   <a
-                    href="https://instagram.com/taqyeem"
+                    href="https://www.instagram.com/taqyeem.site?stkn=MXRkazMwb3N3c2h1Ng=="
                     target="_blank"
                     rel="noreferrer"
                     className="flex size-9 items-center justify-center rounded-xl border border-pink-500/30 bg-pink-500/10 text-pink-500 hover:bg-pink-500 hover:text-white transition-all shadow-xs hover:scale-110"
@@ -291,7 +291,7 @@ export function AppShell({
 
                   {/* Facebook */}
                   <a
-                    href="https://facebook.com/taqyeem"
+                    href="https://www.facebook.com/share/18Vb2gQpWY/"
                     target="_blank"
                     rel="noreferrer"
                     className="flex size-9 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all shadow-xs hover:scale-110"

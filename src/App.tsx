@@ -60,6 +60,7 @@ function App() {
           <Route path="reviews" element={<DashboardReviewsPage />} />
           <Route path="wall-of-love" element={<DashboardWallOfLovePage />} />
           <Route path="qr" element={<DashboardQrPage />} />
+          <Route path="branding" element={<DashboardSettingsPage />} />
           <Route path="settings" element={<DashboardSettingsPage />} />
         </Route>
       </Routes>

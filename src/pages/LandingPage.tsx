@@ -30,6 +30,9 @@ import {
   Scan,
   MessageCircle,
   FileText,
+  Layers,
+  Eye,
+  SlidersHorizontal,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -39,6 +42,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import { BrandLogo, BrandIcon } from '@/components/ui/brand-logo'
 import { useLanguage } from '@/lib/language-context'
+import { type TemplateId } from '@/lib/testimonial-templates'
 
 const WHATSAPP_URL = 'https://wa.me/201125800098'
 
@@ -98,6 +102,181 @@ const BRAND_PALETTE = [
   { name: 'Teal', hex: '#0D9488', bg: 'bg-teal-600' },
 ]
 
+export interface TemplateShowcaseItem {
+  id: TemplateId
+  nameAr: string
+  nameEn: string
+  taglineAr: string
+  taglineEn: string
+  industryAr: string
+  industryEn: string
+  color: string
+  category: 'luxury' | 'minimal' | 'bold' | 'organic'
+  sampleQuoteAr: string
+  sampleQuoteEn: string
+  sampleCustomerAr: string
+  sampleCustomerEn: string
+  sampleMerchantAr: string
+  sampleMerchantEn: string
+  badgeAr: string
+  badgeEn: string
+}
+
+const TEMPLATES_SHOWCASE_DATA: TemplateShowcaseItem[] = [
+  {
+    id: '01-neon-editorial',
+    nameAr: 'نيون الساحر',
+    nameEn: 'Neon Cyber Noir',
+    taglineAr: 'توهج أزرق سيبراني حديث وتأثيرات ضوئية فاخرة',
+    taglineEn: 'Luminous cyan glow with futuristic dark-mode ambiance',
+    industryAr: 'كافيهات ومطاعم حديثة · متاجر إلكترونية · تقنية',
+    industryEn: 'Modern Cafes · E-Commerce · Tech Brands',
+    color: '#22D3EE',
+    category: 'bold',
+    sampleQuoteAr: 'تجربة فوق الخيال! الأجواء والقهوة من عالم ثاني، والخدمة سريعة جداً. أنصح به بشدة!',
+    sampleQuoteEn: 'Next-level experience! The coffee and ambiance are unmatched. Lightning-fast service!',
+    sampleCustomerAr: 'سارة عبد الله',
+    sampleCustomerEn: 'Sarah Jenkins',
+    sampleMerchantAr: 'سايبر لاونج · Cyber Lounge',
+    sampleMerchantEn: 'Cyber Lounge & Cafe',
+    badgeAr: 'الأكثر شعبية 🔥',
+    badgeEn: 'Most Popular 🔥',
+  },
+  {
+    id: '02-luxury-editorial',
+    nameAr: 'الفخامة الملكية',
+    nameEn: 'Royal Luxury Velvet',
+    taglineAr: 'درجات العنابي والذهبي الدافئ للبوتيكات الفاخرة',
+    taglineEn: 'Burgundy velvet & gold accents for luxury brands',
+    industryAr: 'عطور ومجوهرات · أزياء راقية · مطاعم فاخرة',
+    industryEn: 'Perfumes & Jewelry · Haute Couture · Fine Dining',
+    color: '#8E2C3B',
+    category: 'luxury',
+    sampleQuoteAr: 'تغليف راقي وفخامة غير مسبوقة. العطر ثباته مذهل وجودته تضاهي أفخم الماركات العالمية.',
+    sampleQuoteEn: 'Impeccable luxury packaging and outstanding longevity. Quality rivals top global brands.',
+    sampleCustomerAr: 'محمد إبراهيم',
+    sampleCustomerEn: 'Marcus Vance',
+    sampleMerchantAr: 'عطور ريماس الملكية',
+    sampleMerchantEn: 'Remas Royal Fragrances',
+    badgeAr: 'فاخر حصري 👑',
+    badgeEn: 'Exclusive Luxury 👑',
+  },
+  {
+    id: '03-minimal-modern',
+    nameAr: 'المينيمال السويسري',
+    nameEn: 'Clean Minimalist',
+    taglineAr: 'خطوط هندسية نظيفة ومساحات بيضاء مريحة للعين',
+    taglineEn: 'Clean typography and breathable architectural layout',
+    industryAr: 'شركات ناشئة · منتجات تقنية · استوديوهات التصميم',
+    industryEn: 'Tech Startups · Minimalist Apparel · Design Studios',
+    color: '#E2502B',
+    category: 'minimal',
+    sampleQuoteAr: 'تصميم أنيق وسهولة مطلقة في الطلب. وصل في الموعد المحدد بجودة تصنيع متقنة للغاية.',
+    sampleQuoteEn: 'Flawless minimalism and seamless ordering. Arrived right on schedule with top-tier craft.',
+    sampleCustomerAr: 'كريم عادل',
+    sampleCustomerEn: 'Lucas Meyer',
+    sampleMerchantAr: 'ستوديو فيلوكس · Velox',
+    sampleMerchantEn: 'Velox Design Goods',
+    badgeAr: 'بسيط وأنيق ⚡',
+    badgeEn: 'Clean & Modern ⚡',
+  },
+  {
+    id: '04-warm-organic',
+    nameAr: 'الدفء الحرفي',
+    nameEn: 'Warm Artisan Craft',
+    taglineAr: 'ألوان التيراكوتا والتراب الدافئة للمنتجات المصنوعة يدوياً',
+    taglineEn: 'Earthy terracotta tones for artisanal & handmade goods',
+    industryAr: 'مخابز حرفية · قهوة مختصة · منتجات طبيعية',
+    industryEn: 'Artisan Bakeries · Specialty Coffee · Organic Living',
+    color: '#B0603A',
+    category: 'organic',
+    sampleQuoteAr: 'طعم المخبوزات طازج وكأنها مخبوزة في البيت، كل قطعة مصنوعة بحب واهتمام بأدق تفصيل.',
+    sampleQuoteEn: 'Everything is freshly baked with genuine love. Pure artisanal quality in every single bite.',
+    sampleCustomerAr: 'نور الهدى',
+    sampleCustomerEn: 'Elena Rostova',
+    sampleMerchantAr: 'مخبز الأصالة الحرفي',
+    sampleMerchantEn: 'Artisan Hearth Bakery',
+    badgeAr: 'طبيعي وحرفي 🌿',
+    badgeEn: 'Warm & Organic 🌿',
+  },
+  {
+    id: '05-bold-contemporary',
+    nameAr: 'الجريء المعاصر',
+    nameEn: 'Bold Contemporary',
+    taglineAr: 'ألوان حيوية نارية وتصميم قوي يوقف حركة التمرير فوراً',
+    taglineEn: 'High-contrast energetic layout designed to stop the scroll',
+    industryAr: 'ملابس الشارع · لياقة وبدنية · برجر وأكلات عصرية',
+    industryEn: 'Streetwear · Fitness & Gyms · Trendy Fast Food',
+    color: '#FF4D1F',
+    category: 'bold',
+    sampleQuoteAr: 'الخامة ممتازة ومريحة جداً في التمرين، والتصميم ملفت وجذاب. تجربة تسوق 10/10!',
+    sampleQuoteEn: 'Outstanding fabric and maximum athletic comfort. The design turns heads everywhere.',
+    sampleCustomerAr: 'عمر خالد',
+    sampleCustomerEn: 'Alex Rivera',
+    sampleMerchantAr: 'فيت براند · FitBrand',
+    sampleMerchantEn: 'FitBrand Athletics',
+    badgeAr: 'عالي الطاقة 🚀',
+    badgeEn: 'High Energy 🚀',
+  },
+  {
+    id: '06-magazine-editorial',
+    nameAr: 'المجلة التحريرية',
+    nameEn: 'Editorial Magazine',
+    taglineAr: 'تنسيق مستوحى من أغلفة المجلات العالمية وأسلوب التايبوجرافي الكلاسيكي',
+    taglineEn: 'Editorial cover layout with classic serif typography',
+    industryAr: 'عيادات تجميل · صالونات فاخرة · ديكور وأثاث',
+    industryEn: 'Beauty Clinics · Premium Salons · Home & Decor',
+    color: '#C2412D',
+    category: 'luxury',
+    sampleQuoteAr: 'نتائج فوق التوقعات واهتمام فائق بالتفاصيل. تعامل راقي وفريق محترف يستحق كل الشكر.',
+    sampleQuoteEn: 'Results far exceeded my highest expectations. True professionalism and luxury care.',
+    sampleCustomerAr: 'منى الشريف',
+    sampleCustomerEn: 'Sophia Laurent',
+    sampleMerchantAr: 'عيادات إيليت · Elite Clinic',
+    sampleMerchantEn: 'Elite Aesthetic Clinic',
+    badgeAr: 'أناقة كلاسيكية 🖋️',
+    badgeEn: 'Classic Editorial 🖋️',
+  },
+  {
+    id: '07-soft-premium',
+    nameAr: 'الباستيل الهادئ',
+    nameEn: 'Soft Pastel Botanic',
+    taglineAr: 'أخضر ميرمية هادئ ودرجات الباستيل للمنتجات الصحية والجمالية',
+    taglineEn: 'Serene sage greens and soft botanic warmth for wellness',
+    industryAr: 'عناية بالبشرة · سبا ومنتجعات · مستحضرات طبيعية',
+    industryEn: 'Skincare & Spas · Wellness · Natural Cosmetics',
+    color: '#5E7A68',
+    category: 'organic',
+    sampleQuoteAr: 'المنتجات طبيعية 100% وفرقت معايا جداً من أول أسبوع. التغليف أنيق والريحة منعشة!',
+    sampleQuoteEn: '100% clean and soothing ingredients. Made a noticeable difference from week one!',
+    sampleCustomerAr: 'ياسمين طارق',
+    sampleCustomerEn: 'Chloe Bennett',
+    sampleMerchantAr: 'بوتانيك كير · Botanic Care',
+    sampleMerchantEn: 'Botanic Pure Skincare',
+    badgeAr: 'هادئ ومريح 🌸',
+    badgeEn: 'Serene & Clean 🌸',
+  },
+  {
+    id: '08-brutalist-modern',
+    nameAr: 'البروتاليست المعماري',
+    nameEn: 'Brutalist Studio',
+    taglineAr: 'شبكة هندسية جريئة وأزرق كهربائي للتصميمات الحديثة والابتكارية',
+    taglineEn: 'Architectural geometry and electric cobalt for creatives',
+    industryAr: 'استوديوهات إبداعية · وكالات تسويق · معارض فنية',
+    industryEn: 'Creative Agencies · Marketing Studios · Art Galleries',
+    color: '#2B5BFF',
+    category: 'minimal',
+    sampleQuoteAr: 'فريق عمل استثنائي أضاف قيمة حقيقية لمشروعنا. دقة في المواعيد واحترافية غير مسبوقة.',
+    sampleQuoteEn: 'Exceptional creative talent that elevated our entire brand identity. 100% recommended.',
+    sampleCustomerAr: 'طارق حسام',
+    sampleCustomerEn: 'Daniel Hayes',
+    sampleMerchantAr: 'استوديو نكسوس · Nexus',
+    sampleMerchantEn: 'Nexus Creative Studio',
+    badgeAr: 'تصميم جريء 📐',
+    badgeEn: 'Architectural Grid 📐',
+  },
+]
+
 function LandingPage() {
   const { t, isRTL } = useLanguage()
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight
@@ -107,6 +286,11 @@ function LandingPage() {
   const [selectedBrandColor, setSelectedBrandColor] = React.useState(BRAND_PALETTE[0].hex)
   const [selectedQrPlacementIndex, setSelectedQrPlacementIndex] = React.useState(0)
   
+  // Template Showcase Interactive State
+  const [activeTemplateId, setActiveTemplateId] = React.useState<TemplateId>('01-neon-editorial')
+  const [activeCategory, setActiveCategory] = React.useState<'all' | 'luxury' | 'minimal' | 'bold' | 'organic'>('all')
+  const [templatePreviewMode, setTemplatePreviewMode] = React.useState<'rendered' | 'live'>('rendered')
+
   // Card 3 & 4 Interactive States
   const [tamperMode, setTamperMode] = React.useState<'quote' | 'audit'>('quote')
   const [wallCategoryIndex, setWallCategoryIndex] = React.useState(0)
@@ -188,6 +372,29 @@ function LandingPage() {
       <header className="fixed top-0 inset-x-0 z-50 glass-header bg-white/85 dark:bg-[#04120f]/90 border-b border-border/80 dark:border-emerald-500/20 backdrop-blur-xl transition-all duration-300 shadow-xs">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6 md:px-8">
           <BrandLogo href="/" size="md" />
+
+          {/* Desktop Nav Links */}
+          <nav className="hidden md:flex items-center gap-6 text-xs font-extrabold text-ink-muted">
+            <a
+              href="#templates"
+              className="inline-flex items-center gap-1.5 hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
+            >
+              <Palette className="size-3.5 text-emerald" />
+              <span>{isRTL ? 'قوالب التصاميم (8 قوالب)' : 'Templates (8 Styles)'}</span>
+            </a>
+            <a
+              href="#features"
+              className="hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
+            >
+              {isRTL ? 'المميزات' : 'Features'}
+            </a>
+            <a
+              href="#how-it-works"
+              className="hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
+            >
+              {isRTL ? 'كيف يعمل؟' : 'How It Works'}
+            </a>
+          </nav>
 
           <div className="flex items-center gap-2.5 sm:gap-4">
             <ThemeToggle variant="minimal" />
@@ -336,13 +543,17 @@ function LandingPage() {
                           {isRTL ? 'مولّد التقييم الحي التفاعلي' : 'Live Interactive Generator'}
                         </span>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald bg-emerald-surface px-2.5 py-0.5 rounded-full border border-emerald-border/60">
-                        {isRTL ? 'جرّب بنفسك' : 'Interactive'}
-                      </span>
+                      <a
+                        href="#templates"
+                        className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-deep bg-emerald-surface px-2.5 py-1 rounded-full border border-emerald-border/70 hover:scale-105 transition-transform shadow-2xs"
+                      >
+                        <Palette className="size-3 text-emerald" />
+                        <span>{isRTL ? '8 قوالب حصرية' : '8 Templates'}</span>
+                      </a>
                     </div>
 
                     {/* Presets Chips */}
-                    <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1">
+                    <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
                       {presets.map((preset, idx) => (
                         <button
                           key={idx}
@@ -443,7 +654,7 @@ function LandingPage() {
         {/* ========================================================================= */}
         {/* SECTION 2: BENTO MATRIX (The 4 Pillars with Interactive Micro-Widgets)   */}
         {/* ========================================================================= */}
-        <section className="relative isolate py-20 md:py-28 border-t border-border/80 overflow-hidden bg-background-subtle/50">
+        <section id="features" className="relative isolate py-20 md:py-28 border-t border-border/80 overflow-hidden bg-background-subtle/50">
           {/* 1. Animated Geometric Dot Grid Pattern */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#059669_1.2px,transparent_1.2px)] [background-size:28px_28px] opacity-25 dark:opacity-15 z-0" />
 
@@ -721,13 +932,13 @@ function LandingPage() {
                       {BRAND_PALETTE.find((p) => p.hex === selectedBrandColor)?.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
                     {BRAND_PALETTE.map((pal) => (
                       <button
                         key={pal.name}
                         type="button"
                         onClick={() => setSelectedBrandColor(pal.hex)}
-                        className={`size-8 rounded-full shadow-xs border-2 transition-all duration-300 cursor-pointer flex items-center justify-center ${
+                        className={`size-8 rounded-full shadow-xs border-2 transition-all duration-300 cursor-pointer flex items-center justify-center shrink-0 ${
                           selectedBrandColor === pal.hex
                             ? 'scale-125 border-ink ring-2 ring-emerald/40 shadow-md'
                             : 'border-white dark:border-slate-800 hover:scale-110 opacity-80 hover:opacity-100'
@@ -1035,9 +1246,413 @@ function LandingPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* SECTION 3: HOW IT WORKS (Connected 4-Step Velocity Pipeline)            */}
+        {/* SECTION 3: DESIGNER TESTIMONIAL TEMPLATES SHOWCASE                       */}
         {/* ========================================================================= */}
-        <section className="relative isolate py-20 md:py-28 overflow-hidden bg-background-subtle/50 border-t border-border/80">
+        <section id="templates" className="relative isolate py-20 md:py-28 overflow-hidden bg-surface/60 border-t border-border/80 scroll-mt-16">
+          {/* Animated Background Orbs and Dot Grid */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#059669_1.2px,transparent_1.2px)] [background-size:28px_28px] opacity-25 dark:opacity-15 z-0" />
+          <div className="pointer-events-none absolute top-1/4 start-1/2 -translate-x-1/2 size-[620px] rounded-full bg-gradient-to-tr from-emerald-400/30 via-teal-300/20 to-emerald-200/15 dark:from-emerald-500/15 dark:via-emerald-600/10 dark:to-transparent blur-[100px] animate-pulse-glow z-0" />
+          <div className="pointer-events-none absolute -bottom-20 -end-20 size-[480px] rounded-full bg-gradient-to-tr from-indigo-400/25 via-purple-300/15 to-transparent dark:from-indigo-600/15 blur-[90px] animate-orb-2 z-0" />
+          <div className="pointer-events-none absolute -top-20 -start-20 size-[420px] rounded-full bg-gradient-to-tr from-amber-400/25 via-orange-300/15 to-transparent dark:from-amber-600/10 blur-[90px] animate-orb-3 z-0" />
+
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 relative z-10">
+            {/* Section Header */}
+            <div className="mb-12 flex flex-col items-center gap-3.5 text-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-border bg-emerald-surface/90 px-4 py-1.5 text-xs font-extrabold text-emerald-deep shadow-xs backdrop-blur-md">
+                <Palette className="size-3.5" />
+                <span>{t('landing_templates_badge')}</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-ink tracking-tight">
+                {t('landing_templates_title')}
+              </h2>
+
+              <p className="max-w-2xl text-sm sm:text-base text-ink-muted leading-relaxed">
+                {t('landing_templates_subtitle')}
+              </p>
+
+              {/* Category Filter Chips */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
+                {[
+                  { key: 'all' as const, labelAr: 'الكل (8 قوالب)', labelEn: 'All Templates (8)', icon: Layers },
+                  { key: 'luxury' as const, labelAr: 'فاخر وملكي', labelEn: 'Luxury & Royal', icon: Sparkles },
+                  { key: 'minimal' as const, labelAr: 'عصري وبسيط', labelEn: 'Clean & Minimal', icon: SlidersHorizontal },
+                  { key: 'bold' as const, labelAr: 'حيوي وجريء', labelEn: 'Bold & Dynamic', icon: Zap },
+                  { key: 'organic' as const, labelAr: 'طبيعي وناعم', labelEn: 'Warm & Organic', icon: Heart },
+                ].map((cat) => {
+                  const CatIcon = cat.icon
+                  const isActive = activeCategory === cat.key
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      onClick={() => setActiveCategory(cat.key)}
+                      className={`inline-flex items-center gap-1.5 rounded-2xl px-3.5 py-2 text-xs font-bold transition-all duration-200 cursor-pointer shadow-2xs select-none ${
+                        isActive
+                          ? 'bg-emerald text-white shadow-md shadow-emerald/25 ring-2 ring-emerald/40 scale-105'
+                          : 'bg-surface border border-border/80 text-ink-muted hover:text-ink hover:border-emerald-border/70 hover:bg-emerald-surface/30'
+                      }`}
+                    >
+                      <CatIcon className={`size-3.5 ${isActive ? 'text-white' : 'text-emerald'}`} />
+                      <span>{isRTL ? cat.labelAr : cat.labelEn}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Template Showcase Dual-Pane Stage */}
+            {(() => {
+              const filteredTemplates = TEMPLATES_SHOWCASE_DATA.filter(
+                (item) => activeCategory === 'all' || item.category === activeCategory,
+              )
+              const activeTemplate =
+                TEMPLATES_SHOWCASE_DATA.find((item) => item.id === activeTemplateId) ??
+                TEMPLATES_SHOWCASE_DATA[0]
+
+              return (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                  
+                  {/* Left (Large): Active Template Spotlight & Live Interactive Frame (Span 7) */}
+                  <div className="lg:col-span-7 flex flex-col h-full min-h-0">
+                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-5 sm:p-6 shadow-xl relative overflow-hidden group flex flex-col justify-between h-full min-h-0">
+                      
+                      {/* Ambient Glow behind the card matched to template color */}
+                      <div
+                        className="pointer-events-none absolute -top-12 -start-12 size-64 rounded-full blur-3xl opacity-30 transition-all duration-700"
+                        style={{ backgroundColor: activeTemplate.color }}
+                      />
+
+                      {/* Header bar */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-border/70 relative z-10 shrink-0">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="flex size-9 items-center justify-center rounded-xl text-white font-bold shadow-xs transition-colors shrink-0"
+                            style={{ backgroundColor: activeTemplate.color }}
+                          >
+                            <Palette className="size-4.5" />
+                          </div>
+                          <div className="flex flex-col text-start">
+                            <span className="text-sm font-extrabold text-ink leading-tight">
+                              {isRTL ? activeTemplate.nameAr : activeTemplate.nameEn}
+                            </span>
+                            <span className="text-[11px] text-ink-muted">
+                              {isRTL ? activeTemplate.industryAr : activeTemplate.industryEn}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-[11px] font-extrabold px-3 py-1 rounded-full border shadow-2xs"
+                            style={{
+                              backgroundColor: `${activeTemplate.color}15`,
+                              borderColor: `${activeTemplate.color}40`,
+                              color: activeTemplate.color,
+                            }}
+                          >
+                            {isRTL ? activeTemplate.badgeAr : activeTemplate.badgeEn}
+                          </span>
+
+                          {/* View Toggle */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setTemplatePreviewMode((m) => (m === 'rendered' ? 'live' : 'rendered'))
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-bold rounded-xl border border-border bg-background-subtle px-2.5 py-1 text-ink-muted hover:text-ink hover:border-emerald-border transition-colors cursor-pointer shadow-2xs"
+                            title={isRTL ? 'تبديل وضع العرض' : 'Toggle Preview View'}
+                          >
+                            <Eye className="size-3 text-emerald" />
+                            <span>{templatePreviewMode === 'rendered' ? (isRTL ? 'عرض مباشر' : 'Live Mode') : (isRTL ? 'عرض الصورة' : 'Rendered')}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Stage Viewport */}
+                      <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-border/80 bg-slate-950/90 dark:bg-slate-950 shadow-inner group/preview flex items-center justify-center p-2.5 sm:p-4 my-auto">
+                        {templatePreviewMode === 'rendered' ? (
+                          <div className="relative size-full flex items-center justify-center overflow-hidden">
+                            <img
+                              src={`/template-previews/${activeTemplate.id}.png`}
+                              alt={isRTL ? activeTemplate.nameAr : activeTemplate.nameEn}
+                              className="size-full object-contain rounded-xl drop-shadow-2xl transition-transform duration-500 group-hover/preview:scale-[1.01]"
+                              loading="lazy"
+                            />
+                            {/* Watermark/Verified Tag Overlay */}
+                            <div className="absolute top-2.5 end-2.5 flex items-center gap-1.5 rounded-full bg-slate-950/80 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20 shadow-md">
+                              <ShieldCheck className="size-3.5 text-emerald-400" />
+                              <span>{isRTL ? 'تقييم موثق 100%' : '100% Verified'}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Interactive Live Simulator Frame */
+                          <div
+                            className="relative size-full rounded-xl p-6 sm:p-8 flex flex-col justify-between text-white select-none transition-all duration-500 overflow-hidden"
+                            style={{
+                              background: `
+                                radial-gradient(ellipse 95% 75% at 85% 0%, ${activeTemplate.color}65 0%, ${activeTemplate.color}25 35%, transparent 75%),
+                                radial-gradient(circle 500px at 15% 95%, rgba(13, 148, 136, 0.2) 0%, transparent 70%),
+                                linear-gradient(180deg, #051513 0%, #030d0c 55%, #020707 100%)
+                              `,
+                            }}
+                          >
+                            {/* Ambient Glow */}
+                            <div
+                              className="absolute -top-1/4 -right-1/4 size-3/4 rounded-full blur-3xl opacity-40 pointer-events-none"
+                              style={{ backgroundColor: activeTemplate.color }}
+                            />
+
+                            {/* Header */}
+                            <div className="relative z-10 flex items-center justify-between">
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className="flex size-8 items-center justify-center rounded-xl text-xs font-bold text-white shadow-xs"
+                                  style={{ backgroundColor: activeTemplate.color }}
+                                >
+                                  {(isRTL ? activeTemplate.sampleMerchantAr : activeTemplate.sampleMerchantEn).charAt(0)}
+                                </div>
+                                <span className="text-xs sm:text-sm font-bold text-white/90">
+                                  {isRTL ? activeTemplate.sampleMerchantAr : activeTemplate.sampleMerchantEn}
+                                </span>
+                              </div>
+                              <span
+                                className="flex size-7 items-center justify-center rounded-lg bg-white/5 font-serif text-lg font-black opacity-90"
+                                style={{ color: activeTemplate.color }}
+                              >
+                                “
+                              </span>
+                            </div>
+
+                            {/* Quote */}
+                            <div className="relative z-10 flex flex-col gap-2.5 my-auto">
+                              <p className="text-start text-sm sm:text-base font-bold leading-relaxed text-white">
+                                {isRTL ? activeTemplate.sampleQuoteAr : activeTemplate.sampleQuoteEn}
+                              </p>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10">
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className="size-2 rounded-full"
+                                  style={{ backgroundColor: activeTemplate.color }}
+                                />
+                                <span className="text-xs font-bold text-white/90">
+                                  {isRTL ? activeTemplate.sampleCustomerAr : activeTemplate.sampleCustomerEn}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-0.5 text-amber-400">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star key={i} className="size-3.5 fill-amber-400 text-amber-400" />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tagline & Specs Bar */}
+                      <div className="mt-3 flex items-center justify-between gap-2 px-1 text-xs shrink-0">
+                        <span className="font-semibold text-ink-muted truncate text-[11px] sm:text-xs">
+                          {isRTL ? activeTemplate.taglineAr : activeTemplate.taglineEn}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-surface text-emerald-deep border border-emerald-border/80 shrink-0">
+                          4K UHD
+                        </span>
+                      </div>
+
+                      {/* Actions Bar */}
+                      <div className="mt-3 pt-3 border-t border-border/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+                        <div className="flex items-center gap-2 text-xs text-ink-muted text-start">
+                          <Sparkles className="size-4 text-emerald shrink-0" />
+                          <span>
+                            {isRTL
+                              ? 'يتم تطبيق ألوان وشعار متجرك تلقائياً على هذا القالب'
+                              : 'Your brand color and logo auto-adapt to this template'}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                          <Button asChild size="sm" variant="primaryGlow" className="text-xs font-bold gap-1.5 shadow-xs">
+                            <Link to="/signup">
+                              <span>{t('action_start_free')}</span>
+                              <ArrowIcon className="size-3.5" />
+                            </Link>
+                          </Button>
+                          <Button asChild size="sm" variant="outline" className="text-xs font-bold gap-1.5 shadow-2xs">
+                            <Link to="/preview/testimonial">
+                              <span>{t('action_open_preview')}</span>
+                              <ExternalLink className="size-3" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Right (Selector Grid): 8 Interactive Template Cards (Span 5) */}
+                  <div className="lg:col-span-5 flex flex-col h-full min-h-0">
+                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-4 sm:p-5 shadow-xl flex flex-col justify-between h-full min-h-0 relative">
+                      
+                      {/* Header bar */}
+                      <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-border/70 shrink-0">
+                        <span className="text-xs sm:text-sm font-extrabold text-ink tracking-tight flex items-center gap-2">
+                          <Layers className="size-4 text-emerald" />
+                          <span>{isRTL ? 'اختر قالباً للمعاينة والتطبيق:' : 'Select preset to preview:'}</span>
+                        </span>
+                        <span className="text-[10.5px] font-bold text-ink-subtle px-2 py-0.5 rounded-full bg-background-subtle border border-border">
+                          {filteredTemplates.length} {isRTL ? 'قوالب' : 'presets'}
+                        </span>
+                      </div>
+
+                      {/* 8-Template Grid - Proportionally sized so all 8 presets fit perfectly */}
+                      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 flex-1 min-h-0 overflow-y-auto scrollbar-sleek overscroll-contain touch-pan-y pe-1 py-0.5">
+                        {filteredTemplates.map((template) => {
+                          const isSelected = template.id === activeTemplate.id
+                          return (
+                            <button
+                              key={template.id}
+                              type="button"
+                              onClick={() => setActiveTemplateId(template.id)}
+                              className={`group relative flex flex-col items-center overflow-hidden rounded-xl border-2 transition-all duration-200 cursor-pointer text-start ${
+                                isSelected
+                                  ? 'border-emerald bg-emerald-surface/40 shadow-md scale-[1.01] ring-1 ring-emerald-500/30'
+                                  : 'border-border/80 bg-surface/90 hover:border-emerald-border/80 hover:bg-surface hover:shadow-xs'
+                              }`}
+                            >
+                              {/* Thumbnail */}
+                              <div className="relative aspect-[16/8.5] w-full overflow-hidden bg-slate-950 flex items-center justify-center p-1">
+                                <img
+                                  src={`/template-previews/${template.id}.png`}
+                                  alt={isRTL ? template.nameAr : template.nameEn}
+                                  className="size-full object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
+                                  loading="lazy"
+                                />
+                                {isSelected && (
+                                  <div className="absolute inset-0 bg-emerald/10 pointer-events-none" />
+                                )}
+                                {isSelected && (
+                                  <div className="absolute top-1 inset-inline-end-1 flex size-4.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs animate-scale-in">
+                                    <Check className="size-2.5 stroke-[3]" />
+                                  </div>
+                                )}
+                                <span
+                                  className="absolute bottom-0.5 inset-inline-start-1 text-[8px] font-black px-1 py-0.2 rounded bg-slate-950/85 backdrop-blur-xs text-white border border-white/20"
+                                >
+                                  {isRTL ? template.badgeAr : template.badgeEn}
+                                </span>
+                              </div>
+
+                              {/* Label */}
+                              <div className="w-full px-2 py-1.5 flex flex-col gap-0.5 bg-surface/90">
+                                <div className="flex items-center justify-between gap-1">
+                                  <span
+                                    className={`truncate text-[10.5px] sm:text-[11px] font-bold ${
+                                      isSelected ? 'text-emerald-deep' : 'text-ink group-hover:text-emerald-deep'
+                                    } transition-colors`}
+                                  >
+                                    {isRTL ? template.nameAr : template.nameEn}
+                                  </span>
+                                  <span
+                                    className="size-1.5 rounded-full shrink-0"
+                                    style={{ backgroundColor: template.color }}
+                                  />
+                                </div>
+                                <span className="truncate text-[9px] sm:text-[9.5px] text-ink-subtle">
+                                  {isRTL ? template.industryAr.split('·')[0] : template.industryEn.split('·')[0]}
+                                </span>
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Footer sub-bar */}
+                      <div className="mt-2.5 pt-2.5 border-t border-border/70 flex items-center justify-between text-xs text-ink-muted shrink-0">
+                        <span className="text-[10.5px] flex items-center gap-1.5 truncate">
+                          <Sparkles className="size-3.5 text-emerald shrink-0" />
+                          <span>{isRTL ? 'جميع القوالب تدعم الخط العربي واللاتيني' : 'Arabic & Latin typography ready'}</span>
+                        </span>
+                        <span className="text-[9.5px] font-extrabold text-emerald-deep px-2 py-0.5 rounded-md bg-emerald-surface border border-emerald-border/60 shrink-0 ms-2">
+                          8 PRESETS
+                        </span>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              )
+            })()}
+
+            {/* Bottom 4-Feature Capability Highlights Strip */}
+            <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-surface/90 border border-border/80 shadow-2xs">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald border border-emerald-500/30 shrink-0">
+                  <Zap className="size-4.5" />
+                </div>
+                <div className="flex flex-col text-start">
+                  <span className="text-xs font-extrabold text-ink leading-tight">
+                    {isRTL ? 'توليد فوري بجودة 4K' : 'Instant 4K Ultra Render'}
+                  </span>
+                  <span className="text-[10px] text-ink-muted">
+                    {isRTL ? 'بدون انتظار أو معالجة بطيئة' : 'Rendered in milliseconds'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-surface/90 border border-border/80 shadow-2xs">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 border border-teal-500/30 shrink-0">
+                  <Palette className="size-4.5" />
+                </div>
+                <div className="flex flex-col text-start">
+                  <span className="text-xs font-extrabold text-ink leading-tight">
+                    {isRTL ? 'تطابق ألوان هويتك' : 'Auto Palette Calibrated'}
+                  </span>
+                  <span className="text-[10px] text-ink-muted">
+                    {isRTL ? 'تطبيق تلقائي لشعارك ورمزك' : 'Seamless merchant branding'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-surface/90 border border-border/80 shadow-2xs">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 shrink-0">
+                  <Smartphone className="size-4.5" />
+                </div>
+                <div className="flex flex-col text-start">
+                  <span className="text-xs font-extrabold text-ink leading-tight">
+                    {isRTL ? 'مقاسات إنستجرام وتيك توك' : '1:1 & 9:16 Social Ready'}
+                  </span>
+                  <span className="text-[10px] text-ink-muted">
+                    {isRTL ? 'جاهز للنشر كستوري أو بوست' : 'Perfect for Stories & Feeds'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-surface/90 border border-border/80 shadow-2xs">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                  <ShieldCheck className="size-4.5" />
+                </div>
+                <div className="flex flex-col text-start">
+                  <span className="text-xs font-extrabold text-ink leading-tight">
+                    {isRTL ? 'كلام العميل الصادق 100%' : '100% Verbatim & Verified'}
+                  </span>
+                  <span className="text-[10px] text-ink-muted">
+                    {isRTL ? 'بدون أي تحريف أو تغيير' : 'Uncompromised authenticity'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* SECTION 4: HOW IT WORKS (Connected 4-Step Velocity Pipeline)            */}
+        {/* ========================================================================= */}
+        <section id="how-it-works" className="relative isolate py-20 md:py-28 overflow-hidden bg-background-subtle/50 border-t border-border/80 scroll-mt-16">
           {/* 1. Geometric Dot Grid Pattern */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#059669_1.2px,transparent_1.2px)] [background-size:28px_28px] opacity-25 dark:opacity-15 z-0" />
 
@@ -1798,7 +2413,7 @@ function LandingPage() {
 
                 {/* Instagram */}
                 <a
-                  href="https://instagram.com/taqyeem"
+                  href="https://www.instagram.com/taqyeem.site?stkn=MXRkazMwb3N3c2h1Ng=="
                   target="_blank"
                   rel="noreferrer"
                   className="flex size-9 items-center justify-center rounded-xl border border-pink-500/30 bg-pink-500/10 text-pink-500 hover:bg-pink-500 hover:text-white transition-all shadow-xs hover:scale-110"
@@ -1812,7 +2427,7 @@ function LandingPage() {
 
                 {/* Facebook */}
                 <a
-                  href="https://facebook.com/taqyeem"
+                  href="https://www.facebook.com/share/18Vb2gQpWY/"
                   target="_blank"
                   rel="noreferrer"
                   className="flex size-9 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all shadow-xs hover:scale-110"
