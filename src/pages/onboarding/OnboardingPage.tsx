@@ -22,6 +22,7 @@ import { useLanguage } from '@/lib/language-context'
 import { useMerchant } from '@/hooks/useMerchant'
 import { slugify } from '@/lib/slugify'
 import { supabase } from '@/lib/supabase'
+import { FullPageSpinner } from '@/components/auth/RequireAuth'
 import { isValidBusinessName, isValidSlug } from '@/lib/validators'
 
 function OnboardingPage() {
@@ -43,7 +44,11 @@ function OnboardingPage() {
   const [createdSlug, setCreatedSlug] = React.useState<string | null>(null)
   const [copied, setCopied] = React.useState(false)
 
-  if (!merchantLoading && merchant) {
+  if (merchantLoading) {
+    return <FullPageSpinner />
+  }
+
+  if (merchant) {
     return <Navigate to="/dashboard" replace />
   }
 

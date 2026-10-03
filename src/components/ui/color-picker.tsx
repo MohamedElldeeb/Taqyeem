@@ -211,14 +211,14 @@ function ColorPicker({ value, onChange, className }: ColorPickerProps) {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
         {QUICK_PRESETS.map((preset) => (
           <button
             key={preset}
             type="button"
             aria-label={preset}
             onClick={() => onChange(preset)}
-            className="size-7 rounded-full transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2"
+            className="size-7 shrink-0 rounded-full transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2"
             style={{
               backgroundColor: preset,
               outline: value.toUpperCase() === preset.toUpperCase() ? `2px solid ${preset}` : undefined,

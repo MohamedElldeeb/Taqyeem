@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Check, Sparkles, Sun, Upload } from 'lucide-react'
+import { Check, Palette, Sparkles, Sun, Upload } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -149,8 +149,8 @@ function DashboardSettingsPage() {
       {/* Header */}
       <header className="flex flex-col gap-2">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-border bg-emerald-surface px-3 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs">
-          <Sparkles className="size-3.5" />
-          <span>{isRTL ? 'إعدادات الحساب والمظهر' : 'Store Settings & Customization'}</span>
+          <Palette className="size-3.5" />
+          <span>{isRTL ? 'الهوية البصرية وتخصيص المتجر' : 'Branding & Store Identity'}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
           {t('dash_settings_title')}
@@ -166,7 +166,7 @@ function DashboardSettingsPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-3">
               <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-sm">
-                <Sparkles className="size-4.5" />
+                <Palette className="size-4.5" />
               </div>
               <div>
                 <CardTitle className="text-base font-bold text-ink">
@@ -301,7 +301,7 @@ function DashboardSettingsPage() {
               </div>
             </CardHeader>
             <CardContent className="flex flex-col gap-4 pt-4">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 max-h-[390px] sm:max-h-[440px] overflow-y-auto scrollbar-sleek overscroll-contain touch-pan-y pe-1.5 py-0.5">
                 {TEMPLATE_IDS.map((templateId) => {
                   const isSelected = merchant.default_template_id === templateId
                   return (

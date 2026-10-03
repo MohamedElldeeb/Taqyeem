@@ -41,7 +41,8 @@ export const translations = {
     nav_reviews: 'التقييمات',
     nav_wall_of_love: 'Wall of Love',
     nav_qr: 'QR Code',
-    nav_settings: 'الإعدادات',
+    nav_settings: 'الهوية البصرية',
+    nav_branding: 'الهوية البصرية',
     nav_dashboard: 'لوحة التحكم',
 
     // Landing Page
@@ -82,6 +83,9 @@ export const translations = {
     landing_unaltered_desc: 'النص الصادق الذي يكتبه عميلك يظل كما هو دون أي تغيير — نحن نصممه بأسلوب يلفت الأنظار ويعزز الثقة الحقيقية.',
     landing_qr_title: 'ضع الـ QR في كل مكان يراه عميلك',
     landing_qr_desc: 'مسحة سريعة بالكاميرا ← تقييم فوري ← تصميم احترافي ← صفحة Wall of Love.',
+    landing_templates_badge: '🎨 8 قوالب تصاميم احترافية',
+    landing_templates_title: 'قوالب فاخرة مصممة لتناسب هوية متجرك وأسلوبك',
+    landing_templates_subtitle: 'اختر المظهر البصري المثالي لعلامتك. توليد فوري لتصاميم التقييمات بأعلى دقة، متطابقة مع ألوانك وجاهزة للنشر بنقرة واحدة على إنستجرام وتيك توك وواتساب.',
     landing_cta_ready_title: 'جاهز تبدأ تجمع آراء عملائك الحقيقية؟',
     landing_cta_ready_desc: 'انضم الآن وابدأ بناء دليلك التسويقي الأقوى القائم على ثقة العملاء.',
     landing_footer_text: 'جميع الحقوق محفوظة لمنصة تقييم',
@@ -151,11 +155,11 @@ export const translations = {
     dash_qr_download_png: 'تحميل صورة QR',
     dash_qr_print_hint: '💡 نصيحة: اطبع الرمز وضعه بجوار نقطة البيع أو على طاولة الاستقبال.',
 
-    // Dashboard Settings Page
-    dash_settings_title: 'إعدادات المتجر والهوية',
-    dash_settings_subtitle: 'تخصيص بيانات متجرك، ألوانك وشعارك، وتحديد قالب التصميم الافتراضي.',
+    // Dashboard Settings / Branding Page
+    dash_settings_title: 'الهوية البصرية والعلامة التجارية',
+    dash_settings_subtitle: 'تخصيص بيانات متجرك، ألوان الهوية والشعار، وتحديد قالب التصميم الافتراضي للتقييمات.',
     dash_settings_identity_card: 'هوية المتجر والعلامة التجارية',
-    dash_settings_identity_desc: 'تظهر هذه البيانات لعملائك في صفحة التقييم وصفحة Wall of Love والتصاميم.',
+    dash_settings_identity_desc: 'تظهر هذه البيانات لعملائك في صفحة التقييم وصفحة Wall of Love والتصاميم المولدة.',
     dash_settings_biz_name: 'اسم المتجر أو النشاط',
     dash_settings_logo: 'شعار المتجر (Logo)',
     dash_settings_upload_logo: 'رفع شعار جديد',
@@ -268,7 +272,8 @@ export const translations = {
     nav_reviews: 'Reviews',
     nav_wall_of_love: 'Wall of Love',
     nav_qr: 'QR Code',
-    nav_settings: 'Settings',
+    nav_settings: 'Branding',
+    nav_branding: 'Branding',
     nav_dashboard: 'Dashboard',
 
     // Landing Page
@@ -309,6 +314,9 @@ export const translations = {
     landing_unaltered_desc: 'Your customer exact words are preserved character-for-character, beautifully presented to inspire confidence.',
     landing_qr_title: 'Put QR Codes Anywhere Customers Look',
     landing_qr_desc: 'QR Scan → Quick Feedback → Branded Visual → Wall of Love in one smooth loop.',
+    landing_templates_badge: '🎨 8 Designer Testimonial Templates',
+    landing_templates_title: 'Studio-Grade Templates Tailored to Your Brand Aesthetic',
+    landing_templates_subtitle: 'Choose from 8 curated designer presets to generate high-converting testimonial creatives ready for Instagram Stories, TikTok, and WhatsApp.',
     landing_cta_ready_title: 'Ready to Collect Authentic Customer Proof?',
     landing_cta_ready_desc: 'Join the beta today and build your most powerful trust engine.',
     landing_footer_text: 'All rights reserved © Taqyeem',
@@ -378,9 +386,9 @@ export const translations = {
     dash_qr_download_png: 'Download QR PNG',
     dash_qr_print_hint: '💡 Pro Tip: Place your printed QR code at the cash register or on dining tables.',
 
-    // Dashboard Settings Page
-    dash_settings_title: 'Store Settings & Brand',
-    dash_settings_subtitle: 'Customize your business identity, signature color, logo, and default card layout.',
+    // Dashboard Settings / Branding Page
+    dash_settings_title: 'Branding & Store Identity',
+    dash_settings_subtitle: 'Customize your business identity, brand colors, logo, and default testimonial card template.',
     dash_settings_identity_card: 'Store Brand Identity',
     dash_settings_identity_desc: 'Displayed to customers on your review form, Wall of Love, and generated cards.',
     dash_settings_biz_name: 'Business / Store Name',

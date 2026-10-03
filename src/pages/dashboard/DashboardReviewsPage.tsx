@@ -5,12 +5,15 @@ import {
   Heart,
   MessageCircle,
   MessageSquareText,
+  Palette,
   RefreshCw,
   Share2,
+  Sparkles,
   Star,
   TrendingUp,
   Zap,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,6 +27,7 @@ import { useMerchantReviews, type MerchantReview, type ReviewDbStatus } from '@/
 import { toCardStatus } from '@/lib/generated-content-status'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
+import { TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
 
 type FilterTab = 'all' | 'completed' | 'processing' | 'failed'
 
@@ -83,6 +87,34 @@ function DashboardReviewsPage() {
         </h1>
         <p className="text-sm text-ink-muted">{t('dash_reviews_subtitle')}</p>
       </header>
+
+      {/* Active Designer Template Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-border/80 bg-surface/90 backdrop-blur-md p-3.5 sm:p-4 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-2xs">
+            <Palette className="size-4.5" />
+          </div>
+          <div className="flex flex-col text-start">
+            <span className="text-xs sm:text-sm font-bold text-ink">
+              {isRTL
+                ? `قالب التصميم المطبق: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`
+                : `Active Card Template: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`}
+            </span>
+            <span className="text-[11px] text-ink-muted">
+              {isRTL
+                ? 'يتم إنشاء صور التقييمات تلقائياً بالقالب المختار مع ألوان وشعار متجرك.'
+                : 'All incoming reviews are automatically rendered with your selected designer template.'}
+            </span>
+          </div>
+        </div>
+
+        <Button asChild size="sm" variant="outline" className="text-xs font-bold gap-1.5 shadow-2xs shrink-0">
+          <Link to="/dashboard/branding">
+            <Palette className="size-3.5 text-emerald" />
+            <span>{isRTL ? 'تغيير القالب (8 قوالب)' : 'Change Template (8)'}</span>
+          </Link>
+        </Button>
+      </div>
 
       {/* Stats Strip */}
       {!loading && reviews.length > 0 && (
@@ -341,7 +373,15 @@ function ReviewRow({
         </div>
 
         {/* Generated Creative Preview */}
-        <div className="w-full sm:w-[200px] shrink-0">
+        <div className="w-full sm:w-[200px] shrink-0 flex flex-col gap-1.5">
+          <div className="flex items-center justify-between px-0.5 text-[10px] font-bold">
+            <span className="inline-flex items-center gap-1 text-emerald-deep bg-emerald-surface px-2 py-0.5 rounded-md border border-emerald-border/60">
+              <Sparkles className="size-2.5" />
+              <span>{isRTL ? 'قالب التصميم' : 'Template'}</span>
+            </span>
+            <span className="text-ink-subtle font-mono">4K UHD</span>
+          </div>
+
           <GeneratedTestimonialCard
             className="w-full rounded-2xl shadow-xs"
             status={cardStatus}

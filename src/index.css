@@ -55,6 +55,12 @@
     padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   }
 
+  :root {
+    --color-emerald-deep: #047857;
+    --color-emerald-surface: #ecfdf5;
+    --color-emerald-border: #a7f3d0;
+  }
+
   /* Dark Theme Color Overrides */
   .dark,
   html.dark {
@@ -69,8 +75,13 @@
     --color-ink: #f8fafc;
     --color-ink-muted: #94a3b8;
     --color-ink-subtle: #64748b;
-    --color-emerald-surface: rgba(16, 185, 129, 0.14);
-    --color-emerald-border: rgba(16, 185, 129, 0.3);
+    --color-emerald: #10b981;
+    --color-emerald-light: #34d399;
+    --color-emerald-vibrant: #00d293;
+    --color-emerald-deep: #6ee7b7;
+    --color-emerald-dark: #022c22;
+    --color-emerald-surface: rgba(16, 185, 129, 0.16);
+    --color-emerald-border: rgba(52, 211, 153, 0.35);
   }
 
   html.dark ::-webkit-scrollbar-thumb {
@@ -95,6 +106,56 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
   }
+}
+
+/* Utilities for hidden scrollbars (fully scrollable, zero visible scrollbar) */
+.scrollbar-none,
+.scrollbar-hidden,
+.no-scrollbar {
+  -ms-overflow-style: none !important; /* IE & Edge */
+  scrollbar-width: none !important; /* Firefox */
+  -webkit-overflow-scrolling: touch;
+}
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hidden::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Utilities for sleek modern scrollbars (visible, thin, refined emerald theme) */
+.scrollbar-sleek {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.45) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.scrollbar-sleek::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-sleek::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 9999px;
+  margin: 4px 0;
+}
+html.dark .scrollbar-sleek::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+.scrollbar-sleek::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+.scrollbar-sleek::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.85);
+}
+html.dark .scrollbar-sleek::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.5);
+}
+html.dark .scrollbar-sleek::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 211, 153, 0.9);
 }
 
 /* --- High-Impact Background Patterns & Gradients --- */
