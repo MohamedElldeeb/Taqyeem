@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="taqyeem-template" content="07-soft-premium">
+<title>Taqyeem · Soft Premium</title>
+<style>
+@font-face { font-family: 'Cairo'; src: url('../fonts/Cairo-Variable.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Medium.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: block; }
+</style>
+<style>
+:root {
+  --brand: #5E7A68;
+  --brand-soft: color-mix(in srgb, var(--brand) 25%, transparent);
+  --brand-clear: color-mix(in srgb, var(--brand) 0%, transparent);
+  --brand-tint: color-mix(in srgb, var(--brand) 12%, transparent);
+}
+html, body { margin: 0; padding: 0; width: 1080px; height: 1080px; overflow: hidden; background: transparent; }
+* { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+[data-slot="quote"] { overflow-wrap: anywhere; }
+[data-slot="logo"] img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<div data-slot="canvas" style="width: 1080px; height: 1080px; position: relative; overflow: hidden; background: #ECE6DF; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; color: #2A2420; direction: rtl">
+<div data-slot="accent-orb" style="position: absolute; top: -220px; right: -180px; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, var(--brand-soft) 0%, var(--brand-clear) 70%)"></div>
+<div style="position: absolute; bottom: -260px; left: -200px; width: 760px; height: 760px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 70%)"></div>
+<div style="position: absolute; top: 96px; right: 96px; bottom: 96px; left: 96px; background: #FAF7F3; border-radius: 56px; box-shadow: 0 50px 90px rgba(80, 60, 40, 0.12), 0 10px 24px rgba(80, 60, 40, 0.06); box-sizing: border-box; padding: 72px 80px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div data-slot="heading" style="display: flex; align-items: center; gap: 12px; padding: 12px 24px; border-radius: 999px; background: var(--brand-tint); font-size: 24px; font-weight: 600; color: #3A332C">
+<span data-slot="accent-dot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--brand)"></span>
+<span>آراء عملاؤنا</span>
+</div>
+<div data-slot="rating" style="font-size: 30px; color: #E5AE2E; letter-spacing: 4px">★★★★★</div>
+</div>
+<div style="flex-grow: 1; display: flex; align-items: center; min-height: 0">
+<p data-slot="quote" style="margin: 0; font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif; font-size: 50px; font-weight: 500; line-height: 1.8; color: #2A2420">الخدمة كانت ممتازة جدًا والتعامل راقي، أكيد هرجع لكم تاني.</p>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 20px 20px; border-radius: 32px; background: #F2EDE7">
+<div style="display: flex; align-items: center; gap: 18px">
+<div data-slot="avatar" data-on-brand aria-hidden="true" style="width: 72px; height: 72px; border-radius: 50%; background: var(--brand); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700">م</div>
+<div data-slot="customer" style="font-size: 30px; font-weight: 700; color: #2A2420">محمد أحمد</div>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; direction: ltr">
+<div data-slot="logo" aria-label="Merchant logo" style="width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; box-shadow: 0 4px 12px rgba(80, 60, 40, 0.10); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #3A332C">T</div>
+<div data-slot="merchant" style="font-size: 20px; font-weight: 600; color: #7A6F66">Taqyeem</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+window.TAQYEEM_TEMPLATE = { id: "07-soft-premium", defaultBrand: "#5E7A68" };
+/* Taqyeem template runtime: fills slots, fits the quote, sets brand contrast, then marks ready. */
+(function () {
+  var T = window.TAQYEEM_TEMPLATE;
+  function q(sel) { return document.querySelector('[data-slot="' + sel + '"]'); }
+  function params() {
+    var p = new URLSearchParams(location.search), d = {};
+    ['heading','quote','customer','merchant','brandColor','logoUrl','rating'].forEach(function (k) { if (p.has(k)) d[k] = p.get(k); });
+    return d;
+  }
+  function setText(el, v) {
+    if (!el || v == null) return;
+    var kids = el.children;
+    (kids.length ? kids[kids.length - 1] : el).textContent = v;
+  }
+  function luminance(hex) {
+    var h = hex.replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var rgb = [0, 2, 4].map(function (i) { var c = parseInt(h.substr(i, 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  }
+  function fitQuote() {
+    var el = q('quote'); if (!el) return;
+    var box = el.parentElement, base = parseFloat(el.dataset.baseSize || getComputedStyle(el).fontSize);
+    el.dataset.baseSize = base; el.style.fontSize = base + 'px';
+    var min = Math.max(28, Math.round(base * 0.55));
+    function overflows() {
+      var cs = getComputedStyle(box);
+      var avail = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var kids = Array.prototype.filter.call(box.children, function (c) { return getComputedStyle(c).position !== 'absolute'; });
+      var used;
+      if (cs.flexDirection === 'column') {
+        used = kids.reduce(function (s, c) { return s + c.offsetHeight; }, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1);
+      } else {
+        used = Math.max.apply(null, kids.map(function (c) { return c.offsetHeight; }));
+      }
+      return used > avail + 1;
+    }
+    var size = base;
+    while (overflows() && size > min) { size -= 2; el.style.fontSize = size + 'px'; }
+    el.dataset.fittedSize = size;
+    el.dataset.overflow = overflows() ? 'true' : 'false';
+  }
+  function render(data) {
+    data = data || {};
+    var brand = data.brandColor || T.defaultBrand;
+    document.documentElement.style.setProperty('--brand', brand);
+    var onBrand = luminance(brand) > 0.45 ? '#111111' : '#FFFFFF';
+    document.querySelectorAll('[data-on-brand]').forEach(function (n) { n.style.color = onBrand; });
+    setText(q('heading'), data.heading);
+    setText(q('quote'), data.quote);
+    setText(q('customer'), data.customer);
+    setText(q('merchant'), data.merchant);
+    var av = q('avatar'); if (av && data.customer) av.textContent = data.customer.trim().charAt(0);
+    var logo = q('logo'), wait = [];
+    if (logo) {
+      if (data.logoUrl) {
+        var img = new Image(); img.alt = ''; img.src = data.logoUrl;
+        logo.textContent = ''; logo.appendChild(img);
+        wait.push(img.decode ? img.decode().catch(function () {}) : Promise.resolve());
+      } else if (data.merchant) {
+        logo.textContent = data.merchant.trim().charAt(0).toUpperCase();
+      }
+    }
+    var r = q('rating');
+    if (r && data.rating != null) {
+      var n = Math.max(0, Math.min(5, Math.round(+data.rating)));
+      r.innerHTML = '★'.repeat(n) + (n < 5 ? '<span style="opacity:.28">' + '★'.repeat(5 - n) + '</span>' : '');
+    }
+    document.documentElement.removeAttribute('data-ready');
+    var fl = ['400','500','600','700','800','900'].map(function (w) { return document.fonts.load(w + ' 40px Cairo', 'عربي'); });
+    if (document.querySelector('[style*="IBM Plex"]')) fl.push(document.fonts.load('500 40px "IBM Plex Sans Arabic"', 'عربي'));
+    return Promise.all(fl.concat(wait)).then(function () { return document.fonts.ready; }).then(function () {
+      fitQuote();
+      document.documentElement.setAttribute('data-ready', 'true');
+    });
+  }
+  window.taqyeemRender = render;
+  var initial = Object.assign({}, window.TAQYEEM_DATA || {}, params());
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { render(initial); });
+  else render(initial);
+})();
+
+</script>
+</body>
+</html>

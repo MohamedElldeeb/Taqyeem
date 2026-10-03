@@ -13,7 +13,7 @@ import { ColorPicker } from '@/components/ui/color-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { TemplatePreview } from '@/components/testimonial/TemplatePreview'
+import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
 import { useAuth } from '@/lib/auth-context'
 import { useMerchant } from '@/hooks/useMerchant'
 import { supabase } from '@/lib/supabase'
@@ -317,7 +317,7 @@ function DashboardSettingsPage() {
                       }`}
                     >
                       <div className="relative w-full overflow-hidden">
-                        <TemplatePreview templateId={templateId} />
+                        <LiveTemplatePreview templateId={templateId} brandColor={brandColor} />
                         {isSelected && (
                           <div className="absolute inset-0 bg-emerald/5" />
                         )}

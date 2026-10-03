@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="taqyeem-template" content="06-magazine-editorial">
+<title>Taqyeem · Magazine Editorial</title>
+<style>
+@font-face { font-family: 'Cairo'; src: url('../fonts/Cairo-Variable.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Regular.ttf') format('truetype'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-Medium.ttf') format('truetype'); font-weight: 500; font-display: block; }
+@font-face { font-family: 'IBM Plex Sans Arabic'; src: url('../fonts/IBMPlexSansArabic-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: block; }
+</style>
+<style>
+:root {
+  --brand: #C2412D;
+}
+html, body { margin: 0; padding: 0; width: 1080px; height: 1080px; overflow: hidden; background: transparent; }
+* { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+[data-slot="quote"] { overflow-wrap: anywhere; }
+[data-slot="logo"] img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body>
+<div data-slot="canvas" style="width: 1080px; height: 1080px; position: relative; overflow: hidden; background-color: #E5DFD5; background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(160deg, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.06)); background-size: 4px 4px, 100% 100%; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; color: #1A1A1A; direction: rtl">
+<div style="position: absolute; top: 80px; right: 88px; left: 88px; display: flex; flex-direction: column; gap: 14px">
+<div style="height: 3px; background: #1A1A1A"></div>
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div data-slot="heading" style="font-size: 32px; font-weight: 900; color: #1A1A1A">آراء عملاؤنا</div>
+<div style="display: flex; align-items: center; gap: 12px; direction: ltr">
+<div data-slot="logo" aria-label="Merchant logo" style="width: 40px; height: 40px; border: 2px solid #1A1A1A; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900">T</div>
+<div data-slot="merchant" style="font-size: 18px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #1A1A1A">Taqyeem</div>
+</div>
+</div>
+<div style="height: 1px; background: #1A1A1A"></div>
+</div>
+<div data-slot="accent-card" style="position: absolute; top: 250px; right: 150px; width: 800px; height: 720px; background: var(--brand); transform: rotate(-4deg); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12)"></div>
+<div style="position: absolute; top: 240px; right: 112px; width: 830px; height: 730px; background: #D3CBBE; transform: rotate(2deg); box-shadow: 0 16px 30px rgba(0, 0, 0, 0.10)"></div>
+<div style="position: absolute; top: 236px; right: 120px; bottom: 112px; left: 120px; background: #FFFDF8; box-shadow: 0 30px 60px rgba(30, 20, 10, 0.18), 0 2px 6px rgba(30, 20, 10, 0.08); box-sizing: border-box; padding: 56px 72px 56px 72px; display: flex; flex-direction: column; gap: 20px">
+<div aria-hidden="true" style="font-size: 220px; font-weight: 900; line-height: 0.7; height: 110px; color: var(--brand)">”</div>
+<div style="flex-grow: 1; display: flex; align-items: center; min-height: 0">
+<p data-slot="quote" style="margin: 0; font-size: 52px; font-weight: 700; line-height: 1.65; color: #1A1A1A">الخدمة كانت ممتازة جدًا والتعامل راقي، أكيد هرجع لكم تاني.</p>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #1A1A1A; padding-top: 24px">
+<div style="display: flex; align-items: center; gap: 16px">
+<div style="width: 36px; height: 2px; background: #1A1A1A"></div>
+<div data-slot="customer" style="font-size: 32px; font-weight: 800; color: #1A1A1A">محمد أحمد</div>
+</div>
+<div data-slot="rating" style="font-size: 30px; color: #E8A800; letter-spacing: 4px">★★★★★</div>
+</div>
+</div>
+</div>
+<script>
+window.TAQYEEM_TEMPLATE = { id: "06-magazine-editorial", defaultBrand: "#C2412D" };
+/* Taqyeem template runtime: fills slots, fits the quote, sets brand contrast, then marks ready. */
+(function () {
+  var T = window.TAQYEEM_TEMPLATE;
+  function q(sel) { return document.querySelector('[data-slot="' + sel + '"]'); }
+  function params() {
+    var p = new URLSearchParams(location.search), d = {};
+    ['heading','quote','customer','merchant','brandColor','logoUrl','rating'].forEach(function (k) { if (p.has(k)) d[k] = p.get(k); });
+    return d;
+  }
+  function setText(el, v) {
+    if (!el || v == null) return;
+    var kids = el.children;
+    (kids.length ? kids[kids.length - 1] : el).textContent = v;
+  }
+  function luminance(hex) {
+    var h = hex.replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var rgb = [0, 2, 4].map(function (i) { var c = parseInt(h.substr(i, 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  }
+  function fitQuote() {
+    var el = q('quote'); if (!el) return;
+    var box = el.parentElement, base = parseFloat(el.dataset.baseSize || getComputedStyle(el).fontSize);
+    el.dataset.baseSize = base; el.style.fontSize = base + 'px';
+    var min = Math.max(28, Math.round(base * 0.55));
+    function overflows() {
+      var cs = getComputedStyle(box);
+      var avail = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var kids = Array.prototype.filter.call(box.children, function (c) { return getComputedStyle(c).position !== 'absolute'; });
+      var used;
+      if (cs.flexDirection === 'column') {
+        used = kids.reduce(function (s, c) { return s + c.offsetHeight; }, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1);
+      } else {
+        used = Math.max.apply(null, kids.map(function (c) { return c.offsetHeight; }));
+      }
+      return used > avail + 1;
+    }
+    var size = base;
+    while (overflows() && size > min) { size -= 2; el.style.fontSize = size + 'px'; }
+    el.dataset.fittedSize = size;
+    el.dataset.overflow = overflows() ? 'true' : 'false';
+  }
+  function render(data) {
+    data = data || {};
+    var brand = data.brandColor || T.defaultBrand;
+    document.documentElement.style.setProperty('--brand', brand);
+    var onBrand = luminance(brand) > 0.45 ? '#111111' : '#FFFFFF';
+    document.querySelectorAll('[data-on-brand]').forEach(function (n) { n.style.color = onBrand; });
+    setText(q('heading'), data.heading);
+    setText(q('quote'), data.quote);
+    setText(q('customer'), data.customer);
+    setText(q('merchant'), data.merchant);
+    var av = q('avatar'); if (av && data.customer) av.textContent = data.customer.trim().charAt(0);
+    var logo = q('logo'), wait = [];
+    if (logo) {
+      if (data.logoUrl) {
+        var img = new Image(); img.alt = ''; img.src = data.logoUrl;
+        logo.textContent = ''; logo.appendChild(img);
+        wait.push(img.decode ? img.decode().catch(function () {}) : Promise.resolve());
+      } else if (data.merchant) {
+        logo.textContent = data.merchant.trim().charAt(0).toUpperCase();
+      }
+    }
+    var r = q('rating');
+    if (r && data.rating != null) {
+      var n = Math.max(0, Math.min(5, Math.round(+data.rating)));
+      r.innerHTML = '★'.repeat(n) + (n < 5 ? '<span style="opacity:.28">' + '★'.repeat(5 - n) + '</span>' : '');
+    }
+    document.documentElement.removeAttribute('data-ready');
+    var fl = ['400','500','600','700','800','900'].map(function (w) { return document.fonts.load(w + ' 40px Cairo', 'عربي'); });
+    if (document.querySelector('[style*="IBM Plex"]')) fl.push(document.fonts.load('500 40px "IBM Plex Sans Arabic"', 'عربي'));
+    return Promise.all(fl.concat(wait)).then(function () { return document.fonts.ready; }).then(function () {
+      fitQuote();
+      document.documentElement.setAttribute('data-ready', 'true');
+    });
+  }
+  window.taqyeemRender = render;
+  var initial = Object.assign({}, window.TAQYEEM_DATA || {}, params());
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { render(initial); });
+  else render(initial);
+})();
+
+</script>
+</body>
+</html>

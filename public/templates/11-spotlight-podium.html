@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="taqyeem-template" content="11-spotlight-podium">
+<title>Taqyeem · Spotlight Podium</title>
+<style>
+@font-face { font-family: 'Cairo'; src: url('../fonts/Cairo-Variable.ttf') format('truetype'); font-weight: 200 1000; font-style: normal; font-display: block; }
+:root { --brand: #C9A2FF; }
+html, body { margin: 0; padding: 0; width: 1080px; height: 1080px; overflow: hidden; background: transparent; }
+* { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; box-sizing: content-box; }
+.cv { width: 1080px; height: 1080px; position: relative; overflow: hidden; font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; direction: rtl; }
+.qbox { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; }
+[data-slot="quote"] { overflow-wrap: anywhere; }
+[data-slot="logo"] img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cv{background:radial-gradient(ellipse at 50% 100%,#2A2633 0%,#141218 55%,#0B0A0E 100%);color:#F6F4FA}
+.beam{position:absolute;top:-40px;left:240px;width:600px;height:1000px;background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 85%);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);filter:blur(6px)}
+.podium{position:absolute;left:150px;right:150px;bottom:40px;height:230px}
+.ptop{position:absolute;top:0;left:0;right:0;height:120px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,#fff 30%,var(--brand)),var(--brand) 60%,color-mix(in srgb,#000 30%,var(--brand)));z-index:2}
+.pbody{position:absolute;top:60px;left:0;right:0;bottom:0;border-radius:0 0 50% 50%/0 0 60px 60px;background:linear-gradient(90deg,color-mix(in srgb,#000 65%,var(--brand)) 0%,color-mix(in srgb,#000 35%,var(--brand)) 30%,color-mix(in srgb,#000 15%,var(--brand)) 50%,color-mix(in srgb,#000 40%,var(--brand)) 75%,color-mix(in srgb,#000 70%,var(--brand)) 100%)}
+.who{position:absolute;bottom:26px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:2px;z-index:3}
+.stars{font-size:32px;color:#FFC83D;letter-spacing:5px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.name{font-size:30px;font-weight:800;color:#FFFFFF;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.card{position:absolute;top:150px;right:130px;left:130px;bottom:360px;border-radius:36px;background:linear-gradient(160deg,#FFFFFF,#ECE8F3);color:#1C1824;box-shadow:0 60px 60px -20px rgba(0,0,0,.6);box-sizing:border-box;padding:44px 56px;display:flex;flex-direction:column;gap:18px;transform:perspective(1400px) rotateX(6deg)}
+.cshadow{position:absolute;left:280px;right:280px;bottom:250px;height:40px;border-radius:50%;background:rgba(0,0,0,.55);filter:blur(14px);z-index:3}
+.quote{margin:0;font-size:46px;font-weight:800;line-height:1.6;text-align:center;width:100%}
+.head{position:absolute;top:70px;left:0;right:0;text-align:center;font-size:25px;font-weight:700;color:rgba(246,244,250,.75)}
+.mer{display:flex;align-items:center;justify-content:center;gap:10px;direction:ltr}
+.logo{width:40px;height:40px;border-radius:50%;background:#1C1824;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;overflow:hidden}
+.mname{font-size:18px;font-weight:700;color:#6E6878}
+</style>
+</head>
+<body>
+<div class="cv" data-slot="canvas">
+<div class="beam"></div>
+<div class="head" data-slot="heading">آراء عملاؤنا</div>
+<div class="card"><div class="qbox"><p class="quote" data-slot="quote">الخدمة كانت ممتازة جدًا والتعامل راقي، أكيد هرجع لكم تاني.</p></div><div class="mer"><div class="logo" data-slot="logo">T</div><div class="mname" data-slot="merchant">Taqyeem</div></div></div>
+<div class="podium" data-slot="accent-podium"><div class="pbody"></div><div class="ptop"></div><div class="who"><div class="stars" data-slot="rating">★★★★★</div><div class="name" data-slot="customer">محمد أحمد</div></div></div>
+</div>
+<script>
+window.TAQYEEM_TEMPLATE = { id: "11-spotlight-podium", defaultBrand: "#C9A2FF" };
+/* Taqyeem template runtime: fills slots, fits the quote, sets brand contrast, then marks ready. */
+(function () {
+  var T = window.TAQYEEM_TEMPLATE;
+  function q(sel) { return document.querySelector('[data-slot="' + sel + '"]'); }
+  function params() {
+    var p = new URLSearchParams(location.search), d = {};
+    ['heading','quote','customer','merchant','brandColor','logoUrl','rating'].forEach(function (k) { if (p.has(k)) d[k] = p.get(k); });
+    return d;
+  }
+  function setText(el, v) {
+    if (!el || v == null) return;
+    var kids = el.children;
+    (kids.length ? kids[kids.length - 1] : el).textContent = v;
+  }
+  function luminance(hex) {
+    var h = hex.replace('#', ''); if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
+    var rgb = [0, 2, 4].map(function (i) { var c = parseInt(h.substr(i, 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+  }
+  function fitQuote() {
+    var el = q('quote'); if (!el) return;
+    var box = el.parentElement, base = parseFloat(el.dataset.baseSize || getComputedStyle(el).fontSize);
+    el.dataset.baseSize = base; el.style.fontSize = base + 'px';
+    var min = Math.max(28, Math.round(base * 0.55));
+    function overflows() {
+      var cs = getComputedStyle(box);
+      var avail = box.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var kids = Array.prototype.filter.call(box.children, function (c) { return getComputedStyle(c).position !== 'absolute'; });
+      var used;
+      if (cs.flexDirection === 'column') {
+        used = kids.reduce(function (s, c) { return s + c.offsetHeight; }, 0) + (parseFloat(cs.rowGap) || 0) * (kids.length - 1);
+      } else {
+        used = Math.max.apply(null, kids.map(function (c) { return c.offsetHeight; }));
+      }
+      return used > avail + 1;
+    }
+    var size = base;
+    while (overflows() && size > min) { size -= 2; el.style.fontSize = size + 'px'; }
+    el.dataset.fittedSize = size;
+    el.dataset.overflow = overflows() ? 'true' : 'false';
+  }
+  function render(data) {
+    data = data || {};
+    var brand = data.brandColor || T.defaultBrand;
+    document.documentElement.style.setProperty('--brand', brand);
+    var onBrand = luminance(brand) > 0.45 ? '#111111' : '#FFFFFF';
+    document.querySelectorAll('[data-on-brand]').forEach(function (n) { n.style.color = onBrand; });
+    setText(q('heading'), data.heading);
+    setText(q('quote'), data.quote);
+    setText(q('customer'), data.customer);
+    setText(q('merchant'), data.merchant);
+    var av = q('avatar'); if (av && data.customer) av.textContent = data.customer.trim().charAt(0);
+    var logo = q('logo'), wait = [];
+    if (logo) {
+      if (data.logoUrl) {
+        var img = new Image(); img.alt = ''; img.src = data.logoUrl;
+        logo.textContent = ''; logo.appendChild(img);
+        wait.push(img.decode ? img.decode().catch(function () {}) : Promise.resolve());
+      } else if (data.merchant) {
+        logo.textContent = data.merchant.trim().charAt(0).toUpperCase();
+      }
+    }
+    var r = q('rating');
+    if (r && data.rating != null) {
+      var n = Math.max(0, Math.min(5, Math.round(+data.rating)));
+      r.innerHTML = '★'.repeat(n) + (n < 5 ? '<span style="opacity:.28">' + '★'.repeat(5 - n) + '</span>' : '');
+    }
+    document.documentElement.removeAttribute('data-ready');
+    var fl = ['400','500','600','700','800','900'].map(function (w) { return document.fonts.load(w + ' 40px Cairo', 'عربي'); });
+    return Promise.all(fl.concat(wait)).then(function () { return document.fonts.ready; }).then(function () {
+      fitQuote();
+      document.documentElement.setAttribute('data-ready', 'true');
+    });
+  }
+  window.taqyeemRender = render;
+  var initial = Object.assign({}, window.TAQYEEM_DATA || {}, params());
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { render(initial); });
+  else render(initial);
+})();
+
+
+</script>
+</body>
+</html>
