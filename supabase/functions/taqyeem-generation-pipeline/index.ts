@@ -65,7 +65,7 @@ function json(body: unknown, status = 200) {
   });
 }
 
-async function renderFinalPng(opts: {
+async function renderOnce(opts: {
   templateId: TemplateId;
   reviewText: string;
   customerName: string | null;
@@ -97,6 +97,27 @@ async function renderFinalPng(opts: {
   }
 
   return new Uint8Array(await res.arrayBuffer());
+}
+
+/**
+ * The render endpoint occasionally fails transiently (a cold Chromium
+ * launch, a momentary resource hiccup on Vercel) rather than because of
+ * anything wrong with the review/template data -- retrying the exact same
+ * request a second time has reliably succeeded every time this has been
+ * observed. One retry after a short pause turns those into a success
+ * instead of leaving the review permanently stuck in a customer-visible
+ * "فشل الإنشاء" state until someone manually replays the generate action.
+ */
+async function renderFinalPng(
+  opts: Parameters<typeof renderOnce>[0],
+): Promise<Uint8Array> {
+  try {
+    return await renderOnce(opts);
+  } catch (firstError) {
+    console.error("render attempt 1 failed, retrying once", firstError);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return await renderOnce(opts);
+  }
 }
 
 // --- Action handlers ----------------------------------------------------
