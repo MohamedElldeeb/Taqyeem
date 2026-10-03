@@ -43,6 +43,7 @@ import { AnimatedBackground } from '@/components/ui/animated-background'
 import { BrandLogo, BrandIcon } from '@/components/ui/brand-logo'
 import { useLanguage } from '@/lib/language-context'
 import { type TemplateId } from '@/lib/testimonial-templates'
+import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
 
 const WHATSAPP_URL = 'https://wa.me/201125800098'
 
@@ -275,6 +276,234 @@ const TEMPLATES_SHOWCASE_DATA: TemplateShowcaseItem[] = [
     badgeAr: 'تصميم جريء 📐',
     badgeEn: 'Architectural Grid 📐',
   },
+  {
+    id: '01-glass-orbs',
+    nameAr: 'الزجاجي ثلاثي الأبعاد',
+    nameEn: 'Floating Glass Orbs',
+    taglineAr: 'كرات زجاجية وإضاءات ثلاثية الأبعاد بأسلوب Glassmorphism فاخر',
+    taglineEn: 'Frosted glassmorphism with dynamic floating 3D spheres',
+    industryAr: 'تطبيقات رقمية · خدمات سحابية · تكنولوجيا',
+    industryEn: 'Digital Apps · SaaS & Cloud · Tech Services',
+    color: '#7C5CFF',
+    category: 'luxury',
+    sampleQuoteAr: 'المنصة ممتازة وسهلة الاستخدام، رفعت مبيعاتنا بشكل ملحوظ في وقت قياسي!',
+    sampleQuoteEn: 'Outstanding platform and seamless experience. Boosted our sales in record time!',
+    sampleCustomerAr: 'سيف الدين محمود',
+    sampleCustomerEn: 'Ethan Caldwell',
+    sampleMerchantAr: 'سحاب للحلول التقنية',
+    sampleMerchantEn: 'Sahab Tech Solutions',
+    badgeAr: 'ثلاثي الأبعاد 🔮',
+    badgeEn: '3D Glassmorphism 🔮',
+  },
+  {
+    id: '02-soft-clay',
+    nameAr: 'الصلصال الناعم',
+    nameEn: 'Soft Claymorphism',
+    taglineAr: 'تجسيم طيني ناعم وظلال عميقة تعطي إحساساً ملموساً وودوداً',
+    taglineEn: 'Tactile soft clay shapes with delightful smooth depths',
+    industryAr: 'منتجات أطفال · ألعاب تعليمية · مأكولات وحلويات',
+    industryEn: 'Kids & Family · EdTech · Bakery & Treats',
+    color: '#FF7A59',
+    category: 'organic',
+    sampleQuoteAr: 'المنتجات جودتها فوق الممتازة وأطفالي حبوها جداً. تغليف جميل وتوصيل سريع.',
+    sampleQuoteEn: 'Top-tier quality and delightful packaging. My kids absolutely love it!',
+    sampleCustomerAr: 'ريم القحطاني',
+    sampleCustomerEn: 'Maya Lin',
+    sampleMerchantAr: 'ألعاب المرح الذكية',
+    sampleMerchantEn: 'FunPlay Toys & Games',
+    badgeAr: 'كلايمورفيزم 🎨',
+    badgeEn: 'Claymorphism 🎨',
+  },
+  {
+    id: '03-tilted-stack',
+    nameAr: 'الطبقات المائلة',
+    nameEn: 'Tilted Layer Stack',
+    taglineAr: 'تأثير العمق متعدد الطبقات ليعكس حجم التفاعل وقوة الثقة',
+    taglineEn: 'Multi-layered dynamic cards conveying high social proof',
+    industryAr: 'خدمات B2B · استشارات مالية · تسويق رقمي',
+    industryEn: 'B2B Services · Financial Advisory · Digital Marketing',
+    color: '#2F6BFF',
+    category: 'bold',
+    sampleQuoteAr: 'احترافية حقيقية ونتائج واضحة من الشهر الأول. شكراً لفريق العمل المميز!',
+    sampleQuoteEn: 'Real professionalism and tangible growth from month one. Highly recommended!',
+    sampleCustomerAr: 'حسام الغامدي',
+    sampleCustomerEn: 'David Sterling',
+    sampleMerchantAr: 'مجموعة الأفق للاستشارات',
+    sampleMerchantEn: 'Horizon Advisory Group',
+    badgeAr: 'طبقات تفاعلية 📑',
+    badgeEn: 'Dynamic Layers 📑',
+  },
+  {
+    id: '04-extruded-type',
+    nameAr: 'التايبوجرافي البارز',
+    nameEn: 'Extruded 3D Type',
+    taglineAr: 'خطوط عربية عريضة ثلاثية الأبعاد تنبض بالحيوية والجرأة',
+    taglineEn: 'Bold dimensional extruded typography with energetic presence',
+    industryAr: 'أزياء رياضية · مقاهي شبابية · فعاليات ومهرجانات',
+    industryEn: 'Athletics & Sport · Urban Cafes · Events',
+    color: '#FF5A36',
+    category: 'bold',
+    sampleQuoteAr: 'التيشرتات خامتها جبارة والألوان ثابتة بعد الغسيل. أحسن براند ملابس!',
+    sampleQuoteEn: 'Incredible heavyweight fabric and vibrant prints. Best urban streetwear!',
+    sampleCustomerAr: 'كريم الشناوي',
+    sampleCustomerEn: 'Jordan Cole',
+    sampleMerchantAr: 'ستريت كالتشر',
+    sampleMerchantEn: 'Street Culture Wear',
+    badgeAr: 'بارز وجريء 💥',
+    badgeEn: 'Extruded 3D 💥',
+  },
+  {
+    id: '05-floating-note',
+    nameAr: 'الملاحظة العائمة',
+    nameEn: 'Floating Note Pin',
+    taglineAr: 'طابع يدوي دافئ يحاكي الملاحظات اللاصقة المبهجة',
+    taglineEn: 'Tactile sticky-note aesthetic with cheerful friendly vibe',
+    industryAr: 'مكتبات وقرطاسية · دورات تدريبية · منتجات يدوية',
+    industryEn: 'Stationery · Coaching & Courses · Handmade Craft',
+    color: '#F2C230',
+    category: 'organic',
+    sampleQuoteAr: 'الكورس غير طريقة تفكيري بالكامل والشرح مبسط جداً. استفدت فوق ما تصورت!',
+    sampleQuoteEn: 'Transformative coaching with actionable insights. Exceeded expectations!',
+    sampleCustomerAr: 'أروى السعيد',
+    sampleCustomerEn: 'Claire Dubois',
+    sampleMerchantAr: 'أكاديمية الإبداع',
+    sampleMerchantEn: 'Creativity Academy',
+    badgeAr: 'طابع يدوي 📌',
+    badgeEn: 'Handmade Note 📌',
+  },
+  {
+    id: '06-neumorphic',
+    nameAr: 'النيومورفيزم الناعم',
+    nameEn: 'Soft Neumorphism',
+    taglineAr: 'بروز ناعم وأنيق مدمج مع السطح بإضاءات وظلال محسوبة',
+    taglineEn: 'Soft extruded surface lighting for ultra-clean UI feels',
+    industryAr: 'إلكترونيات ذكية · أجهزة منزلية · برمجيات وتطبيقات',
+    industryEn: 'Smart Electronics · Home Gadgets · Clean Software',
+    color: '#3D7BFF',
+    category: 'minimal',
+    sampleQuoteAr: 'الجهاز سهل في التركيب والتحكم من الموبايل شغال بسلاسة تامة.',
+    sampleQuoteEn: 'Effortless setup and ultra-responsive smart controls from mobile.',
+    sampleCustomerAr: 'باسم عبد الرحمن',
+    sampleCustomerEn: 'Samuel Wright',
+    sampleMerchantAr: 'سمارت ليفينج هوم',
+    sampleMerchantEn: 'Smart Living Home',
+    badgeAr: 'نافر وأنيق 🔘',
+    badgeEn: 'Neumorphic 🔘',
+  },
+  {
+    id: '07-liquid-chrome',
+    nameAr: 'الكروم السائل',
+    nameEn: 'Liquid Futuristic Chrome',
+    taglineAr: 'انعكاسات معدنية زئبقية وتدرجات فضية مستقبلية ساحرة',
+    taglineEn: 'Mercurial chrome fluid gradients with futuristic sheen',
+    industryAr: 'مجوهرات عصرية · كماليات سيارات · تقنيات الذكاء الاصطناعي',
+    industryEn: 'Modern Jewelry · Automotive Luxury · AI Hardware',
+    color: '#00E0B8',
+    category: 'luxury',
+    sampleQuoteAr: 'الخاتم تصميمه خيالي ولمعته ملفتة جداً. خدمة العملاء راقية وسريعة.',
+    sampleQuoteEn: 'Mesmerizing liquid metal aesthetics and exceptional craftsmanship.',
+    sampleCustomerAr: 'جمانة مصطفى',
+    sampleCustomerEn: 'Astrid Lindgren',
+    sampleMerchantAr: 'مجوهرات كروميك',
+    sampleMerchantEn: 'Chromic Luxury Jewels',
+    badgeAr: 'معدني مستقبلي 💿',
+    badgeEn: 'Liquid Chrome 💿',
+  },
+  {
+    id: '08-ticket-stub',
+    nameAr: 'تذكرة البوردينج',
+    nameEn: 'Vintage Ticket Stub',
+    taglineAr: 'تصميم تذاكر السفر والفعاليات بتفاصيل باركود وأرقام تسلسلية',
+    taglineEn: 'Event & boarding ticket layout with authentic stub perforations',
+    industryAr: 'سياحة وسفر · مطاعم وتجارب طعام · فعاليات وتذاكر',
+    industryEn: 'Travel & Trips · Dining Experiences · Event Tickets',
+    color: '#E4572E',
+    category: 'bold',
+    sampleQuoteAr: 'الرحلة كانت منظمة بأعلى مستوى، وكل دقيقة كانت ممتعة ومميزة جداً!',
+    sampleQuoteEn: 'Flawlessly planned excursion. Every single minute was extraordinary!',
+    sampleCustomerAr: 'ماجد الحربي',
+    sampleCustomerEn: 'Oliver Finch',
+    sampleMerchantAr: 'رحلات المسافر العربي',
+    sampleMerchantEn: 'Voyager Travel Club',
+    badgeAr: 'تذكرة فعاليات 🎟️',
+    badgeEn: 'Ticket Stub 🎟️',
+  },
+  {
+    id: '09-inflated-bubble',
+    nameAr: 'الفقاعة المنتفخة',
+    nameEn: '3D Inflated Bubble',
+    taglineAr: 'تصميم ثلاثي الأبعاد منتفخ بلمعان بلاستيكي جذاب ومبهج',
+    taglineEn: 'Playful inflated bubble 3D aesthetic with glossy highlights',
+    industryAr: 'منتجات شبابية · حلويات وعصائر · متاجر هدايا',
+    industryEn: 'Gen Z Brands · Bubble Tea & Treats · Gift Stores',
+    color: '#6D4DFF',
+    category: 'bold',
+    sampleQuoteAr: 'البوبا تي طعمه تحفة والمكان ديكوراته لطيفة جداً للتصوير!',
+    sampleQuoteEn: 'Hands down the best bubble tea in town, vibe is incredible!',
+    sampleCustomerAr: 'دينا مجدي',
+    sampleCustomerEn: 'Chloe Adams',
+    sampleMerchantAr: 'بابل كراش كافيه',
+    sampleMerchantEn: 'Bubble Crush Cafe',
+    badgeAr: 'ثلاثي الأبعاد 🎈',
+    badgeEn: 'Inflated 3D 🎈',
+  },
+  {
+    id: '10-paper-depth',
+    nameAr: 'طبقات الورق المقصوص',
+    nameEn: 'Layered Paper Depth',
+    taglineAr: 'ظلال هادئة وتأثير قص الورق الفني يبرز عمق الكلمات',
+    taglineEn: 'Artisanal paper-cut silhouette shadows creating serene depth',
+    industryAr: 'عطور طبيعية · ديكور وهندسة داخلية · طباعة وتغليف',
+    industryEn: 'Natural Aromas · Interior Design · Fine Print',
+    color: '#0E9F8A',
+    category: 'organic',
+    sampleQuoteAr: 'الشموع المعطرة ريحتها فواحة وتملأ المكان بهدوء واسترخاء.',
+    sampleQuoteEn: 'Artisanal scents that transform the entire living space peacefully.',
+    sampleCustomerAr: 'سلوى الفهيد',
+    sampleCustomerEn: 'Camille Dubois',
+    sampleMerchantAr: 'أريج الطبيعة',
+    sampleMerchantEn: 'Areej Botanic Scents',
+    badgeAr: 'ورق فني 📄',
+    badgeEn: 'Paper Craft 📄',
+  },
+  {
+    id: '11-spotlight-podium',
+    nameAr: 'منصة الضوء',
+    nameEn: 'Spotlight Podium',
+    taglineAr: 'إضاءة مسرحية درامية تركز الأنظار على تجربة العميل',
+    taglineEn: 'Dramatic cinematic spotlight highlighting the testimonial',
+    industryAr: 'منتجات فاخرة · ساعات وسيارات · أجهزة مميزة',
+    industryEn: 'Luxury Goods · Watches & Motors · Flagship Hardware',
+    color: '#C9A2FF',
+    category: 'luxury',
+    sampleQuoteAr: 'الساعة وصلت بأفضل مما توقعت، فخامة حقيقية واهتمام بالتغليف.',
+    sampleQuoteEn: 'Exquisite timepiece with heirloom craftsmanship and grand presentation.',
+    sampleCustomerAr: 'فيصل السديري',
+    sampleCustomerEn: 'Alexander Hayes',
+    sampleMerchantAr: 'نخبة الساعات السويسرية',
+    sampleMerchantEn: 'Elite Chrono Horology',
+    badgeAr: 'منصة مسرحية 🎭',
+    badgeEn: 'Spotlight 🎭',
+  },
+  {
+    id: '12-horizon-grid',
+    nameAr: 'شبكة الأفق',
+    nameEn: 'Horizon Neon Grid',
+    taglineAr: 'خطوط شبكية تمتد إلى الأفق بأسلوب الـ Synthwave المستقبلي',
+    taglineEn: 'Synthwave neon wireframe perspective stretching into the horizon',
+    industryAr: 'ألعاب وبطولات · ستريمرز وصناع محتوى · تقنيات الواقع الافتراضي',
+    industryEn: 'Gaming & Esports · Streamers & Creators · VR & Hardware',
+    color: '#FF4F8B',
+    category: 'bold',
+    sampleQuoteAr: 'أفضل تجميعة كمبيوتر جربتها! أداء قوي في الألعاب وشحن سريع.',
+    sampleQuoteEn: 'Insane gaming build with max FPS and lightning delivery!',
+    sampleCustomerAr: 'أحمد النجار',
+    sampleCustomerEn: 'Leon Vance',
+    sampleMerchantAr: 'سايبر ريج جيمنج',
+    sampleMerchantEn: 'Cyber Rig Gaming',
+    badgeAr: 'أفق سيبراني 🌌',
+    badgeEn: 'Horizon Grid 🌌',
+  },
 ]
 
 function LandingPage() {
@@ -380,7 +609,7 @@ function LandingPage() {
               className="inline-flex items-center gap-1.5 hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
             >
               <Palette className="size-3.5 text-emerald" />
-              <span>{isRTL ? 'قوالب التصاميم (8 قوالب)' : 'Templates (8 Styles)'}</span>
+              <span>{isRTL ? `قوالب التصاميم (${TEMPLATES_SHOWCASE_DATA.length} قالباً)` : `Templates (${TEMPLATES_SHOWCASE_DATA.length} Styles)`}</span>
             </a>
             <a
               href="#features"
@@ -548,7 +777,7 @@ function LandingPage() {
                         className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-deep bg-emerald-surface px-2.5 py-1 rounded-full border border-emerald-border/70 hover:scale-105 transition-transform shadow-2xs"
                       >
                         <Palette className="size-3 text-emerald" />
-                        <span>{isRTL ? '8 قوالب حصرية' : '8 Templates'}</span>
+                        <span>{isRTL ? `${TEMPLATES_SHOWCASE_DATA.length} قالباً حصرياً` : `${TEMPLATES_SHOWCASE_DATA.length} Templates`}</span>
                       </a>
                     </div>
 
@@ -932,25 +1161,28 @@ function LandingPage() {
                       {BRAND_PALETTE.find((p) => p.hex === selectedBrandColor)?.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
-                    {BRAND_PALETTE.map((pal) => (
-                      <button
-                        key={pal.name}
-                        type="button"
-                        onClick={() => setSelectedBrandColor(pal.hex)}
-                        className={`size-8 rounded-full shadow-xs border-2 transition-all duration-300 cursor-pointer flex items-center justify-center shrink-0 ${
-                          selectedBrandColor === pal.hex
-                            ? 'scale-125 border-ink ring-2 ring-emerald/40 shadow-md'
-                            : 'border-white dark:border-slate-800 hover:scale-110 opacity-80 hover:opacity-100'
-                        } ${pal.bg}`}
-                        title={pal.name}
-                        aria-label={pal.name}
-                      >
-                        {selectedBrandColor === pal.hex && (
-                          <span className="size-2 rounded-full bg-white shadow-xs" />
-                        )}
-                      </button>
-                    ))}
+                  <div className="flex items-center gap-3 overflow-x-auto py-2.5 px-1 scrollbar-hidden overscroll-contain">
+                    {BRAND_PALETTE.map((pal) => {
+                      const isSelected = selectedBrandColor === pal.hex
+                      return (
+                        <button
+                          key={pal.name}
+                          type="button"
+                          onClick={() => setSelectedBrandColor(pal.hex)}
+                          className={`size-8 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 ${
+                            isSelected
+                              ? 'scale-110 ring-2 ring-offset-2 ring-offset-surface ring-emerald-500 shadow-md border border-white/60'
+                              : 'border-2 border-white dark:border-slate-800 hover:scale-105 opacity-80 hover:opacity-100 shadow-2xs'
+                          } ${pal.bg}`}
+                          title={pal.name}
+                          aria-label={pal.name}
+                        >
+                          {isSelected && (
+                            <span className="size-2 rounded-full bg-white shadow-xs" />
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -1274,7 +1506,7 @@ function LandingPage() {
               {/* Category Filter Chips */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
                 {[
-                  { key: 'all' as const, labelAr: 'الكل (8 قوالب)', labelEn: 'All Templates (8)', icon: Layers },
+                  { key: 'all' as const, labelAr: `الكل (${TEMPLATES_SHOWCASE_DATA.length} قالباً)`, labelEn: `All Templates (${TEMPLATES_SHOWCASE_DATA.length})`, icon: Layers },
                   { key: 'luxury' as const, labelAr: 'فاخر وملكي', labelEn: 'Luxury & Royal', icon: Sparkles },
                   { key: 'minimal' as const, labelAr: 'عصري وبسيط', labelEn: 'Clean & Minimal', icon: SlidersHorizontal },
                   { key: 'bold' as const, labelAr: 'حيوي وجريء', labelEn: 'Bold & Dynamic', icon: Zap },
@@ -1311,11 +1543,11 @@ function LandingPage() {
                 TEMPLATES_SHOWCASE_DATA[0]
 
               return (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-stretch">
                   
                   {/* Left (Large): Active Template Spotlight & Live Interactive Frame (Span 7) */}
-                  <div className="lg:col-span-7 flex flex-col h-full min-h-0">
-                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-5 sm:p-6 shadow-xl relative overflow-hidden group flex flex-col justify-between h-full min-h-0">
+                  <div className="lg:col-span-7 flex flex-col min-h-0">
+                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-4 sm:p-5 lg:p-6 shadow-xl relative overflow-hidden group flex flex-col gap-3.5 sm:gap-4 min-h-0">
                       
                       {/* Ambient Glow behind the card matched to template color */}
                       <div
@@ -1324,7 +1556,7 @@ function LandingPage() {
                       />
 
                       {/* Header bar */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-border/70 relative z-10 shrink-0">
+                      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border/70 relative z-10 shrink-0">
                         <div className="flex items-center gap-2.5">
                           <div
                             className="flex size-9 items-center justify-center rounded-xl text-white font-bold shadow-xs transition-colors shrink-0"
@@ -1370,17 +1602,22 @@ function LandingPage() {
                       </div>
 
                       {/* Stage Viewport */}
-                      <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-border/80 bg-slate-950/90 dark:bg-slate-950 shadow-inner group/preview flex items-center justify-center p-2.5 sm:p-4 my-auto">
+                      <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-border/80 bg-slate-950/90 dark:bg-slate-950 shadow-inner group/preview flex items-center justify-center p-2 sm:p-3">
                         {templatePreviewMode === 'rendered' ? (
-                          <div className="relative size-full flex items-center justify-center overflow-hidden">
-                            <img
-                              src={`/template-previews/${activeTemplate.id}.png`}
-                              alt={isRTL ? activeTemplate.nameAr : activeTemplate.nameEn}
-                              className="size-full object-contain rounded-xl drop-shadow-2xl transition-transform duration-500 group-hover/preview:scale-[1.01]"
-                              loading="lazy"
+                          <div className="relative size-full flex items-center justify-center overflow-hidden rounded-xl">
+                            <LiveTemplatePreview
+                              templateId={activeTemplate.id}
+                              brandColor={activeTemplate.color}
+                              data={{
+                                quote: isRTL ? activeTemplate.sampleQuoteAr : activeTemplate.sampleQuoteEn,
+                                customer: isRTL ? activeTemplate.sampleCustomerAr : activeTemplate.sampleCustomerEn,
+                                merchant: isRTL ? activeTemplate.sampleMerchantAr : activeTemplate.sampleMerchantEn,
+                                rating: 5,
+                              }}
+                              className="size-full rounded-xl drop-shadow-2xl transition-transform duration-500 group-hover/preview:scale-[1.01]"
                             />
                             {/* Watermark/Verified Tag Overlay */}
-                            <div className="absolute top-2.5 end-2.5 flex items-center gap-1.5 rounded-full bg-slate-950/80 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20 shadow-md">
+                            <div className="absolute top-2.5 end-2.5 flex items-center gap-1.5 rounded-full bg-slate-950/80 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20 shadow-md z-10">
                               <ShieldCheck className="size-3.5 text-emerald-400" />
                               <span>{isRTL ? 'تقييم موثق 100%' : '100% Verified'}</span>
                             </div>
@@ -1453,7 +1690,7 @@ function LandingPage() {
                       </div>
 
                       {/* Tagline & Specs Bar */}
-                      <div className="mt-3 flex items-center justify-between gap-2 px-1 text-xs shrink-0">
+                      <div className="flex items-center justify-between gap-2 px-1 text-xs shrink-0">
                         <span className="font-semibold text-ink-muted truncate text-[11px] sm:text-xs">
                           {isRTL ? activeTemplate.taglineAr : activeTemplate.taglineEn}
                         </span>
@@ -1463,7 +1700,7 @@ function LandingPage() {
                       </div>
 
                       {/* Actions Bar */}
-                      <div className="mt-3 pt-3 border-t border-border/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+                      <div className="pt-3 border-t border-border/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
                         <div className="flex items-center gap-2 text-xs text-ink-muted text-start">
                           <Sparkles className="size-4 text-emerald shrink-0" />
                           <span>
@@ -1492,9 +1729,9 @@ function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Right (Selector Grid): 8 Interactive Template Cards (Span 5) */}
+                  {/* Right (Selector Grid): Scrollable Preset Cards (Span 5) */}
                   <div className="lg:col-span-5 flex flex-col h-full min-h-0">
-                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-4 sm:p-5 shadow-xl flex flex-col justify-between h-full min-h-0 relative">
+                    <div className="rounded-3xl border border-border/80 bg-surface/95 backdrop-blur-xl p-4 sm:p-5 shadow-xl flex flex-col justify-between h-full min-h-0 relative overflow-hidden">
                       
                       {/* Header bar */}
                       <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-border/70 shrink-0">
@@ -1502,51 +1739,50 @@ function LandingPage() {
                           <Layers className="size-4 text-emerald" />
                           <span>{isRTL ? 'اختر قالباً للمعاينة والتطبيق:' : 'Select preset to preview:'}</span>
                         </span>
-                        <span className="text-[10.5px] font-bold text-ink-subtle px-2 py-0.5 rounded-full bg-background-subtle border border-border">
-                          {filteredTemplates.length} {isRTL ? 'قوالب' : 'presets'}
+                        <span className="text-[10.5px] font-bold text-ink-subtle px-2.5 py-0.5 rounded-full bg-background-subtle border border-border">
+                          {isRTL ? '6 قوالب مميزة' : '6 presets'}
                         </span>
                       </div>
 
-                      {/* 8-Template Grid - Proportionally sized so all 8 presets fit perfectly */}
-                      <div className="grid grid-cols-2 gap-2 sm:gap-2.5 flex-1 min-h-0 overflow-y-auto scrollbar-sleek overscroll-contain touch-pan-y pe-1 py-0.5">
-                        {filteredTemplates.map((template) => {
+                      {/* Presets Grid - Strictly 6 Items (3 rows x 2 cols) */}
+                      <div className="grid grid-cols-2 gap-2.5 flex-1 min-h-0">
+                        {filteredTemplates.slice(0, 6).map((template) => {
                           const isSelected = template.id === activeTemplate.id
                           return (
                             <button
                               key={template.id}
                               type="button"
                               onClick={() => setActiveTemplateId(template.id)}
-                              className={`group relative flex flex-col items-center overflow-hidden rounded-xl border-2 transition-all duration-200 cursor-pointer text-start ${
+                              className={`w-full group relative flex flex-col items-stretch overflow-hidden rounded-2xl border-2 transition-all duration-200 cursor-pointer text-start ${
                                 isSelected
-                                  ? 'border-emerald bg-emerald-surface/40 shadow-md scale-[1.01] ring-1 ring-emerald-500/30'
+                                  ? 'border-emerald bg-emerald-surface/40 shadow-md ring-1 ring-emerald-500/30'
                                   : 'border-border/80 bg-surface/90 hover:border-emerald-border/80 hover:bg-surface hover:shadow-xs'
                               }`}
                             >
-                              {/* Thumbnail */}
-                              <div className="relative aspect-[16/8.5] w-full overflow-hidden bg-slate-950 flex items-center justify-center p-1">
-                                <img
-                                  src={`/template-previews/${template.id}.png`}
-                                  alt={isRTL ? template.nameAr : template.nameEn}
-                                  className="size-full object-contain rounded-md transition-transform duration-300 group-hover:scale-105"
-                                  loading="lazy"
+                              {/* Thumbnail with 1:1 Square Fit */}
+                              <div className="relative w-full aspect-square overflow-hidden bg-slate-950 flex items-center justify-center shrink-0">
+                                <LiveTemplatePreview
+                                  templateId={template.id}
+                                  brandColor={template.color}
+                                  className="size-full pointer-events-none"
                                 />
                                 {isSelected && (
-                                  <div className="absolute inset-0 bg-emerald/10 pointer-events-none" />
+                                  <div className="absolute inset-0 bg-emerald/10 pointer-events-none z-10" />
                                 )}
                                 {isSelected && (
-                                  <div className="absolute top-1 inset-inline-end-1 flex size-4.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs animate-scale-in">
+                                  <div className="absolute top-1.5 inset-inline-end-1.5 flex size-4.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs animate-scale-in z-20">
                                     <Check className="size-2.5 stroke-[3]" />
                                   </div>
                                 )}
                                 <span
-                                  className="absolute bottom-0.5 inset-inline-start-1 text-[8px] font-black px-1 py-0.2 rounded bg-slate-950/85 backdrop-blur-xs text-white border border-white/20"
+                                  className="absolute bottom-1 inset-inline-start-1 text-[8px] font-black px-1.5 py-0.5 rounded bg-slate-950/85 backdrop-blur-xs text-white border border-white/20 z-20"
                                 >
                                   {isRTL ? template.badgeAr : template.badgeEn}
                                 </span>
                               </div>
 
                               {/* Label */}
-                              <div className="w-full px-2 py-1.5 flex flex-col gap-0.5 bg-surface/90">
+                              <div className="w-full px-2.5 py-2 flex flex-col gap-0.5 bg-surface/90 shrink-0">
                                 <div className="flex items-center justify-between gap-1">
                                   <span
                                     className={`truncate text-[10.5px] sm:text-[11px] font-bold ${
@@ -1571,12 +1807,15 @@ function LandingPage() {
 
                       {/* Footer sub-bar */}
                       <div className="mt-2.5 pt-2.5 border-t border-border/70 flex items-center justify-between text-xs text-ink-muted shrink-0">
-                        <span className="text-[10.5px] flex items-center gap-1.5 truncate">
+                        <Link
+                          to="/preview/testimonial"
+                          className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 transition-colors"
+                        >
                           <Sparkles className="size-3.5 text-emerald shrink-0" />
-                          <span>{isRTL ? 'جميع القوالب تدعم الخط العربي واللاتيني' : 'Arabic & Latin typography ready'}</span>
-                        </span>
-                        <span className="text-[9.5px] font-extrabold text-emerald-deep px-2 py-0.5 rounded-md bg-emerald-surface border border-emerald-border/60 shrink-0 ms-2">
-                          8 PRESETS
+                          <span>{isRTL ? `استعراض كل القوالب (${TEMPLATES_SHOWCASE_DATA.length}) ↗` : `View all ${TEMPLATES_SHOWCASE_DATA.length} presets ↗`}</span>
+                        </Link>
+                        <span className="text-[9.5px] font-extrabold text-emerald-deep px-2 py-0.5 rounded-md bg-emerald-surface border border-emerald-border/60 shrink-0 ms-2 uppercase">
+                          6 PRESETS
                         </span>
                       </div>
 

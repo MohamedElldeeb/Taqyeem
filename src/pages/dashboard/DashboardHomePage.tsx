@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Copy,
   ExternalLink,
   Heart,
@@ -36,6 +38,7 @@ import { useMerchantReviews, type ReviewDbStatus } from '@/hooks/useMerchantRevi
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
 import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
+import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
 
 function DashboardHomePage() {
   const { merchant } = useMerchant()
@@ -44,6 +47,13 @@ function DashboardHomePage() {
   const { showToast } = useToast()
   const [copied, setCopied] = React.useState(false)
   const [copiedReviewId, setCopiedReviewId] = React.useState<string | null>(null)
+  const templateScrollRef = React.useRef<HTMLDivElement>(null)
+
+  const scrollTemplates = (direction: 'left' | 'right') => {
+    if (!templateScrollRef.current) return
+    const offset = direction === 'left' ? -340 : 340
+    templateScrollRef.current.scrollBy({ left: offset, behavior: 'smooth' })
+  }
 
   const reviewLink = `${window.location.origin}/r/${merchant?.slug ?? ''}`
 
@@ -388,58 +398,84 @@ function DashboardHomePage() {
                   {isRTL ? 'قوالب تصاميم التقييمات' : 'Review Card Templates'}
                 </CardTitle>
                 <Badge variant="default" className="text-[10px] py-0 px-2 font-bold">
-                  8 {isRTL ? 'قوالب حصرية' : 'Presets'}
+                  {TEMPLATE_IDS.length} {isRTL ? 'قالب حصري' : 'Presets'}
                 </Badge>
               </div>
               <CardDescription className="text-xs text-ink-muted mt-0.5">
                 {isRTL
-                  ? `القالب الافتراضي المطبق على تقييماتك: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`
-                  : `Active default template for your reviews: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`}
+                  ? `القالب الافتراضي: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`
+                  : `Active default: ${TEMPLATE_LABELS[(merchant?.default_template_id as TemplateId) || DEFAULT_TEMPLATE_ID]}`}
               </CardDescription>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* Quick Carousel Controls */}
+            <div className="flex items-center gap-1 me-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => scrollTemplates(isRTL ? 'right' : 'left')}
+                className="size-8 rounded-lg cursor-pointer text-ink-muted hover:text-ink shadow-2xs"
+                title={isRTL ? 'السابق' : 'Previous'}
+              >
+                {isRTL ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => scrollTemplates(isRTL ? 'left' : 'right')}
+                className="size-8 rounded-lg cursor-pointer text-ink-muted hover:text-ink shadow-2xs"
+                title={isRTL ? 'التالي' : 'Next'}
+              >
+                {isRTL ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
+              </Button>
+            </div>
+
             <Button asChild variant="outline" size="sm" className="h-8 text-xs font-bold gap-1.5 shadow-2xs">
               <Link to="/preview/testimonial">
                 <Sparkles className="size-3.5 text-indigo-500" />
-                <span>{isRTL ? 'المحاكي التفاعلي' : 'Live Simulator'}</span>
+                <span>{isRTL ? 'المحاكي' : 'Simulator'}</span>
               </Link>
             </Button>
 
             <Button asChild variant="primaryGlow" size="sm" className="h-8 text-xs font-bold gap-1.5 shadow-xs">
               <Link to="/dashboard/branding">
                 <Palette className="size-3.5" />
-                <span>{isRTL ? 'تخصيص القالب' : 'Customize Template'}</span>
+                <span>{isRTL ? 'تخصيص' : 'Customize'}</span>
               </Link>
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="p-4 sm:p-5">
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5 sm:gap-3">
+        <CardContent className="p-3.5 sm:p-4">
+          <div
+            ref={templateScrollRef}
+            className="flex items-center gap-3 overflow-x-auto scrollbar-hidden overscroll-contain py-1 px-1 scroll-smooth snap-x"
+          >
             {TEMPLATE_IDS.map((tId) => {
               const isActive = (merchant?.default_template_id || DEFAULT_TEMPLATE_ID) === tId
               return (
                 <Link
                   key={tId}
                   to="/dashboard/branding"
-                  className={`group relative flex flex-col items-center overflow-hidden rounded-xl border transition-all duration-200 ${
+                  className={`group relative flex flex-col items-center overflow-hidden rounded-xl border transition-all duration-200 w-24 sm:w-28 shrink-0 snap-start ${
                     isActive
-                      ? 'border-emerald ring-2 ring-emerald/30 shadow-sm scale-102 bg-emerald-surface/30'
+                      ? 'border-emerald ring-2 ring-emerald/30 shadow-md scale-[1.02] bg-emerald-surface/30'
                       : 'border-border/80 bg-background-subtle/50 hover:border-border hover:bg-surface hover:shadow-xs'
                   }`}
                   title={`${TEMPLATE_LABELS[tId]} - ${isActive ? (isRTL ? 'القالب النشط حالياً' : 'Active Template') : (isRTL ? 'اضغط للتطبيق' : 'Click to apply')}`}
                 >
                   <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
-                    <img
-                      src={`/template-previews/${tId}.png`}
-                      alt={TEMPLATE_LABELS[tId]}
-                      className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
+                    <LiveTemplatePreview
+                      templateId={tId}
+                      brandColor={merchant?.brand_color}
+                      className="size-full pointer-events-none"
                     />
                     {isActive && (
-                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs">
+                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
                         <Check className="size-2.5 stroke-[3]" />
                       </div>
                     )}

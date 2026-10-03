@@ -211,7 +211,7 @@ function ColorPicker({ value, onChange, className }: ColorPickerProps) {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
+      <div className="flex flex-wrap items-center gap-2.5 py-1.5 px-1 overflow-x-auto scrollbar-hidden overscroll-contain">
         {QUICK_PRESETS.map((preset) => (
           <button
             key={preset}
