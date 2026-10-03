@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Check, Palette, Sparkles, Sun, Upload } from 'lucide-react'
+import { Check, Palette, RotateCcw, Sparkles, Sun, Trash2, Upload } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -33,12 +33,28 @@ function DashboardSettingsPage() {
   const [brandColor, setBrandColor] = React.useState(merchant?.brand_color ?? '#059669')
   const [logoFile, setLogoFile] = React.useState<File | null>(null)
   const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(null)
+  const [removeExistingLogo, setRemoveExistingLogo] = React.useState(false)
   const [saving, setSaving] = React.useState(false)
   const [saved, setSaved] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
   const [savingTemplate, setSavingTemplate] = React.useState(false)
   const [templateError, setTemplateError] = React.useState<string | null>(null)
+
+  // Keep state in sync with loaded / updated merchant profile
+  React.useEffect(() => {
+    if (merchant) {
+      setBusinessName(merchant.business_name ?? '')
+      setBrandColor(merchant.brand_color ?? '#059669')
+      setRemoveExistingLogo(false)
+      setLogoFile(null)
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl)
+        setLogoPreviewUrl(null)
+      }
+      setError(null)
+    }
+  }, [merchant?.id, merchant?.business_name, merchant?.brand_color, merchant?.logo_url])
 
   React.useEffect(() => {
     return () => {
@@ -48,24 +64,55 @@ function DashboardSettingsPage() {
 
   if (!merchant) return null
 
+  const isDirty =
+    businessName.trim() !== (merchant.business_name ?? '').trim() ||
+    brandColor.toLowerCase() !== (merchant.brand_color ?? '#059669').toLowerCase() ||
+    logoFile !== null ||
+    removeExistingLogo
+
+  function handleReset() {
+    if (!merchant) return
+    setBusinessName(merchant.business_name ?? '')
+    setBrandColor(merchant.brand_color ?? '#059669')
+    setLogoFile(null)
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl)
+      setLogoPreviewUrl(null)
+    }
+    setRemoveExistingLogo(false)
+    setError(null)
+  }
+
   function handleLogoChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null
     event.target.value = ''
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      setError('الملف المختار مش صورة.')
+      setError(isRTL ? 'الملف المختار مش صورة.' : 'Selected file is not an image.')
       return
     }
     if (file.size > MAX_LOGO_BYTES) {
-      setError('حجم الصورة كبير جداً (الحد الأقصى 5 ميجا).')
+      setError(isRTL ? 'حجم الصورة كبير جداً (الحد الأقصى 5 ميجا).' : 'Image size exceeds 5MB limit.')
       return
     }
 
     setError(null)
+    setRemoveExistingLogo(false)
     setLogoFile(file)
     if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl)
     setLogoPreviewUrl(URL.createObjectURL(file))
+  }
+
+  function handleClearSelectedLogo() {
+    setLogoFile(null)
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl)
+      setLogoPreviewUrl(null)
+    }
+    if (merchant?.logo_url) {
+      setRemoveExistingLogo(true)
+    }
   }
 
   async function handleSelectTemplate(templateId: TemplateId) {
@@ -82,7 +129,7 @@ function DashboardSettingsPage() {
     setSavingTemplate(false)
 
     if (updateError) {
-      setTemplateError('تعذر حفظ التصميم. حاول مرة أخرى.')
+      setTemplateError(isRTL ? 'تعذر حفظ التصميم. حاول مرة أخرى.' : 'Failed to update template.')
       return
     }
 
@@ -91,7 +138,7 @@ function DashboardSettingsPage() {
   }
 
   async function handleSave() {
-    if (!user) return
+    if (!user || !merchant) return
 
     if (!businessName.trim() || businessName.trim().length < 2) {
       setError(t('val_biz_name_min'))
@@ -102,7 +149,7 @@ function DashboardSettingsPage() {
     setError(null)
     setSaved(false)
 
-    let logoUrl = merchant!.logo_url
+    let logoUrl = removeExistingLogo ? null : merchant.logo_url
 
     if (logoFile) {
       const extension = logoFile.name.split('.').pop() ?? 'png'
@@ -113,7 +160,7 @@ function DashboardSettingsPage() {
 
       if (uploadError) {
         setSaving(false)
-        setError('تعذر رفع الشعار. حاول مرة أخرى.')
+        setError(isRTL ? 'تعذر رفع الشعار. حاول مرة أخرى.' : 'Failed to upload logo.')
         return
       }
 
@@ -122,27 +169,36 @@ function DashboardSettingsPage() {
 
     const { error: updateError } = await supabase
       .from('merchants')
-      .update({ business_name: businessName.trim(), brand_color: brandColor, logo_url: logoUrl })
-      .eq('id', merchant!.id)
+      .update({
+        business_name: businessName.trim(),
+        brand_color: brandColor,
+        logo_url: logoUrl,
+      })
+      .eq('id', merchant.id)
 
     setSaving(false)
 
     if (updateError) {
-      setError('تعذر حفظ التغييرات. حاول مرة أخرى.')
+      setError(isRTL ? 'تعذر حفظ التغييرات. حاول مرة أخرى.' : 'Failed to save changes.')
       return
     }
 
+    // Reset local staging state
     setLogoFile(null)
-    if (logoPreviewUrl) URL.revokeObjectURL(logoPreviewUrl)
-    setLogoPreviewUrl(null)
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl)
+      setLogoPreviewUrl(null)
+    }
+    setRemoveExistingLogo(false)
 
+    // Sync latest merchant row into context
     await refetch()
     setSaved(true)
     showToast(t('action_saved'), undefined, 'success')
-    setTimeout(() => setSaved(false), 2000)
+    setTimeout(() => setSaved(false), 2500)
   }
 
-  const displayedLogoUrl = logoPreviewUrl ?? merchant.logo_url
+  const displayedLogoUrl = removeExistingLogo ? null : (logoPreviewUrl ?? merchant.logo_url)
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in pb-8">
@@ -158,24 +214,32 @@ function DashboardSettingsPage() {
         <p className="text-sm text-ink-muted">{t('dash_settings_subtitle')}</p>
       </header>
 
-      {/* All three cards in one row: left = Brand Identity, right = Theme + Templates stacked */}
+      {/* Grid: left = Brand Identity, right = Theme + Templates stacked */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
         {/* Brand Identity Card */}
         <Card className="border-border/80 bg-surface/90 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-md">
           <CardHeader className="pb-2">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-sm">
-                <Palette className="size-4.5" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-sm">
+                  <Palette className="size-4.5" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold text-ink">
+                    {t('dash_settings_identity_card')}
+                  </CardTitle>
+                  <CardDescription className="text-xs text-ink-muted mt-0.5">
+                    {t('dash_settings_identity_desc')}
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-base font-bold text-ink">
-                  {t('dash_settings_identity_card')}
-                </CardTitle>
-                <CardDescription className="text-xs text-ink-muted mt-0.5">
-                  {t('dash_settings_identity_desc')}
-                </CardDescription>
-              </div>
+
+              {isDirty && (
+                <span className="text-[11px] font-bold text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 shrink-0">
+                  {isRTL ? 'تعديلات غير محفوظة' : 'Unsaved changes'}
+                </span>
+              )}
             </div>
           </CardHeader>
 
@@ -188,6 +252,7 @@ function DashboardSettingsPage() {
                 id="businessName"
                 value={businessName}
                 onChange={(event) => setBusinessName(event.target.value)}
+                placeholder={isRTL ? 'مثال: متجر الأصالة' : 'e.g. Acme Coffee'}
               />
             </div>
 
@@ -211,13 +276,34 @@ function DashboardSettingsPage() {
                     {businessName.trim().charAt(0) || 'ت'}
                   </div>
                 )}
-                <div className="flex flex-col gap-1.5">
-                  <Button variant="secondary" size="sm" asChild className="w-fit cursor-pointer">
-                    <label htmlFor="logo">
-                      <Upload className="size-4" />
-                      <span>{merchant.logo_url || logoFile ? t('dash_settings_change_logo') : t('dash_settings_upload_logo')}</span>
-                    </label>
-                  </Button>
+                <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="secondary" size="sm" asChild className="w-fit cursor-pointer">
+                      <label htmlFor="logo">
+                        <Upload className="size-4" />
+                        <span>
+                          {displayedLogoUrl
+                            ? t('dash_settings_change_logo')
+                            : t('dash_settings_upload_logo')}
+                        </span>
+                      </label>
+                    </Button>
+
+                    {displayedLogoUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleClearSelectedLogo}
+                        className="text-danger hover:text-danger hover:bg-danger-surface border-border/80"
+                        title={t('action_remove_logo')}
+                      >
+                        <Trash2 className="size-3.5" />
+                        <span className="text-xs">{t('action_remove_logo')}</span>
+                      </Button>
+                    )}
+                  </div>
+
                   <Input
                     id="logo"
                     type="file"
@@ -226,7 +312,9 @@ function DashboardSettingsPage() {
                     className="hidden"
                   />
                   <span className="text-[11px] text-ink-subtle">
-                    {logoFile ? 'سيتم الرفع عند الضغط على حفظ التغييرات' : t('dash_settings_logo_hint')}
+                    {logoFile
+                      ? (isRTL ? 'سيتم الرفع عند الضغط على حفظ التغييرات' : 'Will be uploaded upon saving')
+                      : t('dash_settings_logo_hint')}
                   </span>
                 </div>
               </div>
@@ -245,16 +333,33 @@ function DashboardSettingsPage() {
               </div>
             )}
 
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              variant="primaryGlow"
-              size="lg"
-              className="w-fit font-bold shadow-md gap-2"
-            >
-              {saved && <Check className="size-4 text-white" />}
-              <span>{saving ? t('action_saving') : saved ? t('action_saved') : t('action_save')}</span>
-            </Button>
+            {/* Actions: Save + Reset */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Button
+                onClick={handleSave}
+                disabled={saving || !isDirty}
+                variant="primaryGlow"
+                size="lg"
+                className="font-bold shadow-md gap-2 cursor-pointer"
+              >
+                {saved && <Check className="size-4 text-white" />}
+                <span>{saving ? t('action_saving') : saved ? t('action_saved') : t('action_save')}</span>
+              </Button>
+
+              {isDirty && (
+                <Button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={saving}
+                  variant="outline"
+                  size="lg"
+                  className="font-bold gap-2 text-ink-muted hover:text-ink cursor-pointer"
+                >
+                  <RotateCcw className="size-4" />
+                  <span>{t('action_reset')}</span>
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -262,25 +367,25 @@ function DashboardSettingsPage() {
         <div className="flex flex-col gap-6">
 
           {/* Theme Appearance Card */}
-        <Card className="border-border/80 bg-surface/90 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-md">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm">
-                <Sun className="size-4.5" />
+          <Card className="border-border/80 bg-surface/90 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-md">
+            <CardHeader className="pb-2">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-sm">
+                  <Sun className="size-4.5" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold text-ink">
+                    {isRTL ? 'مظهر وتنسيق الواجهة' : 'Interface Theme'}
+                  </CardTitle>
+                  <CardDescription className="text-xs text-ink-muted mt-0.5">
+                    {isRTL ? 'اختر المظهر المفضل للتطبيق (فاتح أو داكن أو حسب نظام جهازك).' : 'Choose your preferred application theme (Light, Dark, or System default).'}
+                  </CardDescription>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-base font-bold text-ink">
-                  {isRTL ? 'مظهر وتنسيق الواجهة' : 'Interface Theme'}
-                </CardTitle>
-                <CardDescription className="text-xs text-ink-muted mt-0.5">
-                  {isRTL ? 'اختر المظهر المفضل للتطبيق (فاتح أو داكن أو حسب نظام جهازك).' : 'Choose your preferred application theme (Light, Dark, or System default).'}
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <ThemeToggle variant="segmented" />
-          </CardContent>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <ThemeToggle variant="segmented" />
+            </CardContent>
           </Card>
 
           {/* Review Template Selection Card */}
@@ -322,7 +427,7 @@ function DashboardSettingsPage() {
                           <div className="absolute inset-0 bg-emerald/5" />
                         )}
                         {isSelected && (
-                          <div className="absolute top-1.5 inset-inline-end-1.5 flex size-5 items-center justify-center rounded-full bg-emerald text-white shadow-md animate-scale-in">
+                          <div className="absolute top-1.5 inset-inline-end-1.5 flex size-5 items-center justify-center rounded-full bg-emerald text-white shadow-md animate-scale-in z-10">
                             <Check className="size-3 stroke-[3]" />
                           </div>
                         )}

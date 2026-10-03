@@ -10,7 +10,8 @@ import {
 } from '@/mock/generated-testimonials'
 import { useLanguage } from '@/lib/language-context'
 import { CheckCircle2, Sliders, Palette, Check } from 'lucide-react'
-import { TEMPLATE_IDS, TEMPLATE_LABELS, type TemplateId } from '@/lib/testimonial-templates'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_BRAND_BY_TEMPLATE, type TemplateId } from '@/lib/testimonial-templates'
+import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
 
 const ADDITIONAL_SAMPLES: Record<string, GeneratedTestimonialData> = {
   short: {
@@ -45,6 +46,8 @@ function TestimonialPreviewPage() {
     return MOCK_TESTIMONIAL_READY
   }
 
+  const readyData = getActiveReadyData()
+
   return (
     <AppShell
       pageTitle={isRTL ? 'معاينة تصاميم التقييمات' : 'Testimonial Showcase'}
@@ -58,7 +61,7 @@ function TestimonialPreviewPage() {
         <header className="flex flex-col gap-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-border bg-emerald-surface px-3.5 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs">
             <Palette className="size-3.5" />
-            <span>{isRTL ? 'معاينة القوالب والتصاميم · Creative Templates' : 'Creative Templates Showcase'}</span>
+            <span>{isRTL ? `معاينة القوالب والتصاميم (${TEMPLATE_IDS.length} قالباً)` : `Creative Templates Showcase (${TEMPLATE_IDS.length} Styles)`}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-ink tracking-tight">
@@ -67,8 +70,8 @@ function TestimonialPreviewPage() {
 
           <p className="max-w-2xl text-sm sm:text-base text-ink-muted leading-relaxed">
             {isRTL
-              ? 'استعراض لقوالب التصاميم الـ 8 مع حالات المعالجة المختلفة وتناسق الخطوط التلقائي.'
-              : 'Showcase of the 8 designer templates and testimonial card states with adaptive typography.'}
+              ? `استعراض لقوالب التصاميم الـ ${TEMPLATE_IDS.length} مع حالات المعالجة المختلفة وتناسق الخطوط التلقائي.`
+              : `Showcase of the ${TEMPLATE_IDS.length} designer templates and testimonial card states with adaptive typography.`}
           </p>
 
           {/* Review Length Filter Pills */}
@@ -110,13 +113,13 @@ function TestimonialPreviewPage() {
           </div>
         </header>
 
-        {/* 8 Designer Templates Gallery Row */}
+        {/* 20 Designer Templates Gallery Row */}
         <section className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface/90 backdrop-blur-md p-5 shadow-xs">
           <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/60">
             <div className="flex items-center gap-2">
               <Palette className="size-4 text-emerald" />
               <span className="text-sm font-bold text-ink">
-                {isRTL ? 'اختر قالباً للمعاينة المباشرة (8 قوالب):' : 'Select Designer Template to Preview (8 Styles):'}
+                {isRTL ? `اختر قالباً للمعاينة المباشرة (${TEMPLATE_IDS.length} قالباً):` : `Select Designer Template to Preview (${TEMPLATE_IDS.length} Styles):`}
               </span>
             </div>
             <span className="text-xs font-bold text-emerald-deep bg-emerald-surface px-2.5 py-0.5 rounded-full border border-emerald-border/60">
@@ -139,14 +142,13 @@ function TestimonialPreviewPage() {
                   }`}
                 >
                   <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
-                    <img
-                      src={`/template-previews/${tId}.png`}
-                      alt={TEMPLATE_LABELS[tId]}
-                      className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
+                    <LiveTemplatePreview
+                      templateId={tId}
+                      brandColor={DEFAULT_BRAND_BY_TEMPLATE[tId]}
+                      className="size-full pointer-events-none"
                     />
                     {isSelected && (
-                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs">
+                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
                         <Check className="size-2.5 stroke-[3]" />
                       </div>
                     )}
@@ -175,11 +177,16 @@ function TestimonialPreviewPage() {
               </span>
             </div>
             <div className="aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-950 shadow-md">
-              <img
-                src={`/template-previews/${selectedTemplateId}.png`}
-                alt={TEMPLATE_LABELS[selectedTemplateId]}
-                className="size-full object-cover"
-                loading="lazy"
+              <LiveTemplatePreview
+                templateId={selectedTemplateId}
+                brandColor={readyData.merchant.brandColor || DEFAULT_BRAND_BY_TEMPLATE[selectedTemplateId]}
+                data={{
+                  quote: readyData.reviewText,
+                  customer: readyData.customerName,
+                  merchant: readyData.merchant.businessName,
+                  rating: readyData.rating,
+                }}
+                className="size-full"
               />
             </div>
           </section>

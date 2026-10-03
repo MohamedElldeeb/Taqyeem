@@ -27,7 +27,7 @@ import { useMerchantReviews, type MerchantReview, type ReviewDbStatus } from '@/
 import { toCardStatus } from '@/lib/generated-content-status'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
-import { TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
 
 type FilterTab = 'all' | 'completed' | 'processing' | 'failed'
 
@@ -111,7 +111,7 @@ function DashboardReviewsPage() {
         <Button asChild size="sm" variant="outline" className="text-xs font-bold gap-1.5 shadow-2xs shrink-0">
           <Link to="/dashboard/branding">
             <Palette className="size-3.5 text-emerald" />
-            <span>{isRTL ? 'تغيير القالب (8 قوالب)' : 'Change Template (8)'}</span>
+            <span>{isRTL ? `تغيير القالب (${TEMPLATE_IDS.length} قالباً)` : `Change Template (${TEMPLATE_IDS.length})`}</span>
           </Link>
         </Button>
       </div>

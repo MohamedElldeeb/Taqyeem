@@ -38,6 +38,14 @@ function mapAuthError(error: AuthError | { code?: string; message?: string } | n
   }
 
   if (
+    code === 'validation_failed' ||
+    message.includes('Unsupported provider') ||
+    message.includes('provider is not enabled')
+  ) {
+    return 'تسجيل الدخول عبر Google غير مفعّل بعد في إعدادات Supabase (Authentication > Providers > Google).'
+  }
+
+  if (
     code === 'otp_expired' ||
     code === 'otp_disabled' ||
     message.includes('expired') ||

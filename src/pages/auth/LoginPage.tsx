@@ -16,6 +16,7 @@ import { LanguageToggle } from '@/components/ui/language-toggle'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { AnimatedBackground } from '@/components/ui/animated-background'
 import { BrandLogo } from '@/components/ui/brand-logo'
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton'
 import { useAuth } from '@/lib/auth-context'
 import { useLanguage } from '@/lib/language-context'
 import { useTheme } from '@/lib/theme-context'
@@ -138,8 +139,22 @@ function LoginPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-4 sm:p-6 pt-2">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+          <CardContent className="p-4 sm:p-6 pt-2 flex flex-col gap-4">
+            <GoogleAuthButton onError={(err) => setError(err)} />
+
+            <div className="relative my-0.5 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center">
+                <div className={cn('w-full border-t', isDark ? 'border-emerald-900/40' : 'border-border/80')} />
+              </div>
+              <div className={cn(
+                'relative px-3 py-0.5 text-[11px] font-semibold tracking-wide rounded-full',
+                isDark ? 'bg-[#03110e] text-slate-400 border border-emerald-950/80' : 'bg-surface text-ink-muted border border-border/60'
+              )}>
+                {t('auth_or_divider')}
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email" className={cn('text-xs font-bold', isDark ? 'text-slate-300' : 'text-ink')}>
                 {t('auth_email_label')}

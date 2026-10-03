@@ -16,6 +16,7 @@ interface AuthContextValue {
   loading: boolean
   signUp: (email: string, password: string) => Promise<SignUpResult>
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
+  signInWithGoogle: () => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   resendConfirmation: (email: string) => Promise<{ error: string | null }>
   requestPasswordReset: (email: string) => Promise<{ error: string | null }>
@@ -69,6 +70,16 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error ? mapAuthError(error) : null }
   }, [])
 
+  const signInWithGoogle = React.useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    })
+    return { error: error ? mapAuthError(error) : null }
+  }, [])
+
   const signOut = React.useCallback(async () => {
     await supabase.auth.signOut()
   }, [])
@@ -101,12 +112,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       signUp,
       signIn,
+      signInWithGoogle,
       signOut,
       resendConfirmation,
       requestPasswordReset,
       updatePassword,
     }),
-    [session, loading, signUp, signIn, signOut, resendConfirmation, requestPasswordReset, updatePassword],
+    [session, loading, signUp, signIn, signInWithGoogle, signOut, resendConfirmation, requestPasswordReset, updatePassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
