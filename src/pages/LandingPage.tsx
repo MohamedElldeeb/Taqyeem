@@ -33,6 +33,7 @@ import {
   Layers,
   Eye,
   SlidersHorizontal,
+  ChevronDown,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -47,60 +48,51 @@ import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePrevie
 
 const WHATSAPP_URL = 'https://wa.me/201125800098'
 
-const HERO_PRESETS_AR = [
-  {
-    name: 'سارة عبد الله',
-    rating: 5,
-    text: 'استلمت طلبي في الوقت المحدد بالضبط والأكل كان طازج وسخن. فريق التوصيل كان محترم جداً، تجربة ممتازة ومن أول مرة وأكيد هطلب تاني!',
-    color: '#059669',
-    merchant: 'مطعم الأصيل المحدث',
-  },
-  {
-    name: 'محمد إبراهيم',
-    rating: 5,
-    text: 'أفضل تجربة تسوق أونلاين في مصر! التغليف فاخر، والمنتج خامته فوق الوصف. شكراً على الاهتمام بأدق التفاصيل.',
-    color: '#4F46E5',
-    merchant: 'بوتيك فيلوست',
-  },
-  {
-    name: 'نور الهدى',
-    rating: 5,
-    text: 'خدمة عملاء قمة في الذوق والسرعة. ردوا على كل استفساراتي ووصل الطلب قبل الموعد بيوم كامل. خمس نجوم وتستاهلوا أكثر!',
-    color: '#D97706',
-    merchant: 'عطور ريماس الفاخرة',
-  },
-]
-
-const HERO_PRESETS_EN = [
-  {
-    name: 'Sarah Jenkins',
-    rating: 5,
-    text: 'Received my order right on time and the quality exceeded all my expectations. The packaging was immaculate. Definitely ordering again!',
-    color: '#059669',
-    merchant: 'Artisan Cafe & Bakery',
-  },
-  {
-    name: 'Marcus Vance',
-    rating: 5,
-    text: 'Best online shopping experience this year. Customer service resolved my sizing question in minutes. 10/10 recommendation!',
-    color: '#4F46E5',
-    merchant: 'Velox Apparel Studio',
-  },
-  {
-    name: 'Elena Rostova',
-    rating: 5,
-    text: 'Flawless craftsmanship and super fast delivery. These reviews convinced me to buy, and now I am leaving one myself!',
-    color: '#D97706',
-    merchant: 'Lumina Home Living',
-  },
-]
-
 const BRAND_PALETTE = [
   { name: 'Emerald', hex: '#059669', bg: 'bg-emerald-500' },
   { name: 'Indigo', hex: '#4F46E5', bg: 'bg-indigo-600' },
   { name: 'Amber', hex: '#D97706', bg: 'bg-amber-600' },
   { name: 'Rose', hex: '#E11D48', bg: 'bg-rose-600' },
   { name: 'Teal', hex: '#0D9488', bg: 'bg-teal-600' },
+  { name: 'Violet', hex: '#8B5CF6', bg: 'bg-violet-600' },
+  { name: 'Cyan', hex: '#06B6D4', bg: 'bg-cyan-500' },
+]
+
+const BRANDING_SHOWCASE_TEMPLATES: {
+  id: TemplateId
+  nameAr: string
+  nameEn: string
+  badgeAr: string
+  badgeEn: string
+  icon: string
+}[] = [
+  { id: '01-glass-orbs', nameAr: 'زجاجي ثلاثي الأبعاد', nameEn: '3D Glass Orbs', badgeAr: 'زجاجي 3D', badgeEn: '3D Glass', icon: '🔮' },
+  { id: '01-neon-editorial', nameAr: 'نيون متوهج', nameEn: 'Neon Cyber', badgeAr: 'نيون', badgeEn: 'Neon', icon: '✨' },
+  { id: '02-luxury-editorial', nameAr: 'فاخر ملكي', nameEn: 'Royal Luxury', badgeAr: 'فاخر', badgeEn: 'Luxury', icon: '👑' },
+  { id: '03-minimal-modern', nameAr: 'مينيمال سويسري', nameEn: 'Swiss Minimal', badgeAr: 'مينيمال', badgeEn: 'Minimal', icon: '⚡' },
+  { id: '04-warm-organic', nameAr: 'طبيعي دافئ', nameEn: 'Warm Artisan', badgeAr: 'حرفي', badgeEn: 'Artisan', icon: '🌿' },
+]
+
+const HERO_QUICK_TEMPLATES: {
+  id: TemplateId
+  nameAr: string
+  nameEn: string
+  icon: string
+  badgeAr: string
+  badgeEn: string
+}[] = [
+  { id: '01-neon-editorial', nameAr: 'نيون الساحر', nameEn: 'Neon Cyber Noir', icon: '✨', badgeAr: 'نيون', badgeEn: 'Neon' },
+  { id: '01-glass-orbs', nameAr: 'الزجاجي 3D', nameEn: '3D Glass Orbs', icon: '🔮', badgeAr: 'زجاجي', badgeEn: 'Glass' },
+  { id: '02-luxury-editorial', nameAr: 'الفخامة الملكية', nameEn: 'Royal Luxury Velvet', icon: '👑', badgeAr: 'فاخر', badgeEn: 'Luxury' },
+  { id: '03-minimal-modern', nameAr: 'المينيمال السويسري', nameEn: 'Swiss Minimalist', icon: '⚡', badgeAr: 'مينيمال', badgeEn: 'Minimal' },
+  { id: '04-warm-organic', nameAr: 'الدفء الحرفي', nameEn: 'Warm Artisan Craft', icon: '🌿', badgeAr: 'حرفي', badgeEn: 'Artisan' },
+  { id: '05-bold-contemporary', nameAr: 'الجريء المعاصر', nameEn: 'Bold Contemporary', icon: '🚀', badgeAr: 'جريء', badgeEn: 'Bold' },
+  { id: '06-magazine-editorial', nameAr: 'المجلة التحريرية', nameEn: 'Editorial Magazine', icon: '🖋️', badgeAr: 'مجلة', badgeEn: 'Editorial' },
+  { id: '07-soft-premium', nameAr: 'الباستيل الهادئ', nameEn: 'Soft Botanic Pastel', icon: '🌸', badgeAr: 'باستيل', badgeEn: 'Pastel' },
+  { id: '08-brutalist-modern', nameAr: 'البروتاليست المعماري', nameEn: 'Brutalist Studio', icon: '📐', badgeAr: 'معماري', badgeEn: 'Brutalist' },
+  { id: '02-soft-clay', nameAr: 'الصلصال الناعم', nameEn: 'Soft Claymorphism', icon: '🎨', badgeAr: 'طين', badgeEn: 'Clay' },
+  { id: '11-spotlight-podium', nameAr: 'منصة الضوء', nameEn: 'Spotlight Podium', icon: '🎭', badgeAr: 'منصة', badgeEn: 'Podium' },
+  { id: '12-horizon-grid', nameAr: 'شبكة الأفق', nameEn: 'Horizon Neon Grid', icon: '🌌', badgeAr: 'أفق', badgeEn: 'Horizon' },
 ]
 
 export interface TemplateShowcaseItem {
@@ -510,10 +502,31 @@ function LandingPage() {
   const { t, isRTL } = useLanguage()
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight
 
-  const presets = isRTL ? HERO_PRESETS_AR : HERO_PRESETS_EN
-  const [selectedPresetIndex, setSelectedPresetIndex] = React.useState(0)
+  const [heroTemplateId, setHeroTemplateId] = React.useState<TemplateId>('01-neon-editorial')
+  const [heroDropdownOpen, setHeroDropdownOpen] = React.useState(false)
+  const heroDropdownRef = React.useRef<HTMLDivElement>(null)
   const [selectedBrandColor, setSelectedBrandColor] = React.useState(BRAND_PALETTE[0].hex)
+  const [brandingTemplateId, setBrandingTemplateId] = React.useState<TemplateId>('01-glass-orbs')
   const [selectedQrPlacementIndex, setSelectedQrPlacementIndex] = React.useState(0)
+
+  // Auto-close dropdown when clicking outside
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (heroDropdownRef.current && !heroDropdownRef.current.contains(event.target as Node)) {
+        setHeroDropdownOpen(false)
+      }
+    }
+    if (heroDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [heroDropdownOpen])
+
+  const currentHeroTemplate =
+    TEMPLATES_SHOWCASE_DATA.find((item) => item.id === heroTemplateId) ??
+    TEMPLATES_SHOWCASE_DATA[0]
   
   // Template Showcase Interactive State
   const [activeTemplateId, setActiveTemplateId] = React.useState<TemplateId>('01-neon-editorial')
@@ -532,8 +545,6 @@ function LandingPage() {
     setCopiedLink(true)
     setTimeout(() => setCopiedLink(false), 2000)
   }
-
-  const currentDemo = presets[selectedPresetIndex]
 
   const qrPlacements = [
     { label: isRTL ? 'عند الكاشير' : 'At Checkout', icon: '💳' },
@@ -730,7 +741,7 @@ function LandingPage() {
                   {/* Subtle, Soft Ambient Glow (Only in Dark Mode for Obsidian Atmosphere) */}
                   <div
                     className="pointer-events-none absolute -inset-4 rounded-3xl blur-3xl opacity-0 dark:opacity-25 transition-opacity duration-700 -z-10"
-                    style={{ backgroundColor: currentDemo.color }}
+                    style={{ backgroundColor: currentHeroTemplate.color }}
                   />
 
                   {/* Floating Stat Badge 1 - Top End */}
@@ -762,104 +773,145 @@ function LandingPage() {
                   </div>
 
                   {/* Modern Luxury Glass Container with Clean Multi-Stop Shadow */}
-                  <div className="rounded-3xl border border-border/80 dark:border-emerald-500/20 bg-surface/95 backdrop-blur-xl p-4 sm:p-5 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.1),0_4px_16px_rgba(15,23,42,0.04)] ring-1 ring-black/[0.04] dark:ring-white/[0.08] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_35px_-5px_rgba(16,185,129,0.15)] relative z-10">
+                  <div className="rounded-3xl border border-slate-200/80 dark:border-emerald-500/20 bg-white/95 dark:bg-surface/95 backdrop-blur-xl p-4 sm:p-5 shadow-[0_20px_50px_-15px_rgba(15,23,42,0.1),0_4px_16px_rgba(15,23,42,0.04)] ring-1 ring-black/[0.04] dark:ring-white/[0.08] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_35px_-5px_rgba(16,185,129,0.15)] relative z-10">
                     
                     {/* Live Generator Switcher Header */}
-                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-border/70">
+                    <div className="flex flex-wrap items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-border/70 gap-2">
                       <div className="flex items-center gap-2">
                         <span className="flex size-2 rounded-full bg-emerald animate-pulse" />
-                        <span className="text-xs font-bold text-ink">
-                          {isRTL ? 'مولّد التقييم الحي التفاعلي' : 'Live Interactive Generator'}
+                        <span className="text-xs font-bold text-slate-800 dark:text-ink">
+                          {isRTL ? 'اختر قالباً للمعاينة الحية:' : 'Live Template Selector:'}
                         </span>
                       </div>
-                      <a
-                        href="#templates"
-                        className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-deep bg-emerald-surface px-2.5 py-1 rounded-full border border-emerald-border/70 hover:scale-105 transition-transform shadow-2xs"
-                      >
-                        <Palette className="size-3 text-emerald" />
-                        <span>{isRTL ? `${TEMPLATES_SHOWCASE_DATA.length} قالباً حصرياً` : `${TEMPLATES_SHOWCASE_DATA.length} Templates`}</span>
-                      </a>
-                    </div>
 
-                    {/* Presets Chips */}
-                    <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
-                      {presets.map((preset, idx) => (
+                      {/* Custom Dark/Light Mode Dropdown to pick ANY of the 20 Templates */}
+                      <div ref={heroDropdownRef} className="relative">
                         <button
-                          key={idx}
                           type="button"
-                          onClick={() => setSelectedPresetIndex(idx)}
-                          className={`rounded-xl px-3 py-1.5 text-[11px] font-bold transition-all cursor-pointer truncate shrink-0 ${
-                            selectedPresetIndex === idx
-                              ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400/40 scale-105'
-                              : 'bg-background-subtle border border-border text-ink-muted hover:text-ink hover:border-emerald-border'
-                          }`}
+                          onClick={() => setHeroDropdownOpen((prev) => !prev)}
+                          aria-expanded={heroDropdownOpen}
+                          aria-haspopup="listbox"
+                          className="inline-flex items-center gap-1.5 text-[10.5px] font-extrabold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-500/40 transition-all shadow-2xs cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald active:scale-95"
                         >
-                          {preset.merchant}
+                          <span className="truncate max-w-[130px] sm:max-w-[160px]">
+                            {isRTL ? currentHeroTemplate.nameAr : currentHeroTemplate.nameEn}
+                          </span>
+                          <ChevronDown className={`size-3 text-emerald transition-transform duration-200 ${heroDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
-                      ))}
+
+                        {heroDropdownOpen && (
+                          <div
+                            role="listbox"
+                            className="absolute top-full end-0 mt-2 z-50 w-72 sm:w-80 max-h-72 overflow-y-auto scrollbar-sleek rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-emerald-500/30 p-1.5 shadow-2xl animate-scale-in ring-1 ring-black/5 dark:ring-white/10"
+                          >
+                            <div className="px-2.5 py-1.5 mb-1 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                              <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                {isRTL ? 'جميع القوالب (20 قالب)' : 'All Presets (20 Styles)'}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                {isRTL ? 'معاينة فورية' : 'Instant Preview'}
+                              </span>
+                            </div>
+
+                            <div className="flex flex-col gap-0.5">
+                              {TEMPLATES_SHOWCASE_DATA.map((tpl) => {
+                                const isSelected = heroTemplateId === tpl.id
+                                return (
+                                  <button
+                                    key={tpl.id}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    onClick={() => {
+                                      setHeroTemplateId(tpl.id)
+                                      setHeroDropdownOpen(false)
+                                    }}
+                                    className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-start transition-all cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 font-extrabold border border-emerald-200 dark:border-emerald-500/40 shadow-2xs'
+                                        : 'text-slate-800 dark:text-slate-200 hover:bg-slate-100/90 dark:hover:bg-slate-900 border border-transparent'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                                      <span
+                                        className="size-2.5 rounded-full shrink-0 border border-black/10 dark:border-white/20 shadow-xs"
+                                        style={{ backgroundColor: tpl.color }}
+                                      />
+                                      <div className="flex flex-col min-w-0">
+                                        <span className={`text-xs font-bold truncate ${
+                                          isSelected ? 'text-emerald-950 dark:text-emerald-100 font-black' : 'text-slate-900 dark:text-slate-100'
+                                        }`}>
+                                          {isRTL ? tpl.nameAr : tpl.nameEn}
+                                        </span>
+                                        <span className={`text-[10px] truncate ${
+                                          isSelected ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
+                                        }`}>
+                                          {isRTL ? tpl.badgeAr : tpl.badgeEn}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {isSelected && (
+                                      <div className="flex size-4 items-center justify-center rounded-full bg-emerald text-white shrink-0 shadow-2xs">
+                                        <Check className="size-2.5 stroke-[3]" />
+                                      </div>
+                                    )}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    {/* The Rendered Testimonial Creative Frame */}
-                    <div
-                      className="relative aspect-square w-full overflow-hidden rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between transition-all duration-700"
-                      style={{
-                        background: `
-                          radial-gradient(ellipse 95% 75% at 85% 0%, ${currentDemo.color}60 0%, ${currentDemo.color}25 35%, transparent 75%),
-                          radial-gradient(circle 500px at 15% 95%, rgba(13, 148, 136, 0.18) 0%, transparent 70%),
-                          linear-gradient(180deg, #051513 0%, #030d0c 55%, #020707 100%)
-                        `,
-                      }}
-                    >
-                      {/* Internal ambient radial glow */}
-                      <div
-                        className="absolute -top-1/4 -right-1/4 size-3/4 rounded-full blur-3xl opacity-50 transition-all duration-500 pointer-events-none"
-                        style={{ backgroundColor: currentDemo.color }}
+                    {/* Quick Template Chips (Switch between different template designs) */}
+                    <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 scrollbar-hidden overscroll-contain">
+                      {HERO_QUICK_TEMPLATES.map((tpl) => {
+                        const isSelected = heroTemplateId === tpl.id
+                        return (
+                          <button
+                            key={tpl.id}
+                            type="button"
+                            onClick={() => setHeroTemplateId(tpl.id)}
+                            className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-[11px] font-bold transition-all cursor-pointer truncate shrink-0 ${
+                              isSelected
+                                ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400/40 scale-102'
+                                : 'bg-slate-50 dark:bg-background-subtle border border-slate-200 dark:border-border text-slate-600 dark:text-ink-muted hover:text-slate-900 dark:hover:text-ink hover:border-emerald-300 dark:hover:border-emerald-border'
+                            }`}
+                          >
+                            <span>{tpl.icon}</span>
+                            <span>{isRTL ? tpl.nameAr : tpl.nameEn}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    {/* The Rendered Testimonial Creative Frame (Live Template Preview) */}
+                    <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-border/80 bg-slate-100 dark:bg-slate-950 shadow-inner group/hero-preview">
+                      <LiveTemplatePreview
+                        templateId={currentHeroTemplate.id}
+                        brandColor={currentHeroTemplate.color}
+                        data={{
+                          quote: isRTL ? currentHeroTemplate.sampleQuoteAr : currentHeroTemplate.sampleQuoteEn,
+                          customer: isRTL ? currentHeroTemplate.sampleCustomerAr : currentHeroTemplate.sampleCustomerEn,
+                          merchant: isRTL ? currentHeroTemplate.sampleMerchantAr : currentHeroTemplate.sampleMerchantEn,
+                          rating: 5,
+                        }}
+                        className="size-full rounded-2xl drop-shadow-2xl transition-transform duration-500 group-hover/hero-preview:scale-[1.01]"
                       />
 
-                      {/* Creative Top Header */}
-                      <div className="relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="flex size-8 items-center justify-center rounded-xl text-xs font-bold text-white shadow-xs transition-colors"
-                            style={{ backgroundColor: currentDemo.color }}
-                          >
-                            {currentDemo.merchant.charAt(0)}
-                          </div>
-                          <span className="text-xs font-bold text-white/90">
-                            {currentDemo.merchant}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-white/60 font-semibold">
-                          {isRTL ? 'تقييم موثق' : 'Verified Review'}
-                        </span>
+                      {/* Top Overlay Badge: Verified */}
+                      <div className="absolute top-2.5 end-2.5 flex items-center gap-1.5 rounded-full bg-slate-950/85 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white border border-white/20 shadow-md z-20 pointer-events-none">
+                        <ShieldCheck className="size-3 text-emerald-400" />
+                        <span>{isRTL ? 'تقييم موثق 100%' : '100% Verified'}</span>
                       </div>
 
-                      {/* Creative Hero Quote */}
-                      <div className="relative z-10 flex flex-col gap-3 my-auto">
-                        <span
-                          className="text-4xl font-black leading-none opacity-80 select-none self-start"
-                          style={{ color: currentDemo.color }}
-                        >
-                          “
-                        </span>
-                        <p className="text-start text-sm sm:text-base font-bold leading-relaxed text-white">
-                          {currentDemo.text}
-                        </p>
-                      </div>
-
-                      {/* Creative Footer */}
-                      <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10">
-                        <span
-                          className="text-xs font-extrabold transition-colors"
-                          style={{ color: currentDemo.color }}
-                        >
-                          {currentDemo.name}
-                        </span>
-                        <div className="flex items-center gap-0.5 text-amber-400">
-                          {Array.from({ length: currentDemo.rating }).map((_, i) => (
-                            <Star key={i} className="size-3.5 fill-amber-400 text-amber-400" />
-                          ))}
-                        </div>
+                      {/* Bottom Overlay Badge: Template Name */}
+                      <div className="absolute bottom-2.5 start-2.5 flex items-center gap-1.5 rounded-lg bg-slate-950/85 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white/90 border border-white/20 shadow-md z-20 pointer-events-none">
+                        <Palette className="size-3 text-emerald-400" />
+                        <span>{isRTL ? currentHeroTemplate.nameAr : currentHeroTemplate.nameEn}</span>
+                        <span className="text-[9px] text-white/60">· {currentHeroTemplate.category.toUpperCase()}</span>
                       </div>
                     </div>
 
@@ -869,9 +921,13 @@ function LandingPage() {
                         <Check className="size-4" />
                         <span>{isRTL ? 'تصميم فوري بهوية المتجر' : 'Instant Branded Creative'}</span>
                       </div>
-                      <span className="text-[11px] text-ink-subtle">
-                        {isRTL ? 'جاهز للنشر على السوشيال ميديا' : 'Ready to Share on Stories'}
-                      </span>
+                      <a
+                        href="#templates"
+                        className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 font-bold"
+                      >
+                        <Sparkles className="size-3 text-emerald" />
+                        <span>{isRTL ? `كل القوالب (${TEMPLATES_SHOWCASE_DATA.length}) ↗` : `All ${TEMPLATES_SHOWCASE_DATA.length} presets ↗`}</span>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -1015,7 +1071,7 @@ function LandingPage() {
                       </div>
 
                       {/* Stand Dynamic Placement Badge */}
-                      <div className="mt-2.5 inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                      <div className="mt-2.5 inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                         <span>{qrPlacements[selectedQrPlacementIndex].icon}</span>
                         <span>{qrPlacements[selectedQrPlacementIndex].label}</span>
                       </div>
@@ -1056,7 +1112,7 @@ function LandingPage() {
 
               {/* Bento Card 2: Interactive Brand Matcher (Span 5) */}
               <div
-                className="md:col-span-5 rounded-3xl border bg-surface p-7 sm:p-8 shadow-xs hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group relative overflow-hidden"
+                className="md:col-span-5 rounded-3xl border bg-surface p-6 sm:p-7 shadow-xs hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group relative overflow-hidden"
                 style={{
                   borderColor: `${selectedBrandColor}40`,
                   boxShadow: `0 12px 30px -10px ${selectedBrandColor}20`,
@@ -1068,7 +1124,7 @@ function LandingPage() {
                   style={{ backgroundColor: selectedBrandColor }}
                 />
 
-                <div className="flex flex-col gap-3.5 relative z-10">
+                <div className="flex flex-col gap-3 relative z-10">
                   <div className="flex items-center justify-between">
                     <div
                       className="flex size-12 items-center justify-center rounded-2xl border shadow-xs group-hover:scale-110 transition-all duration-500"
@@ -1099,57 +1155,92 @@ function LandingPage() {
                     {t('landing_branding_desc')}
                   </p>
 
-                  {/* Interactive Live Mini-Creative Preview */}
-                  <div
-                    className="mt-2 rounded-2xl p-3.5 text-white transition-all duration-500 shadow-md relative overflow-hidden"
-                    style={{
-                      background: `
-                        radial-gradient(ellipse 90% 70% at 85% 0%, ${selectedBrandColor}70 0%, ${selectedBrandColor}25 40%, transparent 80%),
-                        linear-gradient(145deg, #071f1a 0%, #030d0b 100%)
-                      `,
-                      border: `1px solid ${selectedBrandColor}45`,
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="flex size-7 items-center justify-center rounded-lg text-xs font-black text-white shadow-xs transition-colors duration-500"
-                          style={{ backgroundColor: selectedBrandColor }}
-                        >
-                          T
-                        </div>
-                        <div className="flex flex-col text-start">
-                          <span className="text-xs font-bold text-white leading-tight">
-                            {isRTL ? 'متجر الأناقة العصري' : 'Elegance Studio'}
-                          </span>
-                          <span className="text-[10px] text-white/60">
-                            {isRTL ? 'تطبيق تلقائي للهوية' : 'Automatic Palette Match'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="size-3 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                    </div>
-                    <div
-                      className="mt-2.5 text-[11px] font-medium leading-relaxed rounded-lg p-2 transition-all duration-500 text-start"
-                      style={{
-                        backgroundColor: `${selectedBrandColor}15`,
-                        borderLeft: isRTL ? undefined : `2.5px solid ${selectedBrandColor}`,
-                        borderRight: isRTL ? `2.5px solid ${selectedBrandColor}` : undefined,
+                  {/* Interactive Live Template Render in Selected Brand Color */}
+                  <div className="mt-1 relative w-full aspect-[16/11] sm:aspect-[4/3] max-h-[260px] rounded-2xl overflow-hidden border border-border/80 bg-slate-100 dark:bg-slate-950 shadow-lg group/brandpreview">
+                    <LiveTemplatePreview
+                      templateId={brandingTemplateId}
+                      brandColor={selectedBrandColor}
+                      data={{
+                        quote: isRTL
+                          ? '«الهوية البصرية وتناسق الألوان يطابق متجرنا بدقة 100%، تجربة تسوق راقية وتغليف فاخر!»'
+                          : '“Flawless product quality and brand styling matched our exact palette 100%!”',
+                        customer: isRTL ? 'سارة عبد الله' : 'Sarah Jenkins',
+                        merchant: isRTL ? 'متجر الأناقة العصري' : 'Elegance Studio',
+                        rating: 5,
                       }}
-                    >
-                      {isRTL
-                        ? '“تجربة رائعة وتغليف فاخر، الهوية البصرية تطابق متجرنا بدقة 100%!”'
-                        : '“Flawless product quality and brand styling matched our exact palette 100%!”'}
+                      className="size-full rounded-2xl drop-shadow-xl"
+                    />
+
+                    {/* Top End Adaptive Overlay */}
+                    <div className="absolute top-2.5 end-2.5 flex items-center gap-1.5 rounded-full bg-slate-950/85 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-bold text-white border border-white/20 shadow-xs z-20 pointer-events-none">
+                      <span className="size-1.5 rounded-full animate-pulse" style={{ backgroundColor: selectedBrandColor }} />
+                      <span>{isRTL ? 'تطابق فوري للهوية' : 'Adaptive Match'}</span>
+                    </div>
+
+                    {/* Bottom Start Active Template Badge */}
+                    <div className="absolute bottom-2.5 start-2.5 flex items-center gap-1.5 rounded-lg bg-slate-950/90 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-white/90 border border-white/20 shadow-xs z-20 pointer-events-none">
+                      <span className="text-xs">
+                        {BRANDING_SHOWCASE_TEMPLATES.find((t) => t.id === brandingTemplateId)?.icon}
+                      </span>
+                      <span>
+                        {isRTL
+                          ? BRANDING_SHOWCASE_TEMPLATES.find((t) => t.id === brandingTemplateId)?.nameAr
+                          : BRANDING_SHOWCASE_TEMPLATES.find((t) => t.id === brandingTemplateId)?.nameEn}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Template Images & Thumbnails Selector Gallery in Branding */}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-ink-subtle px-0.5">
+                      <span>{isRTL ? 'معاينة القوالب بألوان علامتك:' : 'Templates in your brand palette:'}</span>
+                      <span className="text-[10px] font-mono text-emerald font-bold">5 {isRTL ? 'قوالب' : 'Styles'}</span>
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {BRANDING_SHOWCASE_TEMPLATES.map((tpl) => {
+                        const isSelected = brandingTemplateId === tpl.id
+                        return (
+                          <button
+                            key={tpl.id}
+                            type="button"
+                            onClick={() => setBrandingTemplateId(tpl.id)}
+                            className={`group/btn relative flex flex-col items-center rounded-xl p-1 border transition-all duration-200 cursor-pointer ${
+                              isSelected
+                                ? 'border-emerald bg-emerald-surface/50 shadow-xs scale-105 ring-1 ring-emerald-500/30'
+                                : 'border-border/80 bg-background-subtle hover:border-emerald-border hover:bg-surface'
+                            }`}
+                            title={isRTL ? tpl.nameAr : tpl.nameEn}
+                          >
+                            {/* Mini Live Preview Thumbnail */}
+                            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 shrink-0">
+                              <LiveTemplatePreview
+                                templateId={tpl.id}
+                                brandColor={selectedBrandColor}
+                                size={52}
+                                className="size-full pointer-events-none"
+                              />
+                              {isSelected && (
+                                <div className="absolute inset-0 bg-emerald-500/15 pointer-events-none z-10" />
+                              )}
+                              {isSelected && (
+                                <div className="absolute top-0.5 end-0.5 flex size-3.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-20">
+                                  <Check className="size-2 stroke-[3]" />
+                                </div>
+                              )}
+                            </div>
+                            <span className={`text-[9px] font-bold mt-1 truncate max-w-full ${isSelected ? 'text-emerald font-black' : 'text-ink-muted'}`}>
+                              {isRTL ? tpl.badgeAr : tpl.badgeEn}
+                            </span>
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
 
                 {/* Interactive Real Palette Switcher */}
-                <div className="pt-4 mt-3 border-t border-border/70 flex flex-col gap-2 relative z-10">
+                <div className="pt-3 mt-2 border-t border-border/70 flex flex-col gap-1.5 relative z-10">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-bold text-ink-subtle">
                       {isRTL ? 'اختر لون هوية متجرك:' : 'Pick your brand palette:'}
@@ -1158,10 +1249,10 @@ function LandingPage() {
                       className="text-[11px] font-black transition-colors duration-500"
                       style={{ color: selectedBrandColor }}
                     >
-                      {BRAND_PALETTE.find((p) => p.hex === selectedBrandColor)?.name}
+                      {BRAND_PALETTE.find((p) => p.hex === selectedBrandColor)?.name} ({selectedBrandColor})
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 overflow-x-auto py-2.5 px-1 scrollbar-hidden overscroll-contain">
+                  <div className="flex items-center gap-2 overflow-x-auto py-1.5 px-0.5 scrollbar-hidden overscroll-contain">
                     {BRAND_PALETTE.map((pal) => {
                       const isSelected = selectedBrandColor === pal.hex
                       return (
@@ -1169,12 +1260,12 @@ function LandingPage() {
                           key={pal.name}
                           type="button"
                           onClick={() => setSelectedBrandColor(pal.hex)}
-                          className={`size-8 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 ${
+                          className={`size-7 sm:size-8 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 ${
                             isSelected
                               ? 'scale-110 ring-2 ring-offset-2 ring-offset-surface ring-emerald-500 shadow-md border border-white/60'
                               : 'border-2 border-white dark:border-slate-800 hover:scale-105 opacity-80 hover:opacity-100 shadow-2xs'
                           } ${pal.bg}`}
-                          title={pal.name}
+                          title={`${pal.name} (${pal.hex})`}
                           aria-label={pal.name}
                         >
                           {isSelected && (
@@ -1602,7 +1693,7 @@ function LandingPage() {
                       </div>
 
                       {/* Stage Viewport */}
-                      <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-border/80 bg-slate-950/90 dark:bg-slate-950 shadow-inner group/preview flex items-center justify-center p-2 sm:p-3">
+                      <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-border/80 bg-slate-100 dark:bg-slate-950 shadow-inner group/preview flex items-center justify-center p-2 sm:p-3">
                         {templatePreviewMode === 'rendered' ? (
                           <div className="relative size-full flex items-center justify-center overflow-hidden rounded-xl">
                             <LiveTemplatePreview
@@ -1760,7 +1851,7 @@ function LandingPage() {
                               }`}
                             >
                               {/* Thumbnail with 1:1 Square Fit */}
-                              <div className="relative w-full aspect-square overflow-hidden bg-slate-950 flex items-center justify-center shrink-0">
+                              <div className="relative w-full aspect-square overflow-hidden bg-slate-100 dark:bg-slate-950 flex items-center justify-center shrink-0">
                                 <LiveTemplatePreview
                                   templateId={template.id}
                                   brandColor={template.color}
@@ -1770,12 +1861,12 @@ function LandingPage() {
                                   <div className="absolute inset-0 bg-emerald/10 pointer-events-none z-10" />
                                 )}
                                 {isSelected && (
-                                  <div className="absolute top-1.5 inset-inline-end-1.5 flex size-4.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs animate-scale-in z-20">
+                                  <div className="absolute top-1.5 end-1.5 flex size-4.5 items-center justify-center rounded-full bg-emerald text-white shadow-xs animate-scale-in z-20">
                                     <Check className="size-2.5 stroke-[3]" />
                                   </div>
                                 )}
                                 <span
-                                  className="absolute bottom-1 inset-inline-start-1 text-[8px] font-black px-1.5 py-0.5 rounded bg-slate-950/85 backdrop-blur-xs text-white border border-white/20 z-20"
+                                  className="absolute bottom-1 start-1 text-[8px] font-black px-1.5 py-0.5 rounded bg-slate-950/85 backdrop-blur-xs text-white border border-white/20 z-20"
                                 >
                                   {isRTL ? template.badgeAr : template.badgeEn}
                                 </span>

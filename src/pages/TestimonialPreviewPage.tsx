@@ -10,7 +10,7 @@ import {
 } from '@/mock/generated-testimonials'
 import { useLanguage } from '@/lib/language-context'
 import { CheckCircle2, Sliders, Palette, Check } from 'lucide-react'
-import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_BRAND_BY_TEMPLATE, type TemplateId } from '@/lib/testimonial-templates'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, TEMPLATE_LABELS_EN, DEFAULT_BRAND_BY_TEMPLATE, type TemplateId } from '@/lib/testimonial-templates'
 import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
 
 const ADDITIONAL_SAMPLES: Record<string, GeneratedTestimonialData> = {
@@ -141,14 +141,14 @@ function TestimonialPreviewPage() {
                       : 'border-border/80 bg-background-subtle/50 hover:border-border hover:bg-surface hover:shadow-xs'
                   }`}
                 >
-                  <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
+                  <div className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-950">
                     <LiveTemplatePreview
                       templateId={tId}
                       brandColor={DEFAULT_BRAND_BY_TEMPLATE[tId]}
                       className="size-full pointer-events-none"
                     />
                     {isSelected && (
-                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
+                      <div className="absolute top-1 end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
                         <Check className="size-2.5 stroke-[3]" />
                       </div>
                     )}
@@ -158,7 +158,7 @@ function TestimonialPreviewPage() {
                       isSelected ? 'text-emerald-deep font-black' : 'text-ink-muted group-hover:text-ink'
                     }`}
                   >
-                    {TEMPLATE_LABELS[tId]}
+                    {isRTL ? TEMPLATE_LABELS[tId] : TEMPLATE_LABELS_EN[tId]}
                   </span>
                 </button>
               )
@@ -173,10 +173,10 @@ function TestimonialPreviewPage() {
             <div className="flex items-center gap-2 px-1">
               <span className="size-2 shrink-0 rounded-full bg-indigo-500" />
               <span className="text-xs sm:text-sm font-bold text-ink">
-                {isRTL ? `قالب: ${TEMPLATE_LABELS[selectedTemplateId]}` : `Template: ${TEMPLATE_LABELS[selectedTemplateId]}`}
+                {isRTL ? `قالب: ${TEMPLATE_LABELS[selectedTemplateId]}` : `Template: ${TEMPLATE_LABELS_EN[selectedTemplateId]}`}
               </span>
             </div>
-            <div className="aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-950 shadow-md">
+            <div className="aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-100 dark:bg-slate-950 shadow-md">
               <LiveTemplatePreview
                 templateId={selectedTemplateId}
                 brandColor={readyData.merchant.brandColor || DEFAULT_BRAND_BY_TEMPLATE[selectedTemplateId]}

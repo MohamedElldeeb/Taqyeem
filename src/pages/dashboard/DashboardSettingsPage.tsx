@@ -17,7 +17,7 @@ import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePrevie
 import { useAuth } from '@/lib/auth-context'
 import { useMerchant } from '@/hooks/useMerchant'
 import { supabase } from '@/lib/supabase'
-import { TEMPLATE_IDS, TEMPLATE_LABELS, type TemplateId } from '@/lib/testimonial-templates'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, TEMPLATE_LABELS_EN, type TemplateId } from '@/lib/testimonial-templates'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
 
@@ -390,57 +390,133 @@ function DashboardSettingsPage() {
 
           {/* Review Template Selection Card */}
           <Card className="border-border/80 bg-surface/90 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-md">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-purple-600 text-white shadow-sm">
-                  <Sparkles className="size-4.5" />
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-purple-600 text-white shadow-sm">
+                    <Sparkles className="size-4.5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base font-bold text-ink">
+                      {t('dash_settings_template_card')}
+                    </CardTitle>
+                    <CardDescription className="text-xs text-ink-muted mt-0.5">
+                      {t('dash_settings_template_desc')}
+                    </CardDescription>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle className="text-base font-bold text-ink">
-                    {t('dash_settings_template_card')}
-                  </CardTitle>
-                  <CardDescription className="text-xs text-ink-muted mt-0.5">
-                    {t('dash_settings_template_desc')}
-                  </CardDescription>
-                </div>
+
+                <span className="text-[11px] font-bold text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20 shrink-0">
+                  {TEMPLATE_IDS.length} {isRTL ? 'قالب حصري' : 'Presets'}
+                </span>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 pt-4">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 max-h-[390px] sm:max-h-[440px] overflow-y-auto scrollbar-sleek overscroll-contain touch-pan-y pe-1.5 py-0.5">
-                {TEMPLATE_IDS.map((templateId) => {
-                  const isSelected = merchant.default_template_id === templateId
-                  return (
-                    <button
-                      key={templateId}
-                      type="button"
-                      onClick={() => handleSelectTemplate(templateId)}
-                      disabled={savingTemplate}
-                      className={`group relative flex flex-col items-center overflow-hidden rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
-                        isSelected
-                          ? 'border-emerald bg-emerald-surface/30 shadow-md scale-[1.02]'
-                          : 'border-transparent bg-background-subtle/50 hover:border-border hover:bg-surface hover:shadow-sm'
-                      }`}
-                    >
-                      <div className="relative w-full overflow-hidden">
-                        <LiveTemplatePreview templateId={templateId} brandColor={brandColor} />
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-emerald/5" />
-                        )}
-                        {isSelected && (
-                          <div className="absolute top-1.5 inset-inline-end-1.5 flex size-5 items-center justify-center rounded-full bg-emerald text-white shadow-md animate-scale-in z-10">
-                            <Check className="size-3 stroke-[3]" />
-                          </div>
-                        )}
-                      </div>
-                      <span className={`w-full text-center py-2 px-1.5 text-[11px] font-bold ${
-                        isSelected ? 'text-emerald-deep' : 'text-ink group-hover:text-emerald-deep'
-                      } transition-colors`}>
-                        {TEMPLATE_LABELS[templateId]}
-                      </span>
-                    </button>
-                  )
-                })}
+
+            <CardContent className="flex flex-col gap-5 pt-2">
+              {/* Active Selected Template Live Highlight */}
+              <div className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-emerald-border/60 bg-emerald-surface/20 p-3.5 shadow-2xs">
+                <div className="size-28 sm:size-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-emerald/30 shadow-md shrink-0 relative">
+                  <LiveTemplatePreview
+                    templateId={(merchant.default_template_id as TemplateId) || '01-glass-orbs'}
+                    brandColor={brandColor}
+                    data={{
+                      merchant: businessName.trim() || merchant.business_name || 'Taqyeem',
+                      logoUrl: displayedLogoUrl || undefined,
+                      customer: isRTL ? 'عميل مميز' : 'Verified Buyer',
+                      quote: isRTL ? 'تجربة شراء استثنائية وجودة لا غبار عليها.' : 'Exceptional buying experience and top quality.',
+                    }}
+                    className="size-full pointer-events-none"
+                  />
+                  <div className="absolute top-1.5 end-1.5 flex size-5 items-center justify-center rounded-full bg-emerald text-white shadow-md z-10">
+                    <Check className="size-3 stroke-[3]" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center sm:items-start text-center sm:text-start gap-1.5 min-w-0 flex-1">
+                  <div className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-deep bg-emerald-surface px-2 py-0.5 rounded-full border border-emerald-border/80">
+                    <Sparkles className="size-3" />
+                    <span>{isRTL ? 'القالب الافتراضي المطبق' : 'Active Default Template'}</span>
+                  </div>
+                  <h4 className="text-sm font-extrabold text-ink">
+                    {isRTL
+                      ? TEMPLATE_LABELS[(merchant.default_template_id as TemplateId) || '01-glass-orbs']
+                      : TEMPLATE_LABELS_EN[(merchant.default_template_id as TemplateId) || '01-glass-orbs']}
+                    <span className="text-ink-muted text-xs font-normal ms-1.5">
+                      ({isRTL ? TEMPLATE_LABELS_EN[(merchant.default_template_id as TemplateId) || '01-glass-orbs'] : TEMPLATE_LABELS[(merchant.default_template_id as TemplateId) || '01-glass-orbs']})
+                    </span>
+                  </h4>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    {isRTL
+                      ? 'يتم تطبيق هذا النمط التلقائي على جميع بطاقات التقييمات الجديدة وتوليد الصور الترويجية.'
+                      : 'All new customer review cards and promotional images will automatically use this aesthetic.'}
+                  </p>
+                </div>
               </div>
+
+              {/* Template Selection Grid */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold text-ink">
+                    {isRTL ? 'اختر القالب المفضل للمعاينة والتطبيق:' : 'Choose template style:'}
+                  </Label>
+                  <span className="text-[11px] text-ink-subtle">
+                    {isRTL ? 'اضغط لتطبيق القالب فوراً' : 'Click any card to apply'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 max-h-[380px] sm:max-h-[420px] overflow-y-auto scrollbar-sleek overscroll-contain touch-pan-y pe-1.5 py-1">
+                  {TEMPLATE_IDS.map((templateId) => {
+                    const isSelected = merchant.default_template_id === templateId
+                    return (
+                      <button
+                        key={templateId}
+                        type="button"
+                        onClick={() => handleSelectTemplate(templateId)}
+                        disabled={savingTemplate}
+                        className={`group relative flex flex-col items-center overflow-hidden rounded-2xl border-2 transition-all duration-200 cursor-pointer text-start ${
+                          isSelected
+                            ? 'border-emerald bg-emerald-surface/40 shadow-md scale-[1.02] ring-2 ring-emerald-500/30'
+                            : 'border-border/80 bg-surface/90 hover:border-emerald-border/80 hover:bg-surface hover:shadow-sm hover:scale-[1.01]'
+                        }`}
+                      >
+                        <div className="relative w-full aspect-square overflow-hidden bg-slate-100 dark:bg-slate-950 flex items-center justify-center shrink-0">
+                          <LiveTemplatePreview
+                            templateId={templateId}
+                            brandColor={brandColor}
+                            data={{
+                              merchant: businessName.trim() || merchant.business_name || 'Taqyeem',
+                              logoUrl: displayedLogoUrl || undefined,
+                            }}
+                            className="size-full pointer-events-none"
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-emerald/10 pointer-events-none z-10" />
+                          )}
+                          {isSelected && (
+                            <div className="absolute top-1.5 end-1.5 flex size-5 items-center justify-center rounded-full bg-emerald text-white shadow-md animate-scale-in z-20">
+                              <Check className="size-3 stroke-[3]" />
+                            </div>
+                          )}
+                          <div className="absolute bottom-1.5 start-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 backdrop-blur-xs text-[9px] font-bold text-white px-1.5 py-0.5 rounded-md pointer-events-none">
+                            {TEMPLATE_LABELS_EN[templateId]}
+                          </div>
+                        </div>
+                        <div className="w-full flex items-center justify-between py-2 px-2 gap-1 bg-surface/80">
+                          <span className={`text-[11px] font-bold truncate ${
+                            isSelected ? 'text-emerald-deep font-black' : 'text-ink group-hover:text-emerald-deep'
+                          } transition-colors`}>
+                            {isRTL ? TEMPLATE_LABELS[templateId] : TEMPLATE_LABELS_EN[templateId]}
+                          </span>
+                          {isSelected && (
+                            <span className="size-1.5 rounded-full bg-emerald shrink-0" />
+                          )}
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
               {templateError && (
                 <p className="text-xs font-semibold text-danger animate-fade-in">{templateError}</p>
               )}

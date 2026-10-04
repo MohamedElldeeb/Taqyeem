@@ -41,10 +41,6 @@ function LoginPage() {
   const [resendState, setResendState] = React.useState<'idle' | 'sending' | 'sent'>('idle')
   const [resendError, setResendError] = React.useState<string | null>(null)
 
-  if (!loading && session) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   const emailError = React.useMemo(() => {
     if (!touched.email) return null
     if (!email.trim()) return t('val_email_required')
@@ -58,6 +54,10 @@ function LoginPage() {
     if (password.length < 6) return t('val_password_min')
     return null
   }, [password, touched.password, t])
+
+  if (!loading && session) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
