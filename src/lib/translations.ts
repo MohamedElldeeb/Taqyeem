@@ -37,6 +37,11 @@ export const translations = {
     action_search: 'بحث...',
     action_filter_all: 'الكل',
     action_switch_language: 'English',
+    pagination_prev: 'السابق',
+    pagination_next: 'التالي',
+    pagination_first: 'الأولى',
+    pagination_last: 'الأخيرة',
+    pagination_per_page: 'لكل صفحة:',
 
     // Navigation Items
     nav_home: 'الرئيسية',
@@ -118,6 +123,15 @@ export const translations = {
     wall_share_btn: 'مشاركة الصفحة',
     wall_total_reviews: 'إجمالي التقييمات',
     wall_avg_rating: 'متوسط التقييم',
+    wall_search_placeholder: 'ابحث في محتوى التقييمات أو أسماء العملاء...',
+    wall_showing_count: 'عرض {count} من إجمالي {total} تقييم',
+    wall_no_search_results: 'لم يتم العثور على تقييمات تطابق بحثك',
+    wall_no_search_desc: 'جرب استخدام كلمات بحث أخرى أو إزالة الفلاتر المحددة.',
+    wall_clear_filters: 'إعادة ضبط البحث والفلاتر',
+    wall_sort_label: 'الترتيب:',
+    wall_sort_newest: 'الأحدث أولاً',
+    wall_sort_highest: 'الأعلى تقييماً',
+    wall_sort_lowest: 'الأقل تقييماً',
 
     // Dashboard Home
     dash_home_title: 'لوحة التحكم',
@@ -272,6 +286,11 @@ export const translations = {
     action_search: 'Search...',
     action_filter_all: 'All',
     action_switch_language: 'العربية',
+    pagination_prev: 'Prev',
+    pagination_next: 'Next',
+    pagination_first: 'First',
+    pagination_last: 'Last',
+    pagination_per_page: 'per page:',
 
     // Navigation Items
     nav_home: 'Home',
@@ -353,6 +372,15 @@ export const translations = {
     wall_share_btn: 'Share Page',
     wall_total_reviews: 'Total Reviews',
     wall_avg_rating: 'Average Rating',
+    wall_search_placeholder: 'Search in testimonials or customer names...',
+    wall_showing_count: 'Showing {count} of {total} reviews',
+    wall_no_search_results: 'No reviews matched your search',
+    wall_no_search_desc: 'Try searching with different keywords or clear applied filters.',
+    wall_clear_filters: 'Reset Search & Filters',
+    wall_sort_label: 'Sort by:',
+    wall_sort_newest: 'Newest First',
+    wall_sort_highest: 'Highest Rated',
+    wall_sort_lowest: 'Lowest Rated',
 
     // Dashboard Home
     dash_home_title: 'Dashboard',

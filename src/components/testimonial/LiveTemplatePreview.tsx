@@ -113,7 +113,7 @@ export function LiveTemplatePreview({
   return (
     <div
       ref={wrapperRef}
-      className={`relative overflow-hidden select-none bg-slate-950 ${className ?? ''}`}
+      className={`relative overflow-hidden select-none bg-slate-100 dark:bg-slate-950 ${className ?? ''}`}
       style={
         fluid
           ? { width: '100%', height: '100%' }
@@ -155,7 +155,7 @@ export function LiveTemplatePreview({
         />
       )}
       {!ready && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-slate-950/70 backdrop-blur-xs">
           <div
             className="size-5 rounded-full border-2 border-t-transparent animate-spin"
             style={{ borderColor: effectiveBrand, borderTopColor: 'transparent' }}

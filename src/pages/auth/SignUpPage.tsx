@@ -38,11 +38,6 @@ function SignUpPage() {
   const [submitting, setSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [alreadyExists, setAlreadyExists] = React.useState(false)
-
-  if (!loading && session) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   const emailError = React.useMemo(() => {
     if (!touched.email) return null
     if (!email.trim()) return t('val_email_required')
@@ -56,6 +51,10 @@ function SignUpPage() {
     if (password.length < 6) return t('val_password_min')
     return null
   }, [password, touched.password, t])
+
+  if (!loading && session) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()

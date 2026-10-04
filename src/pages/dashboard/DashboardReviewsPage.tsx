@@ -27,6 +27,7 @@ import { useMerchantReviews, type MerchantReview, type ReviewDbStatus } from '@/
 import { toCardStatus } from '@/lib/generated-content-status'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
+import { Pagination } from '@/components/ui/pagination'
 import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
 
 type FilterTab = 'all' | 'completed' | 'processing' | 'failed'
@@ -36,11 +37,33 @@ function DashboardReviewsPage() {
   const { reviews, loading, error, refetch } = useMerchantReviews(merchant?.id)
   const { t, isRTL, formatDate } = useLanguage()
   const [activeTab, setActiveTab] = React.useState<FilterTab>('all')
+  const [currentPage, setCurrentPage] = React.useState(1)
+  const [pageSize, setPageSize] = React.useState(6)
+
+  // Reset page when tab changes
+  const handleTabChange = (tab: FilterTab) => {
+    setActiveTab(tab)
+    setCurrentPage(1)
+  }
 
   const filteredReviews = React.useMemo(() => {
     if (activeTab === 'all') return reviews
     return reviews.filter((r) => r.status === activeTab)
   }, [reviews, activeTab])
+
+  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize))
+
+  // Ensure current page is valid when count changes
+  React.useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [totalPages, currentPage])
+
+  const paginatedReviews = React.useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    return filteredReviews.slice(start, start + pageSize)
+  }, [filteredReviews, currentPage, pageSize])
 
   const statusLabels: Record<ReviewDbStatus, string> = {
     submitted: t('status_submitted'),
@@ -75,7 +98,7 @@ function DashboardReviewsPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-6 animate-fade-in">
+    <div className="flex flex-col gap-6 animate-fade-in pb-8">
       {/* Page Header */}
       <header className="flex flex-col gap-2">
         <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-border bg-emerald-surface px-3 py-1 text-xs font-bold text-emerald-deep w-fit shadow-2xs">
@@ -167,7 +190,7 @@ function DashboardReviewsPage() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer ${
                   activeTab === tab.id
                     ? 'bg-emerald text-white shadow-md shadow-emerald/25 scale-[1.02]'
@@ -233,7 +256,7 @@ function DashboardReviewsPage() {
       {/* Reviews List */}
       {!loading && !error && filteredReviews.length > 0 && (
         <div className="flex flex-col gap-4">
-          {filteredReviews.map((review) => (
+          {paginatedReviews.map((review) => (
             <ReviewRow
               key={review.id}
               review={review}
@@ -245,6 +268,20 @@ function DashboardReviewsPage() {
               anonymousLabel={t('dash_anonymous_customer')}
             />
           ))}
+
+          {/* Pagination Controls */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredReviews.length}
+            pageSize={pageSize}
+            pageSizeOptions={[6, 12, 24]}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize)
+              setCurrentPage(1)
+            }}
+          />
         </div>
       )}
     </div>

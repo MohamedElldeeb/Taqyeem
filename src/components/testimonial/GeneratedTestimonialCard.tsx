@@ -53,7 +53,7 @@ function GeneratedTestimonialCard({
   return (
     <div
       className={cn(
-        'group relative aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-950 shadow-md transition-all duration-300 hover:shadow-xl hover:border-border',
+        'group relative aspect-square w-full max-w-[520px] overflow-hidden rounded-2xl border border-border/80 bg-slate-100 dark:bg-slate-950 shadow-md transition-all duration-300 hover:shadow-xl hover:border-border',
         className,
       )}
     >
@@ -66,30 +66,30 @@ function GeneratedTestimonialCard({
 
 function ProcessingState() {
   return (
-    <div className="flex h-full w-full animate-pulse flex-col justify-between bg-slate-950 p-5 sm:p-6 md:p-7">
+    <div className="flex h-full w-full animate-pulse flex-col justify-between bg-slate-100 dark:bg-slate-950 p-5 sm:p-6 md:p-7">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="size-7 rounded-xl bg-white/10" />
-          <div className="h-4 w-24 rounded-full bg-white/10" />
+          <div className="size-7 rounded-xl bg-slate-300/40 dark:bg-white/10" />
+          <div className="h-4 w-24 rounded-full bg-slate-300/40 dark:bg-white/10" />
         </div>
-        <div className="size-6 rounded-lg bg-white/5" />
+        <div className="size-6 rounded-lg bg-slate-200/40 dark:bg-white/5" />
       </div>
 
       <div className="flex flex-col gap-2.5 my-auto">
-        <div className="h-4 w-full rounded-full bg-white/10" />
-        <div className="h-4 w-5/6 rounded-full bg-white/10" />
-        <div className="h-4 w-4/6 rounded-full bg-white/10" />
-        <div className="h-4 w-2/3 rounded-full bg-white/10" />
+        <div className="h-4 w-full rounded-full bg-slate-300/40 dark:bg-white/10" />
+        <div className="h-4 w-5/6 rounded-full bg-slate-300/40 dark:bg-white/10" />
+        <div className="h-4 w-4/6 rounded-full bg-slate-300/40 dark:bg-white/10" />
+        <div className="h-4 w-2/3 rounded-full bg-slate-300/40 dark:bg-white/10" />
       </div>
 
-      <div className="flex flex-col gap-2 pt-2.5 border-t border-white/5">
+      <div className="flex flex-col gap-2 pt-2.5 border-t border-slate-200/50 dark:border-white/5">
         <div className="flex items-center justify-between">
-          <div className="h-3.5 w-20 rounded-full bg-white/10" />
-          <div className="h-3.5 w-16 rounded-full bg-white/10" />
+          <div className="h-3.5 w-20 rounded-full bg-slate-300/40 dark:bg-white/10" />
+          <div className="h-3.5 w-16 rounded-full bg-slate-300/40 dark:bg-white/10" />
         </div>
         <div className="flex items-center justify-between pt-0.5">
-          <div className="h-2.5 w-14 rounded-full bg-white/5" />
-          <div className="h-2.5 w-16 rounded-full bg-white/5" />
+          <div className="h-2.5 w-14 rounded-full bg-slate-200/40 dark:bg-white/5" />
+          <div className="h-2.5 w-16 rounded-full bg-slate-200/40 dark:bg-white/5" />
         </div>
       </div>
     </div>
@@ -98,13 +98,13 @@ function ProcessingState() {
 
 function FailedState({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-3.5 bg-slate-950 p-5 sm:p-6 text-center">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-3.5 bg-slate-100 dark:bg-slate-950 p-5 sm:p-6 text-center">
       <div className="flex size-12 items-center justify-center rounded-2xl bg-danger/10 text-danger border border-danger/20">
         <AlertTriangle className="size-6" />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-bold text-white">تعذر إنشاء صورة التقييم</p>
-        <p className="text-xs text-white/50">حدث خطأ أثناء معالجة الصورة</p>
+        <p className="text-sm font-bold text-ink dark:text-white">تعذر إنشاء صورة التقييم</p>
+        <p className="text-xs text-ink-muted dark:text-white/50">حدث خطأ أثناء معالجة الصورة</p>
       </div>
       {onRetry && (
         <Button variant="secondary" size="sm" onClick={onRetry} className="gap-1.5 mt-1">
@@ -121,7 +121,7 @@ function ReadyState({ data }: { data: GeneratedTestimonialData }) {
 
   if (generatedImageUrl) {
     return (
-      <div className="relative h-full w-full bg-slate-950">
+      <div className="relative h-full w-full bg-slate-100 dark:bg-slate-950">
         <img
           src={generatedImageUrl}
           alt={customerName ? `تقييم من ${customerName}` : 'تقييم العميل'}

@@ -68,6 +68,29 @@ export const TEMPLATE_LABELS: Record<TemplateId, string> = {
   '08-brutalist-modern': 'حاد',
 }
 
+export const TEMPLATE_LABELS_EN: Record<TemplateId, string> = {
+  '01-glass-orbs': '3D Glass',
+  '02-soft-clay': 'Soft Clay',
+  '03-tilted-stack': 'Tilted Stack',
+  '04-extruded-type': 'Extruded Type',
+  '05-floating-note': 'Floating Note',
+  '06-neumorphic': 'Neumorphic',
+  '07-liquid-chrome': 'Liquid Chrome',
+  '08-ticket-stub': 'Ticket Stub',
+  '09-inflated-bubble': 'Inflated Bubble',
+  '10-paper-depth': 'Paper Depth',
+  '11-spotlight-podium': 'Spotlight Podium',
+  '12-horizon-grid': 'Horizon Grid',
+  '01-neon-editorial': 'Neon Cyber',
+  '02-luxury-editorial': 'Royal Luxury',
+  '03-minimal-modern': 'Clean Minimal',
+  '04-warm-organic': 'Warm Artisan',
+  '05-bold-contemporary': 'Bold Dynamic',
+  '06-magazine-editorial': 'Editorial Magazine',
+  '07-soft-premium': 'Soft Botanic',
+  '08-brutalist-modern': 'Brutalist Studio',
+}
+
 export const DEFAULT_BRAND_BY_TEMPLATE: Record<TemplateId, string> = {
   '01-glass-orbs': '#7C5CFF',
   '02-soft-clay': '#FF7A59',

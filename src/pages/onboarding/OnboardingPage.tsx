@@ -44,14 +44,6 @@ function OnboardingPage() {
   const [createdSlug, setCreatedSlug] = React.useState<string | null>(null)
   const [copied, setCopied] = React.useState(false)
 
-  if (merchantLoading) {
-    return <FullPageSpinner />
-  }
-
-  if (merchant) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   const businessNameError = React.useMemo(() => {
     if (!touched.businessName) return null
     if (!businessName.trim()) return t('val_biz_name_required')
@@ -66,6 +58,14 @@ function OnboardingPage() {
     if (!isValidSlug(slug)) return t('val_slug_invalid')
     return null
   }, [slug, touched.slug, t])
+
+  if (merchantLoading) {
+    return <FullPageSpinner />
+  }
+
+  if (merchant) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   function handleBusinessNameChange(value: string) {
     setBusinessName(value)

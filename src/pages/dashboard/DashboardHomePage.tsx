@@ -37,8 +37,9 @@ import { useMerchant } from '@/hooks/useMerchant'
 import { useMerchantReviews, type ReviewDbStatus } from '@/hooks/useMerchantReviews'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
-import { TEMPLATE_IDS, TEMPLATE_LABELS, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
+import { TEMPLATE_IDS, TEMPLATE_LABELS, TEMPLATE_LABELS_EN, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
 import { LiveTemplatePreview } from '@/components/testimonial/LiveTemplatePreview'
+import { Pagination } from '@/components/ui/pagination'
 
 function DashboardHomePage() {
   const { merchant } = useMerchant()
@@ -47,6 +48,8 @@ function DashboardHomePage() {
   const { showToast } = useToast()
   const [copied, setCopied] = React.useState(false)
   const [copiedReviewId, setCopiedReviewId] = React.useState<string | null>(null)
+  const [recentPage, setRecentPage] = React.useState(1)
+  const recentPageSize = 4
   const templateScrollRef = React.useRef<HTMLDivElement>(null)
 
   const scrollTemplates = (direction: 'left' | 'right') => {
@@ -58,7 +61,12 @@ function DashboardHomePage() {
   const reviewLink = `${window.location.origin}/r/${merchant?.slug ?? ''}`
 
   const readyCount = reviews.filter((r) => r.generated_content?.status === 'completed').length
-  const latestReviews = reviews.slice(0, 3)
+  const totalRecentPages = Math.max(1, Math.ceil(reviews.length / recentPageSize))
+
+  const paginatedRecentReviews = React.useMemo(() => {
+    const start = (recentPage - 1) * recentPageSize
+    return reviews.slice(start, start + recentPageSize)
+  }, [reviews, recentPage, recentPageSize])
 
   const totalReviews = reviews.length
   const avgRating = totalReviews > 0
@@ -468,14 +476,14 @@ function DashboardHomePage() {
                   }`}
                   title={`${TEMPLATE_LABELS[tId]} - ${isActive ? (isRTL ? 'القالب النشط حالياً' : 'Active Template') : (isRTL ? 'اضغط للتطبيق' : 'Click to apply')}`}
                 >
-                  <div className="relative aspect-square w-full overflow-hidden bg-slate-950">
+                  <div className="relative aspect-square w-full overflow-hidden bg-slate-100 dark:bg-slate-950">
                     <LiveTemplatePreview
                       templateId={tId}
                       brandColor={merchant?.brand_color}
                       className="size-full pointer-events-none"
                     />
                     {isActive && (
-                      <div className="absolute top-1 inset-inline-end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
+                      <div className="absolute top-1 end-1 flex size-4 items-center justify-center rounded-full bg-emerald text-white shadow-xs z-10">
                         <Check className="size-2.5 stroke-[3]" />
                       </div>
                     )}
@@ -485,7 +493,7 @@ function DashboardHomePage() {
                       isActive ? 'text-emerald-deep font-black' : 'text-ink-muted group-hover:text-ink'
                     }`}
                   >
-                    {TEMPLATE_LABELS[tId]}
+                    {isRTL ? TEMPLATE_LABELS[tId] : TEMPLATE_LABELS_EN[tId]}
                   </span>
                 </Link>
               )
@@ -540,7 +548,7 @@ function DashboardHomePage() {
 
           {!loading && reviews.length > 0 && (
             <div className="flex flex-col gap-3.5">
-              {latestReviews.map((review) => (
+              {paginatedRecentReviews.map((review) => (
                 <div
                   key={review.id}
                   className="group/review flex flex-col gap-3 rounded-2xl border border-border/80 bg-surface/80 p-4 sm:p-5 transition-all duration-200 hover:border-emerald-border hover:shadow-xs hover:bg-surface"
@@ -650,6 +658,17 @@ function DashboardHomePage() {
                   </div>
                 </div>
               ))}
+
+              {/* Pagination Controls */}
+              {totalRecentPages > 1 && (
+                <Pagination
+                  currentPage={recentPage}
+                  totalPages={totalRecentPages}
+                  totalItems={reviews.length}
+                  pageSize={recentPageSize}
+                  onPageChange={setRecentPage}
+                />
+              )}
             </div>
           )}
         </CardContent>
