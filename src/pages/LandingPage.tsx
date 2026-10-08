@@ -34,6 +34,11 @@ import {
   Eye,
   SlidersHorizontal,
   ChevronDown,
+  Gift,
+  BrainCircuit,
+  Mail,
+  Percent,
+  Clock,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -629,6 +634,13 @@ function LandingPage() {
               {isRTL ? 'المميزات' : 'Features'}
             </a>
             <a
+              href="#engine"
+              className="inline-flex items-center gap-1.5 hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
+            >
+              <ShieldCheck className="size-3.5 text-emerald" />
+              <span>{isRTL ? 'الحماية والنمو' : 'Protection & Growth'}</span>
+            </a>
+            <a
               href="#how-it-works"
               className="hover:text-emerald transition-colors py-1 px-2.5 rounded-xl hover:bg-emerald-surface/50"
             >
@@ -730,6 +742,10 @@ function LandingPage() {
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="size-4 text-emerald" />
                     <span>{isRTL ? 'بدون تحميل تطبيقات' : 'Zero App Downloads'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <MessageSquareText className="size-4 text-emerald" />
+                    <span>{isRTL ? 'تنبيه فوري عند أي تقييم سلبي' : 'Instant alert on any negative review'}</span>
                   </div>
                 </div>
               </div>
@@ -966,12 +982,12 @@ function LandingPage() {
                 {isRTL ? 'لماذا تقييم؟' : 'Why Taqyeem?'}
               </Badge>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-ink tracking-tight">
-                {isRTL ? 'كل ما تحتاجه لبناء ثقة عملاء حقيقية' : 'Everything to Build Unshakable Social Proof'}
+                {isRTL ? 'منظومة كاملة لحماية سمعتك وزيادة مبيعاتك' : 'A Complete Engine to Protect Your Reputation and Grow Sales'}
               </h2>
               <p className="max-w-xl text-sm sm:text-base text-ink-muted">
                 {isRTL
-                  ? 'منظومة متكاملة تضمن جمع آراء العملاء بأسهل طريقة، وتحويلها لأصول تسويقية فعالة.'
-                  : 'An effortless engine to collect genuine customer love and convert it into high-converting sales assets.'}
+                  ? 'مش بس تصاميم جميلة — كل تقييم بيتعامل معاه أوتوماتيك حسب نجومه: حماية من الأزمات، تسويق حقيقي، وخصومات ترجّع عميلك تاني.'
+                  : "It's not just beautiful visuals — every review is routed automatically by its rating: crisis protection, real marketing reach, and discounts that bring customers back."}
               </p>
             </div>
 
@@ -1564,6 +1580,138 @@ function LandingPage() {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* SECTION 2.5: PROTECTION & GROWTH ENGINE (Smart Funnel / AI Insights /     */}
+        {/* Repeat Purchase) — the 3 automated, rating-driven mechanics              */}
+        {/* ========================================================================= */}
+        <section id="engine" className="relative isolate py-20 md:py-28 border-t border-border/80 overflow-hidden">
+          <div className="pointer-events-none absolute -top-20 -end-20 size-[420px] rounded-full bg-gradient-to-tr from-rose-400/20 via-amber-300/15 to-transparent dark:from-rose-600/15 blur-[90px] z-0" />
+          <div className="pointer-events-none absolute -bottom-20 -start-20 size-[420px] rounded-full bg-gradient-to-tr from-indigo-400/20 via-violet-300/15 to-transparent dark:from-indigo-600/15 blur-[90px] z-0" />
+
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 relative z-10">
+            <div className="mb-14 flex flex-col items-center gap-3 text-center">
+              <Badge variant="default" dot>
+                {t('landing_engine_badge')}
+              </Badge>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-ink tracking-tight max-w-2xl">
+                {t('landing_engine_title')}
+              </h2>
+              <p className="max-w-xl text-sm sm:text-base text-ink-muted">
+                {t('landing_engine_subtitle')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card A: Smart Review Funnel */}
+              <div className="rounded-3xl border border-border bg-surface p-6 sm:p-7 shadow-xs hover:border-rose-300/60 hover:shadow-2xl transition-all duration-500 flex flex-col gap-4 group relative overflow-hidden">
+                <div className="pointer-events-none absolute -top-10 -end-10 size-40 rounded-full bg-rose-500/10 blur-3xl opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30 shadow-xs group-hover:scale-110 transition-transform relative z-10">
+                  <ShieldCheck className="size-6" />
+                </div>
+
+                <div className="flex flex-col gap-2 relative z-10">
+                  <h3 className="text-lg font-extrabold text-ink">{t('landing_funnel_title')}</h3>
+                  <p className="text-sm text-ink-muted leading-relaxed">{t('landing_funnel_desc')}</p>
+                </div>
+
+                {/* Visual: negative vs positive routing */}
+                <div className="mt-1 flex flex-col gap-2.5 relative z-10">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50/70 dark:bg-rose-950/30 p-3">
+                    <div className="flex items-center gap-1 text-rose-500 shrink-0">
+                      <Star className="size-3 fill-current" />
+                      <Star className="size-3 fill-current" />
+                      <Star className="size-3" />
+                    </div>
+                    <Mail className="size-3.5 text-rose-500 shrink-0" />
+                    <span className="text-[11px] font-bold text-rose-700 dark:text-rose-300 leading-tight">
+                      {t('landing_funnel_negative_result')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2.5 rounded-xl border border-emerald-border bg-emerald-surface/70 p-3">
+                    <div className="flex items-center gap-1 text-amber-400 shrink-0">
+                      <Star className="size-3 fill-current" />
+                      <Star className="size-3 fill-current" />
+                      <Star className="size-3 fill-current" />
+                    </div>
+                    <Gift className="size-3.5 text-emerald shrink-0" />
+                    <span className="text-[11px] font-bold text-emerald-deep leading-tight">
+                      {t('landing_funnel_positive_result')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card B: AI Weekly Insights */}
+              <div className="rounded-3xl border border-border bg-surface p-6 sm:p-7 shadow-xs hover:border-indigo-300/60 hover:shadow-2xl transition-all duration-500 flex flex-col gap-4 group relative overflow-hidden">
+                <div className="pointer-events-none absolute -top-10 -end-10 size-40 rounded-full bg-indigo-500/10 blur-3xl opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 shadow-xs group-hover:scale-110 transition-transform relative z-10">
+                  <BrainCircuit className="size-6" />
+                </div>
+
+                <div className="flex flex-col gap-2 relative z-10">
+                  <h3 className="text-lg font-extrabold text-ink">{t('landing_insights_title')}</h3>
+                  <p className="text-sm text-ink-muted leading-relaxed">{t('landing_insights_desc')}</p>
+                </div>
+
+                {/* Visual: sample AI digest card */}
+                <div className="mt-1 rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/60 dark:bg-indigo-950/25 p-3.5 relative z-10">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Sparkles className="size-3.5 text-indigo-500" />
+                    <span className="text-[11px] font-extrabold text-indigo-700 dark:text-indigo-300">
+                      {t('landing_insights_sample_title')}
+                    </span>
+                  </div>
+                  <ul className="flex flex-col gap-1.5 text-[11px] text-ink-muted leading-relaxed">
+                    <li className="flex items-start gap-1.5">
+                      <span className="mt-1 size-1 rounded-full bg-indigo-400 shrink-0" />
+                      <span>{t('landing_insights_sample_line1')}</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="mt-1 size-1 rounded-full bg-indigo-400 shrink-0" />
+                      <span>{t('landing_insights_sample_line2')}</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <span className="mt-1 size-1 rounded-full bg-indigo-400 shrink-0" />
+                      <span>{t('landing_insights_sample_line3')}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Card C: Repeat Purchase Engine */}
+              <div className="rounded-3xl border border-border bg-surface p-6 sm:p-7 shadow-xs hover:border-amber-300/60 hover:shadow-2xl transition-all duration-500 flex flex-col gap-4 group relative overflow-hidden">
+                <div className="pointer-events-none absolute -top-10 -end-10 size-40 rounded-full bg-amber-500/10 blur-3xl opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 shadow-xs group-hover:scale-110 transition-transform relative z-10">
+                  <Gift className="size-6" />
+                </div>
+
+                <div className="flex flex-col gap-2 relative z-10">
+                  <h3 className="text-lg font-extrabold text-ink">{t('landing_repeat_title')}</h3>
+                  <p className="text-sm text-ink-muted leading-relaxed">{t('landing_repeat_desc')}</p>
+                </div>
+
+                {/* Visual: sample discount code chip */}
+                <div className="mt-1 flex flex-col gap-2 relative z-10">
+                  <span className="text-[10px] font-bold text-ink-subtle">{t('landing_repeat_sample_label')}</span>
+                  <div className="flex items-center justify-between gap-2 rounded-xl border-2 border-dashed border-amber-400/60 bg-amber-50/70 dark:bg-amber-950/25 px-3 py-2.5">
+                    <code className="text-sm font-extrabold tracking-wider text-amber-700 dark:text-amber-300">
+                      TQY-7F3K9A2B
+                    </code>
+                    <Percent className="size-4 text-amber-500 shrink-0" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    <Clock className="size-3" />
+                    <span>{t('landing_repeat_sample_expiry')}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

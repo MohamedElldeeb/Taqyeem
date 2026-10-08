@@ -11,6 +11,10 @@ export interface Merchant {
   logo_url: string | null
   brand_color: string
   default_template_id: string
+  google_review_url: string | null
+  facebook_review_url: string | null
+  share_discount_percent: number
+  repeat_discount_percent: number
   created_at: string
   updated_at: string
 }

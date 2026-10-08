@@ -12,6 +12,8 @@ export interface MerchantReview {
   original_text: string
   status: ReviewDbStatus
   created_at: string
+  is_published: boolean
+  order_number: string | null
   generated_content: {
     status: GeneratedContentDbStatus
     image_url: string | null
@@ -30,6 +32,8 @@ interface RawReviewRow {
   original_text: string
   status: ReviewDbStatus
   created_at: string
+  is_published: boolean
+  order_number: string | null
   generated_content: RawGeneratedContent[] | RawGeneratedContent | null
 }
 
@@ -68,7 +72,7 @@ function useMerchantReviews(merchantId: string | undefined) {
     const { data, error: fetchError } = await supabase
       .from('reviews')
       .select(
-        'id, customer_name, rating, original_text, status, created_at, generated_content(status, image_url)',
+        'id, customer_name, rating, original_text, status, created_at, is_published, order_number, generated_content(status, image_url)',
       )
       .eq('merchant_id', merchantId)
       .order('created_at', { ascending: false })

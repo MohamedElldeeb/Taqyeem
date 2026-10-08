@@ -19,6 +19,7 @@ import {
   Sparkles,
   Star,
   TrendingUp,
+  BrainCircuit,
 } from 'lucide-react'
 
 import {
@@ -35,6 +36,7 @@ import { StarRating } from '@/components/ui/star-rating'
 import { EmptyState } from '@/components/ui/empty-state'
 import { useMerchant } from '@/hooks/useMerchant'
 import { useMerchantReviews, type ReviewDbStatus } from '@/hooks/useMerchantReviews'
+import { useLatestWeeklyInsight } from '@/hooks/useLatestWeeklyInsight'
 import { useLanguage } from '@/lib/language-context'
 import { useToast } from '@/components/ui/toast'
 import { TEMPLATE_IDS, TEMPLATE_LABELS, TEMPLATE_LABELS_EN, DEFAULT_TEMPLATE_ID, type TemplateId } from '@/lib/testimonial-templates'
@@ -44,6 +46,7 @@ import { Pagination } from '@/components/ui/pagination'
 function DashboardHomePage() {
   const { merchant } = useMerchant()
   const { reviews, loading } = useMerchantReviews(merchant?.id)
+  const { insight: weeklyInsight } = useLatestWeeklyInsight(merchant?.id)
   const { t, isRTL, formatDate } = useLanguage()
   const { showToast } = useToast()
   const [copied, setCopied] = React.useState(false)
@@ -235,6 +238,39 @@ function DashboardHomePage() {
           trend={isRTL ? 'نسبة إيجابية' : 'Positive Ratio'}
         />
       </div>
+
+      {/* 2.5 Weekly AI Insights Card — shown only once the first digest exists */}
+      {weeklyInsight && (
+        <Card className="border-indigo-border/60 bg-gradient-to-br from-indigo-50/60 via-surface to-surface dark:from-indigo-950/20 dark:via-surface dark:to-surface shadow-xs">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30">
+                <BrainCircuit className="size-5" />
+              </div>
+              <div className="flex flex-col">
+                <CardTitle className="text-sm font-extrabold text-ink">
+                  {isRTL ? 'ملخصك الأسبوعي الذكي' : 'Your Weekly AI Insight'}
+                </CardTitle>
+                <CardDescription className="text-[11px]">
+                  {isRTL
+                    ? `بناءً على ${weeklyInsight.review_count} تقييم من ${formatDate(weeklyInsight.week_start)} إلى ${formatDate(weeklyInsight.week_end)}`
+                    : `Based on ${weeklyInsight.review_count} reviews, ${formatDate(weeklyInsight.week_start)} – ${formatDate(weeklyInsight.week_end)}`}
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-1">
+            <div className="rounded-xl border border-indigo-border/50 bg-surface/80 p-4 text-sm text-ink-muted leading-relaxed whitespace-pre-line">
+              {weeklyInsight.content}
+            </div>
+            <p className="mt-2 text-[10px] text-ink-subtle">
+              {isRTL
+                ? 'ملخص مُولّد بالذكاء الاصطناعي من تقييمات عملائك الحقيقية — اجتهاد تحليلي وليس حقيقة مطلقة.'
+                : 'AI-generated from your real customer reviews — an analytical read, not an absolute fact.'}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 3. Middle Bento Grid (Share Hub 7-cols + Rating Analytics 5-cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">

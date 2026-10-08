@@ -375,6 +375,11 @@ function ReviewRow({
             </div>
             <div className="flex items-center gap-2">
               <StarRating value={review.rating} onChange={() => {}} disabled size="sm" />
+              {!review.is_published && (
+                <Badge variant="destructive" dot>
+                  {isRTL ? 'ملاحظة خاصة' : 'Private feedback'}
+                </Badge>
+              )}
               <Badge variant={statusVariant} dot>{statusLabel}</Badge>
             </div>
           </div>
@@ -384,6 +389,13 @@ function ReviewRow({
             {review.original_text}
             <span className="not-italic text-emerald-deep font-black text-lg leading-none ms-1 align-bottom">"</span>
           </blockquote>
+
+          {review.order_number && (
+            <div className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-600">
+              <span>{isRTL ? 'رقم الطلب:' : 'Order #:'}</span>
+              <span dir="ltr">{review.order_number}</span>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-bold text-ink-subtle flex items-center gap-1.5">

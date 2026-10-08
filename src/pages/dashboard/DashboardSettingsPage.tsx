@@ -31,6 +31,8 @@ function DashboardSettingsPage() {
 
   const [businessName, setBusinessName] = React.useState(merchant?.business_name ?? '')
   const [brandColor, setBrandColor] = React.useState(merchant?.brand_color ?? '#059669')
+  const [googleReviewUrl, setGoogleReviewUrl] = React.useState(merchant?.google_review_url ?? '')
+  const [facebookReviewUrl, setFacebookReviewUrl] = React.useState(merchant?.facebook_review_url ?? '')
   const [logoFile, setLogoFile] = React.useState<File | null>(null)
   const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(null)
   const [removeExistingLogo, setRemoveExistingLogo] = React.useState(false)
@@ -46,6 +48,8 @@ function DashboardSettingsPage() {
     if (merchant) {
       setBusinessName(merchant.business_name ?? '')
       setBrandColor(merchant.brand_color ?? '#059669')
+      setGoogleReviewUrl(merchant.google_review_url ?? '')
+      setFacebookReviewUrl(merchant.facebook_review_url ?? '')
       setRemoveExistingLogo(false)
       setLogoFile(null)
       if (logoPreviewUrl) {
@@ -54,7 +58,14 @@ function DashboardSettingsPage() {
       }
       setError(null)
     }
-  }, [merchant?.id, merchant?.business_name, merchant?.brand_color, merchant?.logo_url])
+  }, [
+    merchant?.id,
+    merchant?.business_name,
+    merchant?.brand_color,
+    merchant?.logo_url,
+    merchant?.google_review_url,
+    merchant?.facebook_review_url,
+  ])
 
   React.useEffect(() => {
     return () => {
@@ -67,6 +78,8 @@ function DashboardSettingsPage() {
   const isDirty =
     businessName.trim() !== (merchant.business_name ?? '').trim() ||
     brandColor.toLowerCase() !== (merchant.brand_color ?? '#059669').toLowerCase() ||
+    googleReviewUrl.trim() !== (merchant.google_review_url ?? '').trim() ||
+    facebookReviewUrl.trim() !== (merchant.facebook_review_url ?? '').trim() ||
     logoFile !== null ||
     removeExistingLogo
 
@@ -74,6 +87,8 @@ function DashboardSettingsPage() {
     if (!merchant) return
     setBusinessName(merchant.business_name ?? '')
     setBrandColor(merchant.brand_color ?? '#059669')
+    setGoogleReviewUrl(merchant.google_review_url ?? '')
+    setFacebookReviewUrl(merchant.facebook_review_url ?? '')
     setLogoFile(null)
     if (logoPreviewUrl) {
       URL.revokeObjectURL(logoPreviewUrl)
@@ -173,6 +188,8 @@ function DashboardSettingsPage() {
         business_name: businessName.trim(),
         brand_color: brandColor,
         logo_url: logoUrl,
+        google_review_url: googleReviewUrl.trim() || null,
+        facebook_review_url: facebookReviewUrl.trim() || null,
       })
       .eq('id', merchant.id)
 
@@ -325,6 +342,39 @@ function DashboardSettingsPage() {
                 {t('dash_settings_brand_color')}
               </Label>
               <ColorPicker value={brandColor} onChange={setBrandColor} />
+            </div>
+
+            <div className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-background-subtle/50 p-4">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs font-bold text-ink">{t('dash_settings_review_links_title')}</span>
+                <span className="text-[11px] text-ink-muted">{t('dash_settings_review_links_desc')}</span>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="googleReviewUrl" className="text-xs font-bold text-ink">
+                  {t('dash_settings_google_review_url')}
+                </Label>
+                <Input
+                  id="googleReviewUrl"
+                  value={googleReviewUrl}
+                  onChange={(event) => setGoogleReviewUrl(event.target.value)}
+                  placeholder="https://g.page/r/..."
+                  dir="ltr"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="facebookReviewUrl" className="text-xs font-bold text-ink">
+                  {t('dash_settings_facebook_review_url')}
+                </Label>
+                <Input
+                  id="facebookReviewUrl"
+                  value={facebookReviewUrl}
+                  onChange={(event) => setFacebookReviewUrl(event.target.value)}
+                  placeholder="https://facebook.com/..."
+                  dir="ltr"
+                />
+              </div>
             </div>
 
             {error && (
