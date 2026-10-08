@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router-dom'
-import { CheckCircle2, Loader2, Sparkles } from 'lucide-react'
+import { CheckCircle2, Copy, ExternalLink, Gift, Loader2, Sparkles } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,8 +14,62 @@ import { FullPageSpinner } from '@/components/auth/RequireAuth'
 import { StarRating } from '@/components/ui/star-rating'
 import { Textarea } from '@/components/ui/textarea'
 import { getPublicMerchantBySlug, type PublicMerchant } from '@/lib/public-merchant'
-import { submitReview } from '@/lib/review-submission'
+import { submitReview, type ReviewSubmissionResult } from '@/lib/review-submission'
 import { useLanguage } from '@/lib/language-context'
+
+function DiscountCodeCard({
+  brandColor,
+  title,
+  desc,
+  code,
+  percentOff,
+  expiresAt,
+}: {
+  brandColor: string
+  title: string
+  desc: string
+  code: string
+  percentOff: number
+  expiresAt: string
+}) {
+  const { t, isRTL } = useLanguage()
+  const [copied, setCopied] = React.useState(false)
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard access can fail silently (permissions/insecure context) —
+      // the code is still visible on screen either way.
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-background-subtle/60 p-4 text-right" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="flex items-center gap-2">
+        <Gift className="size-4" style={{ color: brandColor }} />
+        <span className="text-sm font-extrabold text-ink">{title}</span>
+      </div>
+      <p className="text-xs text-ink-muted leading-relaxed">{desc.replace('{percent}', String(percentOff))}</p>
+      <div className="flex items-center gap-2">
+        <code
+          className="flex-1 rounded-xl border-2 border-dashed px-3 py-2 text-center font-mono text-sm font-extrabold tracking-wider"
+          style={{ borderColor: brandColor, color: brandColor }}
+        >
+          {code}
+        </code>
+        <Button type="button" size="icon" variant="outline" onClick={handleCopy} aria-label={t('review_discount_code_copy')}>
+          {copied ? <CheckCircle2 className="size-4 text-emerald" /> : <Copy className="size-4" />}
+        </Button>
+      </div>
+      <span className="text-[11px] font-semibold text-ink-subtle">
+        {t('review_discount_expires', { date: new Date(expiresAt).toLocaleDateString(isRTL ? 'ar-EG' : 'en-US') })}
+      </span>
+    </div>
+  )
+}
 
 type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
 type MerchantLookupState =
@@ -58,8 +112,12 @@ function CustomerReviewPage() {
   const [rating, setRating] = React.useState(5)
   const [reviewText, setReviewText] = React.useState('')
   const [customerName, setCustomerName] = React.useState('')
+  const [orderNumber, setOrderNumber] = React.useState('')
   const [status, setStatus] = React.useState<SubmitStatus>('idle')
   const [attemptedSubmit, setAttemptedSubmit] = React.useState(false)
+  const [result, setResult] = React.useState<ReviewSubmissionResult | null>(null)
+
+  const isLowRating = rating > 0 && rating <= 3
 
   const quickTags = isRTL ? QUICK_TAGS_AR : QUICK_TAGS_EN
 
@@ -96,12 +154,14 @@ function CustomerReviewPage() {
 
     setStatus('submitting')
     try {
-      await submitReview({
+      const submissionResult = await submitReview({
         merchantId: merchant.id,
         rating,
         reviewText,
         customerName,
+        orderNumber: isLowRating ? orderNumber : undefined,
       })
+      setResult(submissionResult)
       setStatus('success')
     } catch {
       setStatus('error')
@@ -109,6 +169,8 @@ function CustomerReviewPage() {
   }
 
   if (status === 'success') {
+    const isLowRatingResult = result ? !result.isPublished : isLowRating
+
     return (
       <main className="relative flex min-h-dvh items-center justify-center bg-background px-4 py-8 overflow-hidden">
         {/* Animated Brand Ambience */}
@@ -134,16 +196,59 @@ function CustomerReviewPage() {
 
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-extrabold text-ink tracking-tight">
-                {t('review_success_title')}
+                {isLowRatingResult ? t('review_low_rating_success_title') : t('review_success_title')}
               </h1>
               <p className="text-sm text-ink-muted leading-relaxed">
-                {isRTL
-                  ? `تم استلام تقييمك بنجاح. رأيك يعني الكثير لـ ${merchant.business_name} ويساعدهم دائماً على التميز.`
-                  : `Your review has been received successfully. Your thoughts mean the world to ${merchant.business_name}!`}
+                {t(
+                  isLowRatingResult ? 'review_low_rating_success_desc' : 'review_high_rating_success_desc',
+                  { business: merchant.business_name },
+                )}
               </p>
             </div>
 
-            <div className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-ink-subtle">
+            {result?.repeatCode && (
+              <DiscountCodeCard
+                brandColor={merchant.brand_color}
+                title={t('review_discount_repeat_title')}
+                desc={t('review_discount_repeat_desc')}
+                code={result.repeatCode.code}
+                percentOff={result.repeatCode.percentOff}
+                expiresAt={result.repeatCode.expiresAt}
+              />
+            )}
+
+            {result?.shareCode && (
+              <div className="flex w-full flex-col gap-3">
+                <DiscountCodeCard
+                  brandColor={merchant.brand_color}
+                  title={t('review_discount_share_title')}
+                  desc={t('review_discount_share_desc')}
+                  code={result.shareCode.code}
+                  percentOff={result.shareCode.percentOff}
+                  expiresAt={result.shareCode.expiresAt}
+                />
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {result.googleReviewUrl && (
+                    <a href={result.googleReviewUrl} target="_blank" rel="noopener noreferrer">
+                      <Button type="button" size="sm" variant="outline" className="gap-1.5">
+                        <ExternalLink className="size-3.5" />
+                        {t('review_discount_share_google_btn')}
+                      </Button>
+                    </a>
+                  )}
+                  {result.facebookReviewUrl && (
+                    <a href={result.facebookReviewUrl} target="_blank" rel="noopener noreferrer">
+                      <Button type="button" size="sm" variant="outline" className="gap-1.5">
+                        <ExternalLink className="size-3.5" />
+                        {t('review_discount_share_facebook_btn')}
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-ink-subtle">
               <Sparkles className="size-3.5 text-emerald" />
               <span>{t('wall_powered_by')}</span>
             </div>
@@ -275,7 +380,29 @@ function CustomerReviewPage() {
                     {t('review_text_required')}
                   </p>
                 )}
+                {isLowRating && (
+                  <p className="text-xs font-bold text-danger/90 animate-fade-in">
+                    {t('review_low_rating_hint')}
+                  </p>
+                )}
               </div>
+
+              {/* Order Number — only surfaced for low ratings, routed straight
+                  to the merchant alert (Feature 1), never posted publicly. */}
+              {isLowRating && (
+                <div className="flex flex-col gap-2 animate-fade-in">
+                  <Label htmlFor="orderNumber" className="text-xs font-bold text-ink">
+                    {t('review_order_number_label')}
+                  </Label>
+                  <Input
+                    id="orderNumber"
+                    value={orderNumber}
+                    onChange={(event) => setOrderNumber(event.target.value)}
+                    disabled={isSubmitting}
+                    placeholder={t('review_order_number_placeholder')}
+                  />
+                </div>
+              )}
 
               {/* Customer Name */}
               <div className="flex flex-col gap-2">
